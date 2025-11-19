@@ -1,0 +1,22 @@
+<div class="row">
+    <ng-container *ngFor="let section of sections">
+        <div class="col"
+             *ngIf="viewBox(section)"  (click)="onView(section.route)"
+             [ngClass]="{'active-box': activeSection === section.route}">
+            <div    class="dashlet p-3"
+                    [ngStyle]="{'border-bottom': activeSection === section.route ? '4px solid #1D4A7B' : 'none'}">
+                <div  class="titreIcon d-flex justify-content-between">
+                    <h3>{{ section.title }}</h3>
+                    <div class="icon px-3 py-2"
+                         [ngStyle]="{'background-color': activeSection === section.route ? '#1D4A7B' : 'rgba(29, 74, 123, 0.10)'}">
+                        <i class="fa-solid" [ngClass]="section.icon"   [ngStyle]="{'color': activeSection === section.route ? 'white' : 'black'}"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ng-container>
+</div>
+<ng-container>
+    <router-outlet></router-outlet>
+</ng-container>

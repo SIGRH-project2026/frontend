@@ -1,0 +1,77 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouvelle Actualité/ Recrutement</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="ActuForm">
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <label class="form-label">Type de l'article</label>
+                    <select class="form-select" formControlName="typeArticle">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let type of typeArticles " value="{{type?.id}}">
+                            {{type?.libelle}}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-sm-6">
+                    <label class="form-label">Titre de l'article</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="titre"/>
+                </div>
+                
+                <div class="col-sm-6">
+                    <label class="form-label">Catégorie</label>
+                    <select class="form-select" formControlName = "categorieActualite">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let categorie of categories" value="{{categorie?.id}}">{{categorie?.libelle}}</option>
+                    </select>
+                </div>
+               <!--  <div class="col-sm-6">
+                    <label class="form-label">Date de publication</label>
+                    <input type="date" class="form-control" placeholder="Saisir" />
+                </div> -->
+
+                <div class="col-sm-6">
+                    <label class="form-label">Image <span class="text-danger fw-bold">*</span></label>
+                    <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                        <ngx-dropzone-label>
+                            <i class="material-icons">cloud_upload</i>
+                            <p class="fw-semibold">Sélectionner les fichiers</p>
+                            <small>ou glisser et déposer les fichiers</small>
+                        </ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                            (removed)="onRemoveFile(f, piecesJointesFiles)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+                
+                <div class="col-sm-6">
+                    <label class="form-label">Résumé <span class="text-danger fw-bold">*</span></label>
+                    <textarea class="form-control" cols="30" rows="7" placeholder="Saisir" formControlName ="resume"></textarea>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Contenu <span class="text-danger fw-bold">*</span></label>
+                    <textarea class="form-control" cols="30" rows="7" placeholder="Saisir" formControlName="contenu"></textarea>
+                </div>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" (click)="onSave()">
+                        Enregistrer
+                    </button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset" (click)="onReset()">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

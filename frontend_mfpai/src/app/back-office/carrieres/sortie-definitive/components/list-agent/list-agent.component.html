@@ -1,0 +1,115 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des agents</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher"
+                           [(ngModel)]="filterValue" (keyup)="onSearch()">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <select class="form-select" (change)="onStatusChange($event)">
+                    <option value="">Tous les types de sortie</option>
+                    <option value="DRA">Retraite ou retraité anticipée</option>
+                    <option value="DRD">Décès</option>
+                    <option value="DDD">Abandon</option>
+                </select>
+            </div>
+      
+        </div>
+        <div class="panel-list-body">
+            <!-- Table -->
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="demandeList.length > 0;else     listEmpty;">
+                        <tr *ngFor="let sortiTamporaire of demandeList">
+                            <td>
+                                {{ sortiTamporaire?.agent?.matricule }}
+                            </td>
+                            <td>
+                                {{ sortiTamporaire?.agent?.prenom  }}
+                            </td>
+                            <td>
+                                {{ sortiTamporaire?.agent?.nom }}
+                            </td>
+
+                               <ng-container *ngIf="sortiTamporaire?.typeActe?.codeActe === 'aa'">
+                                   <td >
+                                       {{ sortiTamporaire?.typeAA?.libelle }}
+                                   </td>
+                               </ng-container>
+                            <ng-container *ngIf="sortiTamporaire?.typeActe?.codeActe === 'ag'">
+                                <td >
+                                    {{ sortiTamporaire?.typeAG?.libelle }}
+                                </td>
+                            </ng-container>
+                          
+                            <td>
+                                {{ sortiTamporaire?.agent?.fonction?.label }}
+                            </td>
+                    
+                            
+                            <td>
+                                <div class="dropdown">
+                                    <button   class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)"  (click)="onViewAgent(sortiTamporaire)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir details</span>
+                                            </a>
+                                        </li>
+                                      
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                </p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+    
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshData()">
+                        <option [ngValue]="10">10</option>
+                        <option [ngValue]="20">20</option>
+                        <option [ngValue]="30">30</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                    (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                </ngb-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+  
+
+

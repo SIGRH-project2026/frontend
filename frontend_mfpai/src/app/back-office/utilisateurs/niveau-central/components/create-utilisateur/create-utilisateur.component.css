@@ -1,0 +1,7 @@
+h5.title-form{
+    color: var(--color-primary);
+    position: relative;
+    border-bottom: 1px solid #CED4DA;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}

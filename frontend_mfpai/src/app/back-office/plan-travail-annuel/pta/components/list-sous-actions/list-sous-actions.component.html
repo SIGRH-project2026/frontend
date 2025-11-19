@@ -1,0 +1,549 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start">
+            <h3>Liste des sous actions</h3>
+            <nav aria-label="breadcrumb" class="breadcrumb-sub mt-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Résultat N°1.1
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngIf="sousactionsList.length > 0;else listEmpty;">
+                    <tr *ngFor="let subAction of sousactionsList">
+                        <td>
+                            {{ subAction?.libelleSubAction }}
+                        </td>
+                        <td>
+                            {{ subAction.indicateur?.libelle }}
+                        </td>
+                        <td>
+                            {{ subAction.indicateur?.responsableActivite }}
+                        </td>
+                        <td>
+                            {{ subAction.indicateur?.listDivisions }}
+                        </td>
+                        <td>
+                            Du {{ subAction.dateDebut }} au Du {{ subAction.dateFin }}
+                        </td>
+
+                        <td>
+                            <ng-container *ngIf="isAction === 'create'">
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <ng-container *ngIf="subAction?.modeCalcul && subAction?.reportRealisation">
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                   (click)="openModal(DETAIL_SOUS_ACTION, subAction)">
+                                                    <i class="fa fa-eye me-2"></i>
+                                                    <span>Voir détails</span>
+                                                </a>
+                                            </li>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="isEditOrCreate === 'edit'">
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                   (click)="openModalSubResult(FORM_EDIT_SOUSACTION, subAction)">
+                                                    <i class="fa fa-edit me-2"></i>
+                                                    <span>Modifier sous action</span>
+                                                </a>
+                                            </li>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="!subAction?.modeCalcul">
+                                            <ng-container *ngIf="isEditOrCreate === 'edit'">
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:(0)"
+                                                       (click)="openModal(FORM_MODE_CALCUL, subAction)">
+                                                        <i class="fa fa-edit me-2"></i>
+                                                        <span>Définir le mode calcul</span>
+                                                    </a>
+                                                </li>
+                                            </ng-container>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="!subAction?.reportRealisation">
+
+                                            <ng-container *ngIf="isEditOrCreate === 'edit'">
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:(0)"
+                                                       (click)="openModal(FORM_REPORTER_REALISATIONS, subAction)">
+                                                        <i class="fa fa-edit me-2"></i>
+                                                        <span>Reporter réalisations</span>
+                                                    </a>
+                                                </li>
+                                            </ng-container>
+                                        </ng-container>
+
+                                    </ul>
+                                </div>
+
+                            </ng-container>
+
+                            <ng-container *ngIf="isAction === 'view'">
+                                <button class="btn" type="button" (click)="openModal(DETAIL_SOUS_ACTION, subAction)"
+                                        title="Voir détail">
+                                    <i class="fa fa-eye text-black-50"></i>
+                                </button>
+                            </ng-container>
+                        </td>
+
+                    </tr>
+                </ng-container>
+                <ng-template #listEmpty>
+                    <tr>
+                        <td [attr.colspan]="headers.length">
+                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                        </td>
+                    </tr>
+                </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshData($event)">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                            (pageChange)="refreshData($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour
+        </button>
+    </div>
+
+
+    <!-- ####### Formulaire Mode de Calcul ########### -->
+    <ng-template #FORM_MODE_CALCUL let-modal>
+        <div class="modal-header modal-header-with-sub">
+            <h1 class="modal-title fs-5">Mode de calcul</h1>
+            <nav aria-label="breadcrumb" class="breadcrumb-sub">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Résultat N°1.1</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Sous action 1.1.1
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="modeCalculForm">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Mode de calcul</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="modeCalcul">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Sources de données</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="sourceDonnees">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Fréquence de production</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="frequenceProd">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Méthode de collecte</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="methodCollecte">
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="form-label d-block">Responsable de production</label>
+                        <select formControlName="divisions" id="selectResponsableProduction" class="w-100" multiple
+                                title="Sélectionner..."
+                                data-width="auto" data-live-search="true">
+                            <option [value]="division?.code" *ngFor="let division of divisionImpliques">
+                                {{ division?.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-primary" (click)="onSaveModeCalcul()">Enregistrer</button>
+            <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+
+    <!-- ####### Formulaire Reporter réalisations ########### -->
+    <ng-template #FORM_REPORTER_REALISATIONS let-modal>
+        <div class="modal-header modal-header-with-sub">
+            <h1 class="modal-title fs-5">Reporter réalisations</h1>
+            <nav aria-label="breadcrumb" class="breadcrumb-sub">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Résultat N°1.1</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Sous action 1.1.1
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="realisationReportForm">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDebut">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" placeholder="Saisir" formControlName="dateFin">
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="form-label">Résumé de la réalisation</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="resume">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Cible</label>
+                        <input type="text" class="form-control" placeholder="Saisir" value="100%" disabled>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Taux atteint</label>
+                        <input type="number" min="0" class="form-control" placeholder="Saisir"
+                               formControlName="tauxAtteint">
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Observation <span class="text-danger fw-bold">*</span></label>
+                        <textarea class="form-control" cols="30" rows="7" placeholder="Saisir"
+                                  formControlName="observation"></textarea>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Pièces jointes</label>
+                        <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                            <ngx-dropzone-label>
+                                <i class="material-icons">cloud_upload</i>
+                                <p class="fw-semibold">Sélectionner les fichiers</p>
+                                <small>ou glisser et déposer les fichiers</small>
+                            </ngx-dropzone-label>
+                            <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                                  (removed)="onRemoveFile(f, piecesJointesFiles)">
+                                <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                            </ngx-dropzone-preview>
+                        </ngx-dropzone>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-primary"
+                    (click)="onSaveReportRealisations()" [disabled]="realisationReportForm.invalid">Enregistrer
+            </button>
+            <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- ####### Détail  ########### -->
+    <ng-template #DETAIL_SOUS_ACTION let-modal>
+        <div class="modal-header modal-header-with-sub">
+            <h1 class="modal-title fs-5">Sous Action 1.1</h1>
+            <nav aria-label="breadcrumb" class="breadcrumb-sub">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Résultat N°1.1</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ detailSubAction?.libelleSubAction }}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        <div class="modal-body py-md-3">
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Libellé sous action</span>
+                        <span>  {{ detailSubAction?.libelleSubAction }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Libellé Indicateur</span>
+                        <span> {{ detailSubAction?.indicateur?.libelle }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Responsable Activité</span>
+                        <span>  {{ detailSubAction?.indicateur?.responsableActivite }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Divisions/Bureaux/Services</span>
+                        <span> {{ detailSubAction?.indicateur?.listDivisions }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Cible</span>
+                        <span>  {{ detailSubAction?.resultPTA?.cible }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Budget</span>
+                        <span>  {{ detailSubAction?.budget }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Échéance</span>
+                        <span>Lorem ipsum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Moyen Tech/RH</span>
+                        <span>  {{ detailSubAction?.moyenRH }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Source de Financement</span>
+                        <span>  {{ detailSubAction?.sourceFinancement }}</span>
+                    </div>
+                </div>
+            </div>
+            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+                <mat-tab label="Mode de Calcul">
+                    <div class="row details py-3 g-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Mode de calcul</span>
+                                <span>  {{ detailSubAction?.modeCalcul?.modeCalcul }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Sources de données</span>
+                                <span>{{ detailSubAction?.modeCalcul?.sourceDonnees }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Fréquence de production</span>
+                                <span>{{ detailSubAction?.modeCalcul?.frequenceProd }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Méthode de collecte</span>
+                                <span>{{ detailSubAction?.modeCalcul?.methodCollecte }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Responsable de production</span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Reporter réalisations">
+                    <div class="row details py-3 g-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Période</span>
+                                <span>{{ detailSubAction?.reportRealisation?.dateDebut }}
+                                    -{{ detailSubAction?.reportRealisation?.dateFin }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Cible</span>
+                                <span>{{ detailSubAction?.reportRealisation?.cible }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Taux atteint</span>
+                                <span>{{ detailSubAction?.reportRealisation?.tauxAtteint }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="details-item">
+                                <span>Résumé de la réalisation</span>
+                                <span>{{ detailSubAction?.reportRealisation?.resume }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="details-item">
+                                <span>Observation</span>
+                                <span>{{ detailSubAction?.reportRealisation?.observation }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="row gx-3 gy-1 doc-files">
+                                <ng-container *ngIf="filesResult !== undefined">
+                                    <div class="col-sm-4" *ngFor="let item of filesResult ">
+                                        <div class="doc-file-item">
+                                            <div class="text-icon">
+                                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                                <div class="text">
+
+                                                    <span> {{ item?.originalName }}</span>
+                                                </div>
+                                            </div>
+                                            <button class="fab-button" type="button"
+                                                    (click)="downloadFile(item?.generatedName)">
+                                                <img src="assets/icons/download.svg" alt="Télécharger"
+                                                     title="Télécharger">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+                Fermer
+            </button>
+        </div>
+    </ng-template>
+
+
+    <ng-template #FORM_EDIT_SOUSACTION let-modal>
+        <div class="modal-header modal-header-with-sub">
+            <h1 class="modal-title fs-5">Modfier Sous Action 1.1</h1>
+            <nav aria-label="breadcrumb" class="breadcrumb-sub">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="javascript:(0)">Résultat N°1.1</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Sous action 1.1.1
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="subActionForm">
+                <div class="row g-4">
+                    <div class="col-sm-4">
+                        <label class="form-label">Libellé sous action</label>
+                        <input type="text" class="form-control" placeholder="Saisir (Ex: Sous action 1.1.1)"
+                               formControlName="libelleSubAction"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Libellé Indicateur</label>
+                        <select class="form-select" formControlName="indicateur" #indicateur
+                                (change)="getIndicateur($any($event.target).value)">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let ind of indicateurs" [value]=ind.id>{{ ind?.libelle }}</option>
+                        </select>
+                    </div>
+
+                    <ng-container *ngIf="indicateur.value">
+                        <div class="col-sm-4">
+                            <label class="form-label">Responsable Activité</label>
+                            <input type="text" class="form-control" placeholder="Saisir" value="{{responssableAct}}"
+                                   disabled/>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">Divisions/Bureaux/Services</label>
+                            <input type="text" class="form-control" placeholder="Saisir" value="{{listDivisions}}"
+                                   disabled/>
+                        </div>
+                    </ng-container>
+                    <div class="col-sm-4">
+                        <label class="form-label">Cible</label>
+                        <input type="text" class="form-control" placeholder="Saisir" value="100" disabled/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Budget</label>
+                        <input type="number" min="0" formControlName="budget" class="form-control"
+                               placeholder="Saisir"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Date début</label>
+                        <input type="date" formControlName="dateDebut" class="form-control" placeholder="Saisir"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" formControlName="dateFin" class="form-control" placeholder="Saisir"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Moyen Tech/RH</label>
+                        <input type="text" formControlName="moyenRH" class="form-control" placeholder="Saisir"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Source de Financement</label>
+                        <input type="text" formControlName="sourceFinancement" class="form-control"
+                               placeholder="Saisir"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-primary" (click)="onUpdateSousAction()"
+                    [disabled]="subActionForm.invalid">
+                Modifier
+            </button>
+            <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+</div>

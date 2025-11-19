@@ -1,0 +1,19 @@
+body{
+  background-color: #EFF8F9 !important;
+}
+
+.button-text{
+  display: block;
+  margin: 12px auto;
+  color: rgba(29, 74, 123, 1);
+  text-align: center;
+    position: relative;
+    transition: all .3s ease-in-out;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.button-text:hover {
+  background-color: rgba(29, 74, 123, .2);
+}

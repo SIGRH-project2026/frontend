@@ -1,0 +1,225 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des demandes de stages</h3>
+            <button class="button button-primary" *ngIf="canConnectedUserCreateDemandeStage" type="button" (click)="onCreateDemande()">
+                <i class="fa fa-add"></i>
+            Enregistrer une demande
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <form [formGroup]="searchForm">
+                    <div class="search-box">
+                        <input class="search-input" (keyup)="onSearchAll()"  type="text" formControlName="searchQuery" placeholder="Rechercher">
+                        <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <select *ngIf="statutDemandeStage === 'ALL'" class="form-select" [(ngModel)]="selectedType" (change)="initFormFilterByDemandeType()">
+                    <option value="">Tous les status</option>
+                    <option value="ENREGISTRER">Enregistrée</option>
+                    <option value="AUTORISER">Autorisée</option>
+                    <option value="NONAUTORISER">Non Autorisée</option>
+                </select>
+            </div>
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="demandes.length > 0;else listEmpty;">
+                        <tr *ngFor="let demande of demandes">
+                            <td>
+                                {{ demande?.numero }}
+                            </td>
+                            <td>
+                                {{ demande?.prenomDemandeur | titlecase }} {{ demande?.nomDemandeur | titlecase }}
+                            </td>
+                            <td>
+                                {{ demande?.tel }}
+                            </td>
+                            <td>
+                                {{ demande?.dateDebut ? demande?.dateDebut : '---' }}
+                            </td>
+                            <td>
+                                {{ demande?.dateFin ? demande?.dateFin : '---' }}
+                            </td>
+                            <td>
+                                <div [appStatus]="demande.statutDemandeStage.code" class="status-badge"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="onViewDemande(demande)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="demande.statutDemandeStage.code === 'ENREGISTRER' && canConnectedUserCreateDemandeStage && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="onEditDemande(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Modifier</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="demande.statutDemandeStage.code === 'ENREGISTRER' && !demande.division && demande?.direction?.code === 'DRH' && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="onImputerDemande(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Imputer</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="canGiverAdvice(demande) && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                               (click)="onDonnerAvisDemande(demande)">
+                                                <i class="fa fa-comments me-2"></i>
+                                                <span>Donner avis</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && demande.haveAuthorisationStage && !demande?.haveRapport && canGiverSetAttestationAndRapport(demande) && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="onSaveRapport(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Enregistrer rapport de stage</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && demande.haveAuthorisationStage && !demande?.haveAttestation && canGiverSetAttestation(demande) && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="onSaveAttestation(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Enregistrer attestation de stage</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a  class="dropdown-item" href="javascript:(0)" *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && !this.demande?.haveAuthorisationStage && canAuthorize() && showOtherButton" (click)="onSaveAutorisation(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Enregistrer autorisation de stage</span>
+                                            </a>
+                                        </li>
+
+                                        <li *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && demande.haveAuthorisationStage && canAuthorize() && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="downloadFile(demande.justificatfsAuthorisationStage[0].generatedName)">
+                                                <i class="fa fa-download me-2"></i>
+                                                <span>Télécharger autorisation de stage</span>
+                                            </a>
+                                        </li>
+
+                                        <li *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && demande.haveRapport && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="downloadFile(demande.rapportStageResponse.piecesJoint.generatedName)">
+                                                <i class="fa fa-download me-2"></i>
+                                                <span>Télécharger rapport de stage</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="demande.statutDemandeStage.code === 'AUTORISER' && demande.haveAttestation && showOtherButton">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="downloadFile(demande.attestationStageResponse.piecesJoint.generatedName)">
+                                                <i class="fa fa-download me-2"></i>
+                                                <span>Télécharger attestation de stage</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-12">
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"  (ngModelChange)="refreshData($event)">
+                        <option [ngValue]="5">5</option>
+                        <option [ngValue]="9">9</option>
+                        <option [ngValue]="18">18</option>
+                        <option [ngValue]="27">27</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true" >
+                </ngb-pagination>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="demandeForm" (ngSubmit)="onFilterDemandeStage()">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Demande</label>
+                        <input type="text" class="form-control" formControlName="numeroDemande" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Prénom Demandeur</label>
+                        <input type="text" class="form-control" formControlName="prenomDemandeur" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Nom Demandeur</label>
+                        <input type="text" class="form-control" formControlName="nomDemandeur" placeholder="Saisir" />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Discipline de stage</label>
+                        <input type="text" class="form-control" formControlName="disciplineStage" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" formControlName="dateDebut" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" formControlName="dateFin" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6" *ngIf="statutDemandeStage === 'ALL'">
+                        <label class="form-label">Statut</label>
+                        <select class="form-select" formControlName="statutDemandeStage">
+                            <option value="">Sélectionner</option>
+                            <option value="ENREGISTRER">Enregistrée</option>
+                            <option value="AUTORISER">Autorisée</option>
+                            <option value="NONAUTORISER">Non Autorisée</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100"
+                (click)="onFilterDemandeStage()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>

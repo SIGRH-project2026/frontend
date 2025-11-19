@@ -1,0 +1,152 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Modifier demande N° 1001</h3>
+        </div>
+    </div>
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Modifer la demande N° {{demande?.numeroDemande}}</h3>
+            <div *ngIf="demande.statutPriseEnCharge.code=='AMODIFIER'" id="motif-modification">
+                <h6 class="title-motif">Motif de modification</h6>
+                <p>{{demande?.motifModification}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <mat-stepper linear #stepper>
+            <mat-step [stepControl]="infosBeneficiairesGroup">
+                <form>
+                    <ng-template matStepLabel>Information générale</ng-template>
+                    <div class="row g-4 mt-3">
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Matricule</label>
+                            <input type="text" class="form-control" [value]="demande?.utilisateur?.matricule" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" [value]="demande?.utilisateur?.prenom" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" [value]="demande?.utilisateur?.nom" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Fonction</label>
+                            <input type="text" class="form-control" [value]="demande?.utilisateur?.fonction?.label" disabled />
+                        </div>
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Région</label>
+                            <input type="text" class="form-control" [value]="demande?.utilisateur?.region?.label" disabled />
+                        </div>
+                        <ng-container *ngIf="demande?.utilisateur?.typeUser==='CEN'">
+                            <div   class="col-lg-4 col-sm-6">
+                                <label class="form-label">Direction</label>
+                                <input type="text" class="form-control" [value]="demande?.utilisateur?.direction?.label" disabled />
+                            </div>
+
+                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='DRH'">
+                                <ng-container *ngIf="demande?.utilisateur?.bureau!=null"> 
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Division</label>
+                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.division?.label" disabled />
+                                </div>
+                            </ng-container>
+                                <ng-container *ngIf="demande?.utilisateur?.bureau!=null"> 
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Bureau</label>
+                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.bureau?.label" disabled />
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='AUD'">
+                                <ng-container *ngIf="demande?.utilisateur?.bureau!=null"> 
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Service</label>
+                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.service?.label" disabled />
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        </ng-container>
+
+                        <ng-container *ngIf="demande?.utilisateur?.typeUser==='DEC'">
+
+                            <div  class="col-lg-4 col-sm-6">
+                                <label class="form-label">IA</label>
+                                <input type="text" class="form-control" [value]="demande?.utilisateur?.ia?.label" disabled />
+                            </div>
+
+                            <ng-container *ngIf="userDTO?.etablissement!==null">
+                                <div   class="col-sm-4">
+                                    <label class="form-label">Etablissement/CFP/EEF</label>
+                                    <input type="text" class="form-control"  [value]="userDTO?.etablissement?.label"  disabled="true"/>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="infosDemandeursGroup">
+                <form [formGroup]="demandePecForm">
+                    <ng-template matStepLabel>Informations de la demande</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Type de demande <span class="text-danger fw-bold">*</span></label>
+                            <select class="form-control" formControlName="codeTypeDemande"  [(ngModel)]="typeSelectionne">
+                                <option [value]="" > Selectionner</option>
+                                <option value="ES">Evacuation sanitaire</option>
+                                <option value="AP">Affaires personnelles</option>
+                                <option value="OC">Organisation Cérémonie</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date demande</label>
+                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDemande" [(ngModel)]="demande.dateDemande" >
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Objet de la demande <span
+                                    class="text-danger fw-bold">*</span></label>
+                            <textarea class="form-control" cols="30" rows="3"  formControlName="objetDemande" [(ngModel)]="demande.objetDemande"></textarea>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                            <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of demande.pieceJointes" [removable]="true" (removed)="onRemove(f)">
+                                    <ngx-dropzone-label>{{ f.originalName }}</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white"
+                            (click)="onSaveDemande()">Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

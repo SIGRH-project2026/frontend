@@ -1,0 +1,77 @@
+<div class="panel-form">
+    <div class="panel-form-header" *ngIf="campaign">
+        <div class="panel-form-text flex-column">
+            <h3>Nouvelle demande d’expression de besoins</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Titre campagne : </span>
+                    <span>{{ campaign?.nom }}</span>
+                </li>
+                <li>
+                    <span>Date Début : </span>
+                    <span>{{ campaign?.dateDebut }}</span>
+                </li>
+                <li>
+                    <span>Date Fin : </span>
+                    <span>{{ campaign?.dateFin }}</span>
+                </li>
+                 <li>
+                     <span>Statut : </span>
+                     <span *ngIf="campaign?.statut === 'NEW_CAMPAGNE'">Nouvelle</span>
+                     <span *ngIf="campaign?.statut === 'STARTED_CAMPAGNE'"> En cours</span>
+                     <span *ngIf="campaign?.statut === 'ENDED_CAMPAGNE'">Clôturée</span>
+                 </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body" *ngIf="campaign">
+        <form [formGroup]="myForm" (ngSubmit)="onSaveExpression()">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.matricule}}" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Prénoms</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.prenom}}" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.nom}}" disabled />
+                </div>
+                <div class="col-sm-4" *ngIf="campaign.utilisateurResponseDTO.direction">
+                    <label class="form-label">Direction</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.direction.code}}" disabled />
+                </div>
+                <div class="col-sm-4" *ngIf="campaign.utilisateurResponseDTO.service">
+                    <label class="form-label">Service</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.service.code}}" disabled />
+                </div>
+                <div class="col-sm-4" *ngIf="campaign.utilisateurResponseDTO.fonction">
+                    <label class="form-label">Fonction</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="{{campaign.utilisateurResponseDTO.fonction.code}}" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Besoin en compétence/ en formation (*)</label>
+                    <input type="text" class="form-control" formControlName="besoin" />
+                </div>
+                <hr class="h-divider">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif du choix (*)</label>
+                    <textarea class="form-control" rows="3" formControlName="motif"></textarea>
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="submit"
+                        >Soumettre</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

@@ -1,0 +1,78 @@
+<div class="panel-list" *ngIf="pta">
+  <div class="panel-list-header">
+    <div
+      class="panel-list-text d-flex align-items-center justify-content-between"
+    >
+      <h3>{{ pta.initialPTA.nomPTA || "Détails du PTA" }}</h3>
+    </div>
+  </div>
+  <div class="panel-list-body">
+    <div ngbAccordion *ngIf="actionPTA.length > 0" [closeOthers]="true">
+      <div
+        *ngFor="let action of actionPTA; let i = index"
+        ngbAccordionItem
+        [collapsed]="i !== 0"
+      >
+        <h2 ngbAccordionHeader>
+          <button ngbAccordionButton>
+            {{ action?.libelleAction || "Action" }}
+          </button>
+        </h2>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody>
+            <ng-template>
+              <div class="table-responsive">
+                <table class="table table-custom">
+                    <caption>Liste des résultats</caption>
+                  <thead>
+                    <tr class="table-light">
+                      <th scope="col" *ngFor="let head of headers">
+                        {{ head }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container
+                      *ngIf="action.resultActions.length > 0; else listEmpty"
+                    >
+                      <tr *ngFor="let resultPTA of action?.resultActions">
+                        <td>{{ resultPTA?.libelleResultat }}</td>
+                        <td>{{ resultPTA?.tauxAtteint }}%</td>
+                        <td>{{ resultPTA?.cible }}%</td>
+                        <td>{{ resultPTA?.subActionPTA?.length || 0 }}</td>
+                        <td>
+                          <button
+                            class="btn"
+                            type="button"
+                            (click)="onViewSousAction(resultPTA.id)"
+                            title="Voir les sous actions"
+                          >
+                            <i class="fa fa-eye text-black-50"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                      <tr>
+                        <td [attr.colspan]="headers.length">
+                          <p class="text-black-50 text-center m-0">
+                            Aucune donnée disponible
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </tbody>
+                </table>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" (click)="goBack()" class="button-return">
+      <i class="fa fa-arrow-left"></i>
+      Retour
+    </button>
+  </div>
+</div>

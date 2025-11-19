@@ -1,0 +1,302 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Nouvelle formation</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <mat-stepper [linear]="true" [selectedIndex]="selectedIndex" (selectedIndexChange)="selectedIndex"  #stepper class="custom-stepper"
+            [orientation]="(stepperOrientation | async)!">
+            <mat-step [stepControl]="planificationForm">
+                <form [formGroup]="planificationForm">
+                    <ng-template matStepLabel>Planification</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Continue'">
+                            <label class="form-label">Thème</label>
+                            <input type="text" class="form-control" value={{this.themeLibelle}} disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Type de formation</label>
+                            <select class="form-select" formControlName="typeFormation">
+                                <option value="">Sélectionner</option>
+                                <option value="Diplômante">Diplômante</option>
+                                <option value="Continue">Continue</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Intitulé de la Formation <span
+                                    class="text-danger fw-bold">*</span></label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="intitule"/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date début <span class="text-danger fw-bold">*</span></label>
+                            <input [(ngModel)]="debut" type="date" class="form-control" formControlName="dateDebut"/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date fin <span class="text-danger fw-bold">*</span></label>
+                            <input [(ngModel)]="fin" type="date" class="form-control" formControlName="dateFin">
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Durée de la formation</label>
+                            <input type="text" class="form-control" value={{calculateDuration(debut,fin)}} disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Coût</label>
+                            <input type="number"  min="0" class="form-control" placeholder="Saisir" formControlName="cout"/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            <label class="form-label">Etablissements EFF <span
+                                class="text-danger fw-bold">*</span></label>
+                            <select class="form-select"  formControlName="etablissement" (change)="getListSpecialite($any($event.target).value)">
+                                <option value="">Sélectioner</option>
+                                <option *ngFor="let eta of etablissements" [value]="eta.code">{{eta?.label}}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            <label class="form-label">Spécialité <span
+                                class="text-danger fw-bold">*</span></label>
+                            <select class="form-select" formControlName="specialite">
+                                <option value="" selected>Sélectionner</option>
+                                <option *ngFor="let spe of specialite" [value]="spe.code">{{spe?.label}}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            <label class="form-label">Date limite de réception <span class="text-danger fw-bold">*</span></label>
+                            <input [(ngModel)]="reception" type="date" class="form-control" formControlName="dateReception"/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante' && (planificationForm.value.etablissement==='CFEN' || planificationForm.value.etablissement==='ENFMEPT')">
+                            <label class="form-label">Nombre de places</label>
+                            <input type="number"  min="0" class="form-control" placeholder="Saisir" formControlName="nbrplaces"/>
+                        </div>
+                        
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="planificationForm.get('typeFormation')?.value === 'Continue'">
+                            <label class="form-label">Formateur(s)/Prestataire(s) <span class="text-danger fw-bold">*</span></label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="prestataires"/>
+                        </div>
+
+
+
+                        <!-- <div class="col-lg-12">
+                            <label class="form-label">Formateur(s) <span class="text-danger fw-bold">*</span></label>
+                            <tag-input [ngModel]="selectedFormateurs" [placeholder]="'Ajouter des formateurs'"
+           [secondaryPlaceholder]="'Ajouter des formateurs'" [ngModelOptions]="{standalone: true}"
+           (ngModelChange)="updateSelectedFormateurs($event)">
+  <tag-input-dropdown [autocompleteItems]="autocompleteFormateurs" [showDropdownIfEmpty]="true"
+                      [dynamicUpdate]="true"></tag-input-dropdown>
+</tag-input>
+                        </div> -->
+                        <div class="col-lg-12">
+                            <label class="form-label">Objectifs de la formation</label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir" formControlName="description"></textarea>
+                        </div>
+
+                        <div class="col-lg-12" *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            <label class="form-label">Insérer le cahier de charge <span class="text-danger fw-bold">*</span></label>
+                            <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, piecesJointesFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button type="button" class="button button-primary text-white"
+                            (click)="onPublish()">Publier</button>
+                        
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="convocationForm">
+                <form>
+                    <ng-template matStepLabel>
+                        <ng-container *ngIf="planificationForm.get('typeFormation')?.value === 'Continue'">
+                            Convocation
+                        </ng-container>
+                        <ng-container *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            Participants
+                        </ng-container>
+                    </ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-6">
+                            <label class="form-label">Termes de références(TDR)</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, tdrFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of tdrFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, tdrFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Convocation</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, convocationFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of convocationFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, convocationFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Liste des participants</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, participantsFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of participantsFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, participantsFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Autres</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, othersFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of othersFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, othersFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button (click)="stepper.previous()" type="button" class="button button-secondary">Précédent</button>
+                        <button (click)="stepper.next()" type="button" class="button button-primary text-white">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="participantForm" [ngClass]="{'disabled-step': isPublished === false}">
+                <form>
+                    <ng-template matStepLabel>
+                        <ng-container *ngIf="planificationForm.get('typeFormation')?.value === 'Continue'">
+                            Participants
+                        </ng-container>
+                        <ng-container *ngIf="planificationForm.get('typeFormation')?.value === 'Diplômante'">
+                            Planning
+                        </ng-container>
+                    </ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-12">
+                            <div class="check-custom-radio row g-3">
+                                <label class="label-check-radio col-lg-6" for="FORM">
+                                    <input type="radio" id="FORM" class="form-check-input" name="participantType"
+                                        value="FORM" (change)="onDisciplineChange($any($event.target).value)" />
+                                    <div class="plan-content">
+                                        <div class="plan-details">
+                                            <span><i class="fa fa-edit me-2"></i>Saisir le formulaire</span>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="label-check-radio col-lg-6" for="FILE">
+                                    <input type="radio" id="FILE" class="form-check-input" name="participantType"
+                                        value="FILE" (change)="onDisciplineChange($any($event.target).value)" />
+                                    <div class="plan-content">
+                                        <div class="plan-details">
+                                            <span><i class="fa fa-upload me-2"></i>Charger un fichier</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-12" *ngIf="selectedParticipantAdd === 'FORM'">
+                            <label class="form-label">Participants <span class="text-danger fw-bold">*</span></label>
+                            <tag-input [ngModel]="selectedParticipants" [placeholder]="'+ Nouveau participant'"
+                                [secondaryPlaceholder]="'+ Nouveau participant'" [ngModelOptions]="{standalone: true}">
+                                <tag-input-dropdown [autocompleteItems]="autocompleteParticipants"
+                                    [showDropdownIfEmpty]="true" [dynamicUpdate]="true">
+                                </tag-input-dropdown>
+                            </tag-input>
+                        </div>
+                        <div class="col-lg-12" *ngIf="selectedParticipantAdd === 'FILE'">
+                            <label class="form-label">Pièces jointes</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, participantsBisFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of participantsBisFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, participantsBisFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button (click)="stepper.previous()" type="button" class="button button-secondary">Précédent</button>
+                        <button (click)="stepper.next()" type="button" class="button button-primary text-white">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="rapportForm" [ngClass]="{'disabled-step': isPublished === false}">
+                <form>
+                    <ng-template matStepLabel>Rapport</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-12">
+                            <label class="form-label">Pièces jointes</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, rapportFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of rapportFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, rapportFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-12">
+                            <label class="form-label">Commentaire</label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button (click)="stepper.previous()" type="button" class="button button-secondary">Précédent</button>
+                        <button type="button" class="button button-primary text-white"
+                            (click)="onSaveFormation()">Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

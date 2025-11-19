@@ -1,0 +1,237 @@
+<div class="panel-list">
+  <div class="panel-list-header">
+    <div class="panel-list-text">
+      <h3>Liste Spécialité/Établissement</h3>
+      <button
+        class="button button-primary"
+        type="button"
+        (click)="openModalAddAgent(CREATE_FORM)"
+      >
+        <i class="fa fa-add"></i>
+        Nouvelle Spécialité/Établissement
+      </button>
+    </div>
+    <div class="panel-list-search">
+      <div class="search">
+        <div class="search-box">
+          <input class="search-input" type="text" placeholder="Rechercher" />
+          <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-list-body">
+    <!-- Table -->
+    <div class="table-responsive">
+      <table class="table table-custom">
+        <thead>
+          <tr class="table-light">
+            <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="dataList.length > 0; else listEmpty">
+            <tr *ngFor="let data of dataList">
+
+              <td>{{ data?.etablissement?.label }}</td>
+              <td>
+                <ng-container
+                  *ngFor="let spec of data?.specialities; let last = last"
+                >
+                  {{ spec?.label }}<span *ngIf="!last">, </span>
+                </ng-container>
+              </td>
+              <td>
+                <div
+                  [appStatus]="data.etablissement.statut"
+                  class="status-badge"
+                  (click)="changeStatus(data)"
+                ></div>
+              </td>
+              <td>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-template #listEmpty>
+            <tr>
+              <td [attr.colspan]="headers.length">
+                <p class="text-black-50 text-center m-0">
+                  Aucune donnée disponible
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+    <!-- PAGINATION -->
+    <div class="flex-row-between">
+      <div class="d-flex align-items-center">
+        <span style="white-space: nowrap">Affichage par</span>
+        <select
+          class="form-select form-select-sm mx-2 form-select-filter"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="refreshData()"
+        >
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="30">30</option>
+        </select>
+        <span style="white-space: nowrap">entrées</span>
+      </div>
+      <ngb-pagination
+        [collectionSize]="collectionSize"
+        [(page)]="page"
+        [pageSize]="pageSize"
+        (pageChange)="refreshData()"
+        [maxSize]="2"
+        [rotate]="true"
+        [boundaryLinks]="true"
+      >
+      </ngb-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Template -->
+<ng-template #CREATE_FORM let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="addDossier">
+      Création Spécialité/Établissement
+    </h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="etablissementForm">
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <label class="form-label">Sélectionner un établissement</label>
+          <select
+            class="form-select"
+           formControlName ="etablissement"
+            name="etablissement"
+          >
+            <option value="" selected>Sélectionner</option>
+              <option [value]="spec?.code" *ngFor="let spec of etablissement">
+                  {{ spec?.label }}
+              </option>
+          </select>
+        </div>
+        <div class="col-lg-12" *ngIf="selectedEtablissement === 'new'">
+          <label class="form-label">Saisir le nouvel établissement</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Saisir le nom de l'établissement"
+          />
+        </div>
+        <div class="col-lg-12">
+          <label class="form-label d-block">Spécialité(s)</label>
+          <tag-input
+          formControlName ="specialities"
+
+            [onlyFromAutocomplete]="true"
+            [addOnBlur]="false"
+            [addOnPaste]="false"
+
+            (onAdding)="onAdding($event)"
+            [placeholder]="'+ Nouveau spécialité'"
+            [secondaryPlaceholder]="'+ Ajouter les spécialités'"
+          >
+            <tag-input-dropdown
+              [appendToBody]="false"
+              [autocompleteItems]="autocompleteSpecialites"
+              [showDropdownIfEmpty]="true"
+              [dynamicUpdate]="true"
+            >
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="button button-primary"
+      (click)="onSaveCreate()"
+    >
+      Enregistrer
+    </button>
+    <button
+      type="button"
+      class="button button-outline-primary"
+      (click)="modal.close()"
+    >
+      Annuler
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #EDIT_FORM let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="addDossier">
+      Modification Spécialité/Établissement
+    </h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form>
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <label class="form-label">Sélectionner un établissement</label>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedEtablissement"
+            name="etablissement"
+          >
+            <option value="" selected>Sélectionner</option>
+            <option value="Établissement A">Établissement A</option>
+            <option value="Établissement B">Établissement B</option>
+            <option value="new">Nouvel établissement</option>
+          </select>
+        </div>
+        <div class="col-lg-12" *ngIf="selectedEtablissement === 'new'">
+          <label class="form-label">Saisir le nouvel établissement</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Saisir le nom de l'établissement"
+          />
+        </div>
+        <div class="col-lg-12">
+          <label class="form-label d-block">Spécialité(s)</label>
+          <tag-input
+            [(ngModel)]="selectedSpecialite"
+            [ngModelOptions]="{ standalone: true }"
+            [onlyFromAutocomplete]="true"
+            [addOnBlur]="false"
+            [addOnPaste]="false"
+            (onAdding)="onAdding($event)"
+            [placeholder]="'+ Nouveau spécialité'"
+            [secondaryPlaceholder]="'+ Ajouter les spécialités'"
+          >
+            <tag-input-dropdown
+              [appendToBody]="false"
+              [autocompleteItems]="autocompleteSpecialites"
+              [showDropdownIfEmpty]="true"
+              [dynamicUpdate]="true"
+            >
+            </tag-input-dropdown> </tag-input
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="button button-primary" (click)="onSaveEdit()" [disabled]="etablissementForm.invalid">
+      Modifier
+    </button>
+    <button
+      type="button"
+      class="button button-outline-primary"
+      (click)="modal.close()"
+    >
+      Annuler
+    </button>
+  </div>
+</ng-template>

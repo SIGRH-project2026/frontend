@@ -1,0 +1,120 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des actualités/ recrutements</h3>
+            <button class="button button-primary" type="button" (click)="onCreateActualite()">
+                <i class="fa fa-add"></i>
+                Nouvelle actualité/ recrutements
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <form [formGroup]="filterForm">
+                    <select class="form-select" (change)="onChangeValueFilter()" formControlName="statut">
+                        <option value="">Tous les status</option>
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="actualiteList && actualiteList.length > 0;else listEmpty;">
+                        <tr *ngFor="let actu of actualiteList">
+                            <td>
+                                <a style="cursor: zoom-in" (click)="onViewImage(getImageUrl(actu.image.generatedName), actu.titre)" class="nav-link">
+<!--                                     <img [src]="getImageUrl(actu.image.generatedName)" [alt]="actu?.titre" [title]="url+actu.image.generatedName" height="80px" width="220px" class="img-fluid">
+ -->                               <img
+                                        [src]="'data:' + actu.image.fileType + ';base64,' + actu.image.base64"
+                                        alt="{{actu.image.fileType}}"
+                                        height="40px" width="80px" class="img-fluid"
+                                     /> 
+                                </a>
+                            </td>
+                            <td>
+                                {{ actu?.titre }}
+                            </td>
+                            <td>
+                                {{ actu?.categorieActualite?.libelle }}
+                            </td>
+
+                            <td>
+                                {{ actu?.datePublication | date : 'dd/MM/yyyy'}}
+                            </td>
+
+                            <td>
+                                {{ actu?.resume }}
+                            </td>
+
+                            <td>
+                                <div [appStatus]="actu.activated" class="status-badge" (click)="changeStatus(actu)"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li *ngIf="actu.activated">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(actu)">
+                                                <i class="fa fa-lock me-2" title="Activer" id="status"
+                                                    type="button"></i>
+                                                <span>Désactiver</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="!actu.activated">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(actu)">
+                                                <i class="fa fa-lock-open me-2" title="Activer" id="status"
+                                                    type="button"></i>
+                                                <span>Activer</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>

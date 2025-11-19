@@ -1,0 +1,43 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Formations</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb section-breadcrumb">
+                <li class="breadcrumb-item"><a [routerLink]="['/']">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Formation diplômante</li>
+            </ol>
+        </nav>
+    </div>
+</aside>
+
+<section class="container my-5">
+    <div class="row g-4">
+        <div class="col-lg-4" *ngFor="let item of formations">
+            <div class="card card-formation h-100" (click)="onViewFormation(item.id)">
+                <img src="assets/images/formation06.png" alt="Photo" height="200" class="card-img-top">
+                <div class="card-body">
+                    <span class="tag">{{ item?.typeFormation?.libelle }}</span>
+                    <h5 class="card-title">{{ item?.intitule }}</h5>
+                    <p class="card-desc text-muted">{{ item?.description }}</p>
+
+                    <small><i>Date de début : {{ item?.dateDebut | date : 'dd/MM/yyyy' }}</i></small>
+
+
+                    <div class="card-formation-details mt-2">
+                        <small><i class="fa fa-images me-2 text-blue"></i>{{item?.duree}}</small>
+                        <span class="text-black-50">|</span>
+                        <!--span class="card-text"><small><i
+                                    class="fa fa-money-bill me-2 text-blue"></i>{{item?.cout}}</small></span>
+                        <span class="text-black-50">|</span-->
+                        <span class="card-text"><small><i
+                                    class="fa fa-users me-2 text-blue"></i>{{item.prestataires}}</small></span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="button button-outline-primary rounded-pill" (click)="onViewFormation(item.id)">Voir plus détails</button>
+                    <button class="button button-primary rounded-pill" (click)="onParticipate()">Participer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

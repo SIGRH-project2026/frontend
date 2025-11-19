@@ -1,0 +1,57 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouvelle Division/Bureaux</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+       
+        <form>
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <label class="form-label">Sélectionner une Division</label>
+                    <select class="form-select" [(ngModel)]="selectedDivision" name="division">
+                        <option value="" selected>Sélectionner</option>
+                        <option value="Formation">Formation</option>
+                        <option value="Demandes de stages">Demandes de stages</option>
+                        <option value="new">Nouveau division</option>
+
+                    </select>
+                </div>
+                <div class="col-sm-6" *ngIf="selectedDivision === 'new'">
+                    <label class="form-label">Saisir la nouvelle Division</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Sélectionner un bureau</label>
+                    <select class="form-select" [(ngModel)]="selectedBureau" name="bureau">
+                        <option value="" selected>Sélectionner</option>
+                        <option value="Formation">Formation</option>
+                        <option value="Demandes de stages">Demandes de stages</option>
+                        <option value="new">Nouveau bureau</option>
+                    </select>
+                </div>
+                <div class="col-sm-6" *ngIf="selectedBureau === 'new'">
+                    <label class="form-label"> Saisir le Nouveau bureau</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+
+                <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" (click)="onSave()">
+                        Enregistrer
+                    </button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+            </div>
+        </form>
+        
+        
+    </div>
+</div>

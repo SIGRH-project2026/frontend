@@ -1,0 +1,158 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste de mes demandes d'actes</h3>
+            <button class="button button-primary" type="button" (click)="onCreateActe()">
+                <i class="fa fa-add"></i>
+                Demander Acte
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">             
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <select class="form-select" [(ngModel)]="typeActe" (ngModelChange)="onSelectedType($event)">
+                    <option value="">Tous les Actes</option>
+                    <option value="Acte Administratif"  >Acte Administratif</option>
+                    <option value="Acte Gestion">Acte de Gestion </option>
+                </select>
+            </div>
+            <button type="button" class="button-filter"  (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+        <div class="panel-list-body">
+            <!-- Table -->
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="actList.length > 0; else listEmpty">
+                        <tr *ngFor="let demande of actList">
+                            <ng-container *ngIf="matchSearchQuery(demande)">
+                            <td>
+                                {{demande?.referenceActe }}
+                            </td>
+                            <td>
+                                {{demande?.dateDemandeActe  }}
+                            </td>
+                            <td>
+                                {{demande?.typeActe.libelleActe}}
+                            </td>
+                            <td>
+                                {{demande?.typeActe?.codeActe === 'aa' ? demande?.typeAA?.libelle : demande?.typeAG?.libelle }}
+                            </td>
+                            <td>
+                                <div [appStatus]="demande.statutActe.code" class="status-badge">{{demande?.statutActe?.libelle}}</div>                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="onViewActe(demande?.id)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir details</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a *ngIf="demande.statutActe.code === 'AMODIFIER' || demande.statutActe.code=='SOUMIS'"class="dropdown-item" href="javascript:(0)" (click)="onEditActe(demande?.id)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Modifier</span>
+                                            </a>
+                                        </li>
+                                        <li  *ngIf="demande.statutActe.code === 'TRANSMISFP'">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="telechargerBordereau(demande?.bordereau)">
+                                                <i class="fa fa-download me-2" title="Activer" id="status"
+                                                    type="button"></i>
+                                                <span>Télechargement bordereau de transmission</span>
+                                            </a>
+                                        </li >
+                                        <li  *ngIf="demande.statutActe.code === 'VALIDEDGCAA'">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="telechargerF(demande?.id)">
+                                                <i class="fa fa-download me-2"></i>
+                                                <span>Télécharger acte</span>
+                                            </a>
+                                        </li>
+
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </ng-container>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+    
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="listAct()">
+                        <option [value]="10">10</option>
+                        <option [value]="20">20</option>
+                        <option [value]="30">30</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                    (pageChange)="listAct()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                </ngb-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <!-- Modal -->
+ <ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="filtreAvanceForm">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Référence Acte</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="referenceActe"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date de demande</label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDemandeActe" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Type acte</label >
+                    <select class="form-select" formControlName="typeActe">
+                        <option value="">Sélectionner</option>
+                        <option value="Acte Administratif">Acte Administratif</option>
+                        <option value="Acte de Gestion">Acte de Gestion</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100"
+            (click)="onSearch();modal.close('Save click')">Rechercher</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

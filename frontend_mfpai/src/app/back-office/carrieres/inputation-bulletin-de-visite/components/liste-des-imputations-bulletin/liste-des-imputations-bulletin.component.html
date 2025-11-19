@@ -1,0 +1,210 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text" *ngIf="!fromDashboard">
+            <h3>Liste des imputations budgetaire/bulletin de visite</h3>
+            <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)" *ngIf="!isDRH">
+                <i class="fa fa-add"></i>
+                Enregistrer Imputation/bulletin
+            </button>
+        </div>
+        <div class="panel-list-text" *ngIf="fromDashboard">
+            <h3>Liste des imputations budgetaire/bulletin de visite</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchText">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+
+                </div>
+                <form [formGroup]="typeFilterForm"  *ngIf="!fromDashboard">
+                    <select class="form-select" formControlName="typeDemande" (change)="onChangeValueFilter()">
+                        <option value="" selected>Tous les types</option>
+                        <option value="Imputation budgétaire">Imputation budgétaire</option>
+                        <option value="Bulletin de visite">Bulletin de visite</option>
+                    </select>
+                </form>
+            </div>
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngIf="userList.length > 0;else listEmpty;">
+                    <tr *ngFor="let imputation of Imputations | searchImputationPipe:searchText">
+                        <td>
+                            {{ imputation?.id }}/ {{imputation.dateImputation.slice(0,4)}}
+                        </td>
+                        <td>
+                            {{ imputation?.utilisateur?.matricule }}
+                        </td>
+                        <td>
+                            {{ imputation?.dateImputation |  date : 'dd/MM/yyyy' }}
+                        </td>
+                        <td *ngIf="imputation?.prenomBeneficiere && imputation?.nomBeneficiere  ; else userPrenom">
+                            {{ imputation?.prenomBeneficiere }} {{imputation?.nomBeneficiere}}
+                        </td>
+                        <ng-template #userPrenom>
+                            <td>
+                                {{imputation?.utilisateur.prenom}} {{imputation?.utilisateur?.nom}}
+                                <!-- nom et prenom  -->
+                            </td>
+                        </ng-template>
+                        <td *ngIf="imputation?.utilisateur?.typeUser=='CEN' ; else userdirection">
+                            {{ imputation?.utilisateur?.direction?.label }}
+                        </td>
+                        <ng-template #userdirection>
+                            <td>
+                                {{imputation?.utilisateur?.ia?.label}}
+                            </td>
+                        </ng-template>
+                        <td>
+                            {{ imputation?.typeDemande }}
+                        </td>
+                        <td>
+                            {{ imputation?.utilisateur?.region?.label }}
+                        </td>
+                        <td>
+                            <!--                             <div class="dropdown" *ngIf="!fromDashboard">
+                             -->                            <div class="dropdown" *ngIf="profile === 'Assistant-DRH' ||
+                                                         profile === 'Directeur-DRH' ||
+                                                         profile === 'Representant-IA' ||
+                                                         profile === 'Chef-division-das' ||
+                                                         profile === 'Représentant-IEF'">
+                            <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li >
+                                    <a class="dropdown-item" (click)="onViewAgent(imputation?.id)">
+                                        <i class="fa fa-eye me-2"></i>
+                                        <span>Voir détails</span>
+                                    </a>
+                                </li>
+                                <li *ngIf="!isDRH">
+                                    <a class="dropdown-item" (click)="generate(imputation?.id)">
+                                        <i class="fa fa-sync-alt me-2"></i>
+                                        <span *ngIf="imputation.typeDemande == 'Imputation budgétaire'">Générer imputation</span>
+                                        <span *ngIf="imputation.typeDemande == 'Bulletin de visite'">Générer bulletin de visite</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-template #listEmpty>
+                    <tr>
+                        <td [attr.colspan]="headers.length">
+                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                        </td>
+                    </tr>
+                </ng-template>
+                </tbody>
+            </table>
+            <br />
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="getAllImputation()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                            (pageChange)="getAllImputation()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="filtreImputationForm">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Numéro demande</label>
+                        <input type="number" class="form-control" placeholder="Saisir"
+                               formControlName="numeroDemande" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Matricule</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Prénom bénéficière</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Nom bénéficière</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="nom" />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" placeholder="Saisir" formControlName="date" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Région</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="region" />
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100"
+                    (click)="modal.close('Save click')">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+
+    <!-- Modal -->
+    <ng-template #Add_dossier let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addDossier">Enregistrement Imputation/bulletin</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="rechercheForm">
+                <div class="row g-3">
+                    <div class="col-lg-12">
+                        <label class="form-label">Saisir le matricule</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary " (click)="modal.close(rechercheForm.value?.matricule)"
+                    [disabled]="!rechercheForm.valid">Rechercher</button>
+            <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+</div>

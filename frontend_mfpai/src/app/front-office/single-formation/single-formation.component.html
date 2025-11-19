@@ -1,0 +1,89 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Formations</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb section-breadcrumb">
+                <li class="breadcrumb-item"><a [routerLink]="['/']">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{formation?.intitule}}</li>
+            </ol>
+        </nav>
+    </div>
+</aside>
+
+<section class="container my-5 pb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="panel-form">
+                <div class="dflex-row mb-3">
+                    <button class="btn btn-light" (click)="goBack()"><i class="fa fa-arrow-left-long"></i></button>
+                    <button class="button button-primary rounded-pill" (click)="onParticipate()">Participer</button>
+                </div>
+
+                <span class="tag">Formation continue</span>
+                <h3>{{formation?.intitule}}</h3>
+
+                <div class="detail-info mt-2">
+                    <span><i class="fa fa-images me-2 text-blue"></i>{{formation?.duree}}</span>
+
+                    <ng-container *ngIf="formation?.nombrePlace > 0">
+                        <span class="text-black-50">|</span>
+                        <span><i class="fa fa-users me-2 text-blue"></i>{{formation?.nombrePlace}} pour les écoles .....</span>
+                    </ng-container>
+
+                </div>
+
+                    <p class="fw-semibold"><i>Du {{formation?.dateDebut | date : 'dd/MM/yyyy'}} au {{formation?.dateFin | date : 'dd/MM/yyyy'}}</i></p>
+
+
+                <a [href]="'assets/images/formation01.png'" target="_blank">
+                    <img [src]="'assets/images/formation01.png'" alt="Actualité" width="100%">
+                </a>
+
+                <h4 class="fw-semibold my-3">Description de la formation</h4>
+                <p>
+                    {{formation?.description}}
+                </p>
+
+
+
+
+
+
+
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="panel-form">
+                <div class="row gy-3">
+                    <div class="col-lg-12">
+                        <h6 class="fw-bold">Formations similaires</h6>
+                        <hr>
+                    </div>
+                    <div class="col-lg-12" *ngFor="let item of formations">
+                        <div class="card card-horiz card-horiz-sm h-auto" (click)="onViewFormation(item.id, item.typeFormation)">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img [src]="item.image" [alt]="item.title" class="img-fluid rounded-start"
+                                         height="100">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title card-title-sm">{{ item.title }}</h5>
+                                        <p class="card-text card-desc-sm">{{ item.description }}</p>
+                                        <p class="card-text"><small class="text-muted"><i
+                                                class="fa fa-calendar-alt"></i> {{
+                                                item.isPublishedDate
+                                            }}</small></p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

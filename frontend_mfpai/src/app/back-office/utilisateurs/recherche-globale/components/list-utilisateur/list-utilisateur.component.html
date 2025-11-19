@@ -1,0 +1,490 @@
+<div class="panel-list mb-3">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Rechercher</h3>
+            <ng-container>
+                <!-- <button class="button button-primary" type="button">
+                    <i class="fa fa-add"></i>
+                    Nouvel utilisateur
+                </button> -->
+            </ng-container>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="searchForm">
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label form-label-sm">Recherche globale </label>
+                    <input type="text" class="form-control form-control-sm"
+                           formControlName="filter"
+                           placeholder="Matricule , CNI , Email" />
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-secondary w-100" type="button" (click)="search()" [disabled]="searchForm.invalid">Rechercher</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset" (click)="reset()">Annuler</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Table Section -->
+<ng-container *ngIf="showTable">
+    <div class="panel-list">
+        <div class="panel-list-header">
+            <div class="panel-list-text">
+                <h3>Résultat de recherche</h3> 
+                <button class="button button-primary" type="button" (click)="onChangeProfil()" >
+                    changer le statut
+                </button>
+            </div>
+        </div>
+        <div class="panel-list-body">
+            <form *ngIf="userResultDec">
+                <h5 class="title-form">Emplacement</h5>
+
+                <div class="row details py-3 g-3">
+
+                    <ng-container *ngIf="userResultDec?.structure?.code === 'IA'">
+                        <ng-container>
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Région</span>
+                                    <span>{{ userResultDec?.region?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="userResultDec?.ia">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>IA</span>
+                                    <span>{{ userResultDec?.ia?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container  *ngIf="userResultDec?.ief">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>IEF</span>
+                                    <span>{{ userResultDec?.ief?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container  *ngIf="userResultDec?.etablissement">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Etablissement</span>
+                                    <span>{{ userResultDec?.etablissement?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="userResultDec?.structure?.code === 'MIN'">
+                        <ng-container  *ngIf="userResultDec?.etablissement">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>EFF</span>
+                                    <span>{{ userResultDec?.etablissement?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+
+                </div>
+
+                <h5 class="title-form">Informations personnelles</h5>
+                <div class="row details py-3 g-3">
+
+                    <ng-container>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Matricule</span>
+                                <span>{{ userResultDec?.matricule }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Nom</span>
+                                <span>{{ userResultDec?.nom }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Prénom</span>
+                                <span>{{ userResultDec?.prenom }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Séxe</span>
+                                <span>{{ userResultDec?.sexe }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Téléphone</span>
+                                <span>{{ userResultDec?.telephone }}</span>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Email</span>
+                                <span>{{ userResultDec?.email }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date de naissance</span>
+                                <span>{{ userResultDec?.dateNaissance }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Lieu de naissance</span>
+                                <span>{{ userResultDec?.lieuDeNaissance }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>CNI</span>
+                                <span>{{ userResultDec?.cni }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Situation matrimoniale</span>
+                                <span>{{ userResultDec?.situationMatrimoniale }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Nationalité</span>
+                                <span>{{ userResultDec?.nationalite }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Adresse</span>
+                                <span>{{ userResultDec?.adresse }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Nombre Enfants</span>
+                                <span>{{ userResultDec?.nombreEnfants }}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <h5 class="title-form">Informations professionnelles</h5>
+                <div class="row details py-3 g-3">
+
+                    <ng-container>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Corps</span>
+                                <span>{{ userResultDec?.corpsGrade?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Grade</span>
+                                <span>{{ userResultDec?.grade?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date Corps</span>
+                                <span>{{ userResultDec?.dateCorp }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Profil</span>
+                                <span>{{ profile.label }}</span>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="userResultDec?.quantumHoraire">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Quantum Horaire</span>
+                                    <span>{{ userResultDec?.quantumHoraire }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Fonction</span>
+                                <span>{{ userResultDec?.fonction?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Spécialité</span>
+                                <span>{{ userResultDec?.speciality?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Type Poste</span>
+                                <span>{{ userResultDec?.typePoste?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date Entrée Etablissement</span>
+                                <span>{{ userResultDec?.dateEntreEtablissement }}</span>
+                            </div>
+                        </div>
+
+                        <ng-container *ngIf="userResultDec?.dateDEntreeFonctionPub">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span> Date Entrée Fonction Publique</span>
+                                    <span>{{ userResultDec?.dateDEntreeFonctionPub }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Date Entrée Enseignement</span>
+                                <span>{{ userResultDec?.dateEntreEnseignement }}</span>
+                            </div>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </form>
+            <form *ngIf="userResultCen">
+                <h5 class="title-form">Emplacement</h5>
+
+                <div class="row details py-3 g-3">
+
+
+                        <ng-container>
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Région</span>
+                                    <span>{{ userResultCen?.region?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Service</span>
+                                    <span>{{ userResultCen?.direction?.label }}</span>
+                                </div>
+                            </div>
+
+
+                        <ng-container  *ngIf="userResultCen?.division">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Division</span>
+                                    <span>{{ userResultCen?.division?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container  *ngIf="userResultCen?.bureau">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Bureau</span>
+                                    <span>{{ userResultCen?.bureau?.label }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+
+                </div>
+
+                <h5 class="title-form">Informations personnelles</h5>
+                <div class="row details py-3 g-3">
+
+                    <ng-container>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Matricule</span>
+                                <span>{{ userResultCen?.matricule }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Nom</span>
+                                <span>{{ userResultCen?.nom }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Prénom</span>
+                                <span>{{ userResultCen?.prenom }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Séxe</span>
+                                <span>{{ userResultCen?.sexe }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Téléphone</span>
+                                <span>{{ userResultCen?.telephone }}</span>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Email</span>
+                                <span>{{ userResultCen?.email }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date de naissance</span>
+                                <span>{{ userResultCen?.dateNaissance }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Lieu de naissance</span>
+                                <span>{{ userResultCen?.lieuDeNaissance }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>CNI</span>
+                                <span>{{ userResultCen?.cni }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Situation matrimoniale</span>
+                                <span>{{ userResultCen?.situationMatrimoniale }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Nationalité</span>
+                                <span>{{ userResultCen?.nationalite }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Adresse</span>
+                                <span>{{ userResultCen?.adresse }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Nombre Enfants</span>
+                                <span>{{ userResultCen?.nombreEnfants }}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <h5 class="title-form">Informations professionnelles</h5>
+                <div class="row details py-3 g-3">
+
+                    <ng-container>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Corps</span>
+                                <span>{{ userResultCen?.corpsGrade?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Grade</span>
+                                <span>{{ userResultCen?.grade?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date Corps</span>
+                                <span>{{ userResultCen?.dateCorp }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Profil</span>
+                                <span>{{ profile.label }}</span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Fonction</span>
+                                <span>{{ userResultCen?.fonction?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Spécialité</span>
+                                <span>{{ userResultCen?.speciality?.label }}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Type Poste</span>
+                                <span>{{ userResultCen?.typePoste?.label }}</span>
+                            </div>
+                        </div>
+
+                        <ng-container *ngIf="userResultCen?.dateDEntreeFonctionPub">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span> Date Entrée Fonction Publique</span>
+                                    <span>{{ userResultCen?.dateDEntreeFonctionPub }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+
+                        <ng-container *ngIf="userResultCen?.dateEntreEnseignement">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span> Date Entrée Enseignement</span>
+                                <span>{{ userResultCen?.dateEntreEnseignement }}</span>
+                            </div>
+                        </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </form>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="!showTable">
+    <div class="col-lg-12">
+        <div class="empty-list shadow-none">
+            <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+            <p>Aucun utilisateur</p>
+        </div>
+    </div>
+</ng-container>

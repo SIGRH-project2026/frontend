@@ -1,0 +1,101 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Détails agent N° {{acte?.referenceActe}}</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Numéro dossier</span>
+                        <span>{{acte?.referenceActe}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Matricule</span>
+                        <span>{{acte?.agent?.matricule}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{acte?.agent?.prenom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{acte?.agent?.nom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Téléphone</span>
+                        <span>{{acte?.agent?.telephone}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Adresse</span>
+                        <span>{{acte?.agent?.adresse}}</span>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="acte?.agent?.typeUser === 'CEN'">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Direction </span>
+                            <span>{{acte?.agent?.direction?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="acte?.agent?.typeUser === 'DEC'">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Direction </span>
+                            <span>{{acte?.agent?.ia?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Fonction</span>
+                        <span>{{acte?.agent?.fonction?.label}}</span>
+                    </div>
+                </div>
+               
+                <br>
+            </div>
+
+            <div class="row mt-3">
+                <label class="form-label">Pièces Justificatives</label>
+                <div class="row gx-3 gy-1 doc-files">
+                    <div class="col-sm-4" *ngFor="let item of acte.pieceJointes">
+                        <div class="doc-file-item">
+                            <div class="text-icon">
+                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                <div class="text">
+                                    <p>{{item.originalName}}</p>
+                                    <span>{{item.fileSize}}</span>
+                                </div>
+                            </div>
+                            <button class="fab-button" type="button"  (click)="telecharger(item.generatedName)">
+                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="button-return" type="button" (click)="goBack()">
+             <i class="fa fa-arrow-left"></i>
+             Retour
+            </button>
+
+
+        </form>
+    </div>

@@ -1,0 +1,35 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Formations</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb section-breadcrumb">
+                <li class="breadcrumb-item"><a [routerLink]="['/']">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Plan de formation triennale</li>
+            </ol>
+        </nav>
+    </div>
+</aside>
+
+<section class="container my-5">
+    <div class="row g-4">
+        <div class="col-lg-12" *ngFor="let item of planFormationList">
+            <div class="card card-formation h-100" *ngIf="item.statutPlanFormation.code=='ENCOURS'">
+                <!-- <img [src]="item.image" alt="Photo" height="200" class="card-img-top"> -->
+                <div class="card-body">
+                    <h5 class="card-title fs-5">{{ item?.titre+' '+item?.dateDebut+' '+item?.dateFin }}</h5>
+                    <p class="card-desc text-muted">{{ item.commentaire }}</p>
+    
+                    <small><i>Publiée le {{ item.datePublication  | date : 'dd/MM/yyyy'  }}</i></small>
+    
+                    <div class="card-formation-details mt-2">
+                        <small><i class="fa fa-circle-half-stroke me-2 text-blue"></i>{{item.themesFormation.length}} thèmes</small>
+                    </div>
+                </div>
+                <div class="card-footer flex-row">
+                    <button class="button button-outline-primary rounded-pill px-4 py-2" (click)="onViewPlan(item.id)">Voir plus détails</button>
+                    <button class="button button-primary rounded-pill px-4 py-2" (click)="Telecharger(item.files[0].originalName)"><i class="fa fa-download me-2"></i>Télécharger les documents</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

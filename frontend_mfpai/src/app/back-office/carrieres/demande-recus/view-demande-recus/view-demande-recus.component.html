@@ -1,0 +1,214 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Détails Acte N° {{acte?.referenceActe}}</h3>
+              <ul class="panel-infos">
+                  <li>
+                      <span>N° Référence : </span>
+                      <span>{{acte?.referenceActe}}</span>
+                  </li>
+                  <li>
+                      <span>Matricule : </span>
+                      <span>{{acte?.agent?.matricule}}</span>
+                  </li>
+                  <li>
+                      <span>Statut : </span>
+                      <span>{{acte?.statutActe?.libelle}}</span>
+                  </li>
+              </ul>
+
+              <!--######## Motif du rejet ########-->
+                
+              <ng-container *ngIf="acte?.statutActe?.code === 'INVALIDE'">
+                <div id="motif-rejet">
+                    <h6 class="title-motif">Motif du rejet</h6>
+                    <p>{{acte?.motifRejetDemande}}</p>
+                </div>
+              </ng-container>
+                
+                <!--######## Motif de modification ########-->
+                <ng-container *ngIf="acte?.statutActe?.code === 'AMODIFIER'">
+                    <div id="motif-modification">
+                        <h6 class="title-motif">Motif de modification</h6>
+                        <p>
+                            {{acte?.motifModification}}
+                        </p>
+                    </div>
+                </ng-container>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row g-3">
+             <!--    <div class="col-sm-4">
+                    <label class="form-label">Acte</label>
+                    <select class="form-select" disabled>
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div> -->
+               <!--  <div class="col-sm-4">
+                    <label class="form-label">Acte</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.typeActe?.libelleActe" disabled />
+                </div> -->
+                <ng-container *ngIf="acte?.typeActe?.codeActe==='aa'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Type d'acte</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.typeAA?.libelle" disabled />
+                    </div>
+
+
+                </ng-container>
+                <ng-container *ngIf="acte?.typeActe?.codeActe==='ag'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Type d'acte</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.typeAG?.libelle" disabled />
+                    </div>
+
+                </ng-container>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.matricule" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.prenom" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.nom" disabled />
+                </div>
+
+                <ng-container *ngIf="acte?.agent?.typeUser === 'CEN'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Direction</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.direction?.label" disabled />
+                    </div>
+                    <ng-container *ngIf="acte?.agent?.direction?.code === 'DRH'">
+                        <div class="col-sm-4">
+                            <label class="form-label">Division</label>
+                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.division?.label" disabled />
+                        </div>
+
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau</label>
+                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.bureau?.label" disabled />
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="acte?.agent?.direction?.code === 'AUD'">
+                        <div class="col-sm-4">
+                            <label class="form-label">Service</label>
+                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.service?.label" disabled />
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+
+                <ng-container *ngIf="acte?.agent?.typeUser === 'DEC'">
+                    <div class="col-sm-4">
+                        <label class="form-label">IA</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.ia?.label" disabled />
+                    </div>
+                    <ng-container *ngIf="acte?.agent?.ief">
+                    <div class="col-sm-4">
+                        <label class="form-label">IEf</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.ief?.label" disabled />
+                    </div>
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Etablissement/CFP/EFF</label>
+                        <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.etablissement?.label" disabled />
+                    </div>
+                </ng-container>
+                </ng-container>
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Téléphone</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.telephone" disabled />
+                </div>
+                <div *ngIf="acte?.typeAG?.typeSortie==='STEM' || acte?.typeAA?.typeSortie==='STEM'" class="posDate">
+                    <ng-container *ngIf="acte?.dateDebut">
+                        <div class="col-sm-4">
+                            <label class="form-label">Date de Début</label>
+                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.dateDebut" disabled />
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="acte?.dateFin">
+                        <div class="col-sm-4">
+                            <label class="form-label">Date de Fin</label>
+                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.dateFin" disabled />
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+<!--                 <div class="col-sm-12">
+ -->                <label class="form-label">Pièces Justificatives</label>
+                <div class="row gx-3 gy-1 doc-files">
+                    <div class="col-sm-4" *ngFor="let item of acte?.pieceJointes">
+                        <div class="doc-file-item">
+                            <div class="text-icon">
+                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                <div class="text">
+                                    <p>{{item.originalName}}</p>
+                                    <span>{{item.fileSize}}Ko</span>
+                                </div>
+                            </div>
+                            <button class="fab-button" type="button" (click)="telecharger(item.generatedName)">
+                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                            </button>
+
+                             <button class="fab-button" type="button" (click)="visualiser2(item.generatedName)">
+                                <i class="fas fa-eye" title="Visualiser"></i> 
+                              </button> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div *ngIf="acte?.statutActe?.code !=='SOUMIS' || !acte.statutActe?.code?.includes('valide')" class="col-sm-3">
+                <label class="form-label">Bordereau</label>
+                <div  class="row gx-3 gy-1 doc-files">
+                        <div  class="doc-file-item">
+                            <div class="text-icon">
+                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                <div class="text">
+                                    <p>{{acte?.currentBordereau?.fileName}}</p>
+<!--                                     <span>{{item?.fileSize}}Ko</span>
+ -->                                </div>
+                            </div>
+                            <button class="fab-button" type="button" (click)="telecharger(acte.currentBordereau.fileName)">
+                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                            </button>
+                            <button class="fab-button" type="button" (click)="visualiser2(acte.currentBordereau.fileName)">
+                                <i class="fas fa-eye" title="Visualiser"></i> 
+                              </button> 
+                         </div>
+                        </div>
+            </div> 
+
+            <!-- <div class="row mt-3">
+                
+                    </div> -->
+
+
+            
+
+            <div class="row mt-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" [value]="acte?.commentaire"
+                        rows="3">
+                    </textarea>
+                </div>
+            </div>
+
+        </form>
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+</div>

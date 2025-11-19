@@ -1,0 +1,67 @@
+<div class="panel-form" *ngIf="indicateur">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Modifier l'indicateur N° {{ indicateur.numero }}</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="form" *ngIf="indicateur">
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <label class="form-label">Libelle</label>
+                    <input type="text"  formControlName="libelle" class="form-control" placeholder="Saisir" />
+                </div>
+
+                <div class="col-sm-6">
+                    <label class="form-label">Responsable Activité</label>
+                    <select class="form-select" formControlName="responsableActivite">
+                        <option value="DRH" selected>DRH</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label d-block">Divisions impliqués</label>
+                    <select   formControlName="divisionsImpliquees" id="selectDivisionImplique" class="w-100" multiple title="Sélectionner..."
+                              data-width="auto" data-live-search="true">
+                        <option  [value]="division.code" *ngFor="let division of divisionImpliques">
+                            {{ division.label }}
+                        </option>
+                    </select>
+                </div>
+
+
+                <div class="col-sm-6">
+                    <label class="form-label d-block">Bureaux impliqués</label>
+                    <select formControlName="bureauxImpliques" id="selectBureauImplique" class="w-100" multiple title="Sélectionner..." data-width="auto"
+                            data-live-search="true">
+                        <option [value]="bureau.code" *ngFor="let bureau of bureauImpliques">
+                            {{ bureau.label }}
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button
+                            class="button button-primary w-100"
+                            type="submit"
+                            (click)="onSave()"
+                    >
+                        Enregistrer
+                    </button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button
+                            class="button button-outline-primary w-100"
+                            type="reset"
+                            (click)="onReset()"
+                    >
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

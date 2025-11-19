@@ -1,0 +1,246 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column">
+            <h3>Nouvelle expression de besoin en recrutement</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="expressionForm">
+            <h6 class="title-section-infos">Informations personnelles</h6>
+            <div class="row g-3 mt-2">
+                <div class="col-sm-4">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule"
+                        [value]="user?.matricule"  />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Prénoms</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom"
+                        [value]="user?.prenom" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="nom"
+                        [value]="user?.nom" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Région  <span style="color: red">*</span></label>
+                    <input *ngIf="user?.typeUser === 'DEC'" type="text" class="form-control" placeholder="Saisir" [value]="user?.region?.label" [disabled]="true" />
+                    
+                    <select  *ngIf="user?.typeUser === 'CEN'" class="form-select" formControlName="region"  (change)="getListIA($event)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                    </select>
+                        <div style="color: red" *ngIf="f['region'].touched && f['region'].hasError('required')">Région <strong>obligatoire!</strong></div>
+                </div>
+          
+                <div class="col-sm-4">
+                    <label class="form-label">IA <span style="color: red">*</span></label>
+                    <input *ngIf="user?.typeUser === 'DEC'" type="text" class="form-control" placeholder="Saisir" [value]="user?.ia?.label" [disabled]="true" />
+                    
+                    <select *ngIf="user?.typeUser === 'CEN'" class="form-select" formControlName="ia"
+                            (change)="getListEF($any($event.target).value); " >
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ie of ia" [value]="ie.code" >{{ie?.label}} </option>
+                    </select>
+
+            <div style="color: red" *ngIf="f['ia'].touched && f['ia'].hasError('required')">IA <strong>obligatoire!</strong></div>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label" >IEF<span style="color: red">*</span></label>
+                    <input *ngIf="user?.typeUser === 'DEC'" type="text"   class="form-control" placeholder="Saisir" [value]="user?.ief?.label" disabled="true" />
+                    <select *ngIf="user?.typeUser === 'CEN'" class="form-select"  formControlName="ief" (change)="
+                        getListEtablissement($any($event.target).value);
+                        " >
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                    </select>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Etablissement ou Ecole de formation <span style="color: red">*</span></label>
+                    <input *ngIf="user?.typeUser === 'DEC'" type="text"   class="form-control" placeholder="Saisir" disabled="true" [value]="user.etablissement.label" />
+                    <select  *ngIf="user?.typeUser === 'CEN'" class="form-select" formControlName="etablissement"
+                             (change)="getChoosedEtablissement($any($event.target).value); ">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+                    </select>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Année</label>
+                    <input  formControlName="annee" type="string" class="form-control" placeholder="Année acadèmique" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Corps</label>
+                    <!-- <input  *ngIf="user.typeUser === 'DEC'" type="text" formControlName="corps" class="form-control" placeholder="À rapatrier"  /> -->
+                    <select  class="form-select" formControlName="corps" placeholder="Sélectionner"
+                            (change)="getGradeFromCorps($any($event.target).value); checkQuatum($any($event.target).value)" >
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let corp of corps" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+                    <div  style="color: red" *ngIf="f['corps'].touched && f['corps'].hasError('required')">Corps  <strong>obligatoire!</strong></div>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Grade</label>
+                    <!-- <input  *ngIf="user.typeUser === 'DEC'" type="text" formControlName="grade" class="form-control" placeholder="À rapatrier"  /> -->
+                    <select  (change)="getChoosedGrade($any($event.target).value);" class="form-select" formControlName="grade">
+                        <option value="">Sélectionner</option>
+                        <option  *ngFor="let corp of grade" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label  class="form-label">Déficit</label>
+                    <input type="text" class="form-control" placeholder="À calculer" value="{{deficit}}"  disabled/>
+                </div>
+                <!-- <div class="col-sm-4">
+                    <label *ngIf="!deficit || noFiche" class="form-label">Déficit</label>
+                    <input type="text" class="form-control" placeholder="À calculer" value="0"  disabled/>
+                </div> -->
+            </div>
+            
+            <!-- add filieres -->
+            <!-- <h6 *ngIf="deficit && deficit>0" class="title-section-infos mt-5 mb-3">Filières</h6> -->
+            
+            <div *ngIf="!noFiche && deficit >0" class="row g-2">
+                <form           [formGroup]="filiereDisciplinesForm">
+                <div >
+                    <div class="row g-4">
+                        <!-- <span style="color: red;">{{filiereError}}</span> -->
+                        <!-- <div class="col-lg-12">                           
+                            <label class="form-label">Filière</label>
+                            <select  formControlName="filiere" class="form-select">
+                                <option value="">Sélectionner</option>
+                                <option [value]="filiere.id" *ngFor="let filiere of listFilieres">{{filiere.libelle}}</option>
+                            </select>
+                        </div> -->
+                        <span style="color: red;">{{disciplineError}}</span>
+                        <div class="col-lg-12">
+                            <label class="form-label d-block">Disciplines</label>
+                            <select formControlName="disciplines" id="selectDisciplineFiliere" class="w-100" multiple title="Sélectionner..." data-width="auto"
+                                data-live-search="true">
+                                <option [value]="discipline.discipline" *ngFor="let discipline of listDisciplineDeficitaire">
+                                    {{ discipline?.discipline?.libelle }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12">
+                            <button type="button" class="button button-secondary w-100" (click)="addFiliereDiscipline()">Ajouter discipline</button>
+                        </div>
+                    </div>
+                </div>
+             </form>
+                <div class="col-lg-8">
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-custom table-form w-100">
+                            <thead>
+                                <tr class="table-light">
+                                    <th scope="col" *ngFor="let head of headersFiliere">{{ head }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="filiereDisciplines.length > 0;else listEmpty;">
+                                    <ng-container *ngFor="let filiere of filiereDisciplines ; let i = index">
+                                        <!-- <tr>
+                                            <td [attr.rowspan]="filiere.besoinEnNombreDisciplines.length+1">
+                                                {{ filiere?.filiere?.libelle }}
+                                            </td>
+
+                                        </tr> -->
+                                        
+                                        <ng-container *ngFor="let discipline of filiere.besoinEnNombreDisciplines; let j = index ">
+                                            <tr>
+                                                <td>
+                                                    {{ discipline?.discipline?.libelle }}
+                                                </td>
+                                                <td>
+                                                    <input type="number" min="0"
+                                                        [value]="discipline.nombreDePersonne "
+                                                        [max]="calculDeficitParDiscipline(discipline.discipline)"
+                                                        class="form-control form-control-sm" style="width: 100px;"
+                                                        [ngModel]="discipline.nombreDePersonne"
+                                                        (change)="quatumsValues( i, j, $event)">
+                                                </td>
+                                                <td>
+                                                    <button class="btn" type="button"
+                                                    (click)="onDelete(i, filiere.besoinEnNombreDisciplines , discipline.discipline.id)">
+                                                    <i class="fa fa-trash text-danger"></i></button>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+
+                                </ng-container>
+                                <ng-template #listEmpty>
+                                    <tr>
+                                        <td [attr.colspan]="headersFiliere.length">
+                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <span style="color: red;">{{deficitError}}</span>
+                </div>
+
+                <!-- <div class="col-lg-12">
+                    <ul class="badges">
+                        <ul class="badges">
+                            <li class="badge-item" *ngFor="let item of filieresList; let i = index">
+                                <span>{{ getFiliere(item.filiere)?.libelle }}<b>({{ item.nombreDePersonne}})</b></span>
+                                <button class="button-remove" (click)="removeFiliere(i)"><i
+                                        class="fa fa-times-circle"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </ul>
+                </div> -->
+
+                <div class="col-sm-12">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" rows="3" placeholder="Saisir"
+                        formControlName="commentaire"></textarea>
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div *ngIf="!noFiche && deficit && deficit>0" class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button"
+                        (click)="onSaveExpression()">Soumettre</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<div class="panel-form mt-3" *ngIf="(!deficit || deficit <= 0)|| noFiche">
+    <div class="panel-list-body py-0">
+
+        <div class="col-lg-12">
+            <div class="empty-list shadow-none" *ngIf="(!deficit || deficit <= 0) && !noFiche">
+                <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+                <p>Vous n'avez pas déficit !!!</p>
+                <!-- <button class="button button-primary" type="button" >
+                    Ajouter Fiche
+                </button> -->
+            </div>
+            <div class="empty-list shadow-none" *ngIf="noFiche">
+                <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+                <p>Aucune fiche pour cet établissement !!!</p>
+                <!-- <button class="button button-primary" type="button" >
+                    Ajouter Fiche
+                </button> -->
+            </div>
+        </div>
+    </div>
+</div>

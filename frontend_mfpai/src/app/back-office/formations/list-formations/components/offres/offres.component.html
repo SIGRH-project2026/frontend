@@ -1,0 +1,170 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Liste des offres techniques et financières</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Référence : </span>
+                    <span>{{formation?.reference}}</span>
+                </li>
+                <li>
+                    <span>Durée : </span>
+                    <span>{{formation?.duree}}</span>
+                </li>
+                <li>
+                    <span>Période : </span>
+                    <span>Du {{formation?.dateDebut}} au {{formation.dateFin}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-search">
+        <div class="search">
+            <div class="search-box">
+                <input class="search-input" type="text" placeholder="Rechercher">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <select class="form-select">
+                <option value="">Tous les status</option>
+                <option value="SOUMISE">Soumise</option>
+                <option value="APPROUVEER">Approuvé</option>
+            </select>
+        </div>
+        <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+            <i class="fa fa-filter"></i>
+            Filtre avancé</button>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive" *ngIf="this.offres.length>0">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="offres.length > 0">
+                        <tr *ngFor="let demande of offres">
+                            <td>
+                                {{ demande?.formation?.reference }}
+                            </td>
+                            <td>
+                                {{ demande?.chefeff?.matricule }}
+                            </td>
+                            <td>
+                                {{ demande?.chefeff?.prenom }} {{ demande?.chefeff?.nom }}
+                            </td>
+                            <td>
+                                {{ demande?.chefeff?.etablissement?.label }}
+                            </td>
+                            <td>
+                                {{ demande?.formation?.intitule }}
+                            </td>
+                            <td>
+                                {{ demande?.formation?.intitule }}
+                            </td>
+                            <td>
+                                <div [appStatus]="demande?.statutOffreTechnique?.code" class="status-badge"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li *ngIf="demande?.statutOffreTechnique?.code == 'SOUMISE'">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="onApprouver(demande)">
+                                                <i class="fa fa-check-circle me-2"></i>
+                                                <span>Approuver</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="downloadFiles(demande.files)">
+                                                <i class="fa fa-download me-2"></i>
+                                                <span>Télécharger</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- PAGINATION -->
+        <!-- <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div> -->
+    </div>
+
+    <button type="button" (click)="goBack()" class="button-return">
+        <i class="fa fa-arrow-left"></i>
+        Retour</button>
+</div>
+
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">EFF</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Thème</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Intitulé de la formation</label>
+                    <input type="text" class="form-control" placeholder="Saisir" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

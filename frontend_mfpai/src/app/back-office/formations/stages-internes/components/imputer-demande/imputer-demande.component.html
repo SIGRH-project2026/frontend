@@ -1,0 +1,74 @@
+<div class="panel-form">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0" *ngIf="demandeStage">
+        <div class="panel-list-text flex-column align-items-start w-100">
+            <h3>Imputer demande de stages</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Demande : </span>
+                    <span>{{ demandeStage.numero }}</span>
+                </li>
+                <li>
+                    <span>Demandeur : </span>
+                    <span>{{ demandeStage.prenomDemandeur }}</span>
+                </li>
+                <li>
+                    <span>Période : </span>
+                    <span>Du {{ demandeStage.dateDebut }} au {{ demandeStage.dateFin }}</span>
+                </li>
+                <li>
+                    <span>Status : </span>
+                    <span *ngIf="demandeStage.statutDemandeStage.code === 'ENREGISTRER'">Enregistrée</span>
+                    <span *ngIf="demandeStage.statutDemandeStage.code === 'AUTORISER'">Autorisée</span>
+                    <span *ngIf="demandeStage.statutDemandeStage.code === 'NONTAURISER'">Non autorisée</span>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+    <div class="panel-list-body py-0">
+        <form [formGroup]="demandeForm" (ngSubmit)="onSaveDemande()" class="mt-5">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Direction</label>
+                    <select class="form-select" formControlName="directionCode"  (change)="onSelectedDirection()" [ngModel]="demandeStage.direction.code">
+                        <option value="">Selectionner</option>
+                        <option *ngFor="let direction of directions" value="{{direction.code}}">{{ direction.label }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4" *ngIf="!isOk && !initOk">
+                    <label class="form-label">Division</label>
+                    <select class="form-select" formControlName="divisionCode" (change)="onSelectedDivision()" >
+                        <option value="">Selectionner</option>
+                        <option *ngFor="let division of divisions" value="{{division.code}}">{{ division.label }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4" *ngIf="!isOk && !initOk">
+                    <label class="form-label">Bureau</label>
+                    <select class="form-select" formControlName="bureauCode">
+                        <option value="">Selectionner</option>
+                        <option *ngFor="let bureau of bureaux" value="{{bureau.code}}">{{ bureau.label }}</option>
+                    </select>
+                </div>
+<!--                <div class="col-sm-4" *ngIf="isOk && !initOk">-->
+<!--                    <label class="form-label">Services</label>-->
+<!--                    <select class="form-select" formControlName="serviceCode">-->
+<!--                        <option value="">Selectionner</option>-->
+<!--                        <option *ngFor="let service of services" value="{{service.code}}">{{ service.label }}</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" (click)="onSaveDemande()">Envoyer</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

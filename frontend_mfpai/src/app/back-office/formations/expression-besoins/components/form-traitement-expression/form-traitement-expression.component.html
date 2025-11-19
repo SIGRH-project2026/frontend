@@ -1,0 +1,79 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column">
+            <h3>Traitement expressions des besoins N° 1011</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Titre campagne : </span>
+                    <span>CampagneInterface EB1</span>
+                </li>
+                <li>
+                    <span>Date Début : </span>
+                    <span>21/12/2023</span>
+                </li>
+                <li>
+                    <span>Date Fin : </span>
+                    <span>01/02/2024</span>
+                </li>
+                 <li>
+                     <span>Statut : </span>
+                     <span>En cours</span>
+                 </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Prénoms</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Direction</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Service</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Fonction</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" placeholder="Saisir" value="2024-01-24" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Besoin en compétence/ en formation</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Lorem ipsum" />
+                </div>
+                <hr class="h-divider">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif du choix</label>
+                    <textarea class="form-control" rows="3" placeholder="Saisir">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</textarea>
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-tertiary w-100" type="button"
+                        (click)="onTraitementDemande('Non Traité')">Traiter</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

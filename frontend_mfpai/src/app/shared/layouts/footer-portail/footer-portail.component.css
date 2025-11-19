@@ -1,0 +1,95 @@
+footer {
+    padding: 40px 0 0 0;
+    background-color: #1D2939;
+    /* background-color: #F8FAFC; */
+    font-family: 'Roboto', sans-serif;
+
+    /* position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0; */
+}
+
+footer .logo-name {
+    color: #fff;
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+footer ul li.nav-item a {
+    color: rgba(255, 255, 255, .8);
+    font-size: 15px;
+}
+
+footer h6 {
+    color: rgba(255, 255, 255, .5);
+}
+
+.mention-legal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sep {
+    height: 20px;
+    width: 2px;
+    background-color: #636363;
+    margin: 0 16px;
+}
+
+.mention-legal a {
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    padding: 0;
+    margin: 0;
+}
+
+.copyright {
+    background-color: #101828;
+    padding: 10px;
+}
+
+.reseaux {
+    display: flex;
+    color: white;
+    align-items: center;
+    gap: 10px;
+}
+
+.reseaux a {
+    color: #fff;
+    background: transparent;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    transition: all .3s ease-in-out;
+}
+
+.reseaux a:hover {
+    color: var(--color-yellow);
+    background: #fff;
+}
+
+.content-copy {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.content-copy p {
+    color: white;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+}

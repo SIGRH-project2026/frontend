@@ -1,0 +1,64 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouveau Courrier</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="courrierForm" (ngSubmit)="onSaveCourrier()">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">N° Référence <span class="text-danger fw-bold">*</span></label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="reference">
+                </div>
+                <div class="col-sm-4" >
+                    <label class="form-label">Direction <span class="text-danger fw-bold">*</span></label>
+                    <select class="form-select" formControlName="directionCode"  (change)="onSelectedDirection()">
+                        <option value="">Sélectionner</option>
+                        <option value="DRH">DRH</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label" >Division</label>
+                    <select class="form-select" formControlName="divisionCode" (change)="onSelectedDivision()">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let division of divisions" value="{{division.code}}">{{ division.label }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label" >Type de courrier</label>
+                    <select class="form-select" formControlName="typeCourrier" (change)="onSelectedTypeCourrier()">
+                        <option value="">Sélectionner</option>
+                        <option value="ENTRANT">Entrant</option>
+                        <option *ngIf="division != 'DAS'" value="SORTANT">Sortant</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label" >Type de demande</label>
+                    <select class="form-select" formControlName="codeDemandeCourrier" (change)="onSelectedTypeDemande()">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let demande of listTypeDemande" value="{{demande.code}}">{{ demande.libelle }}</option>
+                        <option *ngIf="shoOtherOption" value="other">Autre</option>
+
+                    </select>
+                </div>
+                <div *ngIf="showOtherField" class="col-sm-4">
+                    <label class="form-label">libellé demande <span class="text-danger fw-bold">*</span></label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="otherField">
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="submit">Enregistrer</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="button" (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+
+
+    </div>
+</div>

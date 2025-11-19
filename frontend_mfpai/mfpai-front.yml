@@ -1,0 +1,22 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mfpai-front
+  namespace: mfpai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mfpai-front
+      version: v01
+  template:
+    metadata:
+      labels:
+        app: mfpai-front
+        version: v01
+    spec:
+      containers:
+        - name: mfpai-front-container
+          image: infras/mfpai:0.1.${buildnumber}-g2k_mfpai_front
+          ports:
+            - containerPort: 80

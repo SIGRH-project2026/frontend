@@ -1,0 +1,117 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des corps et grades</h3>
+            <button class="button button-primary" type="button" (click)="onCreateCorps()">
+                <i class="fa fa-add"></i>
+                Nouveau Corps/Grade
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <!-- <select class="form-select">
+                    <option value="">Tous les profils</option>
+                </select> -->
+            </div>
+            <!-- <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button> -->
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="dataList.length > 0;else listEmpty;">
+                        <tr *ngFor="let data of dataList">
+                            <td style="text-wrap: nowrap;">
+                                {{ data?.dateParam | date: 'd/MM/yyyy' }}
+                            </td>
+                            <td>
+                                {{ data?.corpsGrade?.label }}
+                            </td>
+                            <td>
+                                <div [@toggleGrades]="data.grades ? 'expanded' : 'collapsed'">
+                                    <ul class="grades">
+                                        <li *ngFor="let item of data.grades">{{ item?.label }}</li>
+                                    </ul>
+                                </div>
+                                <button *ngIf="data.grades.length > 4" class="btn btn-link" (click)="toggleGrades(data)">
+                                    {{ data.grades ? 'Voir moins' : 'Voir plus' }} <i class="fa"
+                                        [ngClass]="{'fa-chevron-down': !data.grades, 'fa-chevron-up': data.grades}"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div [appStatus]="data.statut" class="status-badge"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditCorps(data)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Modifier</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="data.statut">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(data)">
+                                                <i class="fa fa-lock me-2" title="Désactiver" id="status"
+                                                    type="button"></i>
+                                                <span>Désactiver</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="!data.statut">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(data)">
+                                                <i class="fa fa-lock-open me-2" title="Activer" id="status"
+                                                    type="button"></i>
+                                                <span>Activer</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="totalPages" [pageSize]="size"
+                            (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>

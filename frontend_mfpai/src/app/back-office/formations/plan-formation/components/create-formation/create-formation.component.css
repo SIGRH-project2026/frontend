@@ -1,0 +1,20 @@
+::ng-deep .mat-horizontal-stepper-header.disabled-step {
+    /* Your custom styles for the step header */
+    background-color: yellow !important;
+    color: blue !important;
+}
+::ng-deep .ng2-tag-input {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem;
+    height: 50px !important;
+}
+
+::ng-deep .ng2-tags-container tag:hover,
+::ng-deep .ng2-tags-container tag:active {
+    background-color: blue !important;
+    color: #fff !important;
+}
+
+::ng-deep .ng2-tags-container delete-icon svg {
+    color: #fff !important;
+}

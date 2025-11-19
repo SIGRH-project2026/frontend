@@ -1,0 +1,49 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column">
+            <h3>Modifier plan de formation 2023 - 2025</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="loginForm">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Titre</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="titre"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date début</label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDebut" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateFin" />
+                </div>
+                <div class="col-sm-12">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" rows="3" placeholder="Saisir" formControlName="commentaire"></textarea>
+                </div>
+                <div class="col-sm-12">
+                    <label class="form-label">Documents joints</label>
+                    <ngx-dropzone (change)="onSelect($event)">
+                        <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                            <ngx-dropzone-label>{{ f["originalName"] }}</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button"
+                        (click)="onUpdatePlan()">Modifier</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

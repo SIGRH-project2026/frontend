@@ -1,0 +1,129 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouvel acte</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="demandeActeForm">
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <label class="form-label">Acte</label>
+                        <select class="form-select" formControlName="acte" [(ngModel)]="typeSelectionne" (change)="onchangeActe($event)"
+                            id="acte">
+                            <option value="">Sélectionner</option>
+                            <option value="AA">Acte Administratif</option>
+                            <option value="AG">Acte de Gestion</option>
+                        </select>
+                   <div style="color: red" *ngIf="f['acte'].touched && f['acte'].hasError('required')">Acte <strong>obligatoire!</strong></div>
+
+                    </div>
+                
+                    <div class="col-sm-4">
+                        <label class="form-label">Type d'acte</label>
+                        <select class="form-select" id="typeActe" formControlName="typeActe">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let typeActe of actes" [value]="typeActe.code">{{ typeActe.libelle }}</option>
+                        </select>
+                       <div style="color: red" *ngIf="f['typeActe'].touched && f['typeActe'].hasError('required')">Type Acte <strong>obligatoire!</strong></div>
+ 
+                    </div>
+                </div>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" [value]="userDTO?.matricule" disabled="true"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" class="form-control" [value]="userDTO?.prenom" disabled="true"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" [value]="userDTO?.nom" disabled="true" />
+                </div>
+
+                <ng-container *ngIf="userDTO?.typeUser ==='CEN'">
+                    <div   class="col-sm-4">
+                        <label class="form-label">Diréction</label>
+                        <input type="text" class="form-control"  [value]="userDTO?.direction?.label"  disabled="true"/>
+                    </div>
+
+                    <ng-container  *ngIf="userDTO?.direction?.code ==='AUD'" >
+                        <ng-container  *ngIf="userDTO?.service!=null" >
+                        <div   class="col-sm-4">
+                            <label class="form-label">Service</label>
+                            <input type="text" class="form-control"  [value]="userDTO?.service?.label"  disabled="true"/>
+                        </div>
+                    </ng-container>
+                    </ng-container>
+
+                    <ng-container  *ngIf="userDTO?.direction?.code ==='DRH'" >
+                        <ng-container  *ngIf="userDTO?.division!=null" >
+                        <div   class="col-sm-4">
+                            <label class="form-label">Division</label>
+                            <input type="text" class="form-control"  [value]="userDTO?.division?.label"  disabled="true"/>
+                        </div>
+                    </ng-container>
+                        <ng-container  *ngIf="userDTO?.bureau!=null" >
+                        <div   class="col-sm-4">
+                            <label class="form-label">Bureau</label>
+                            <input type="text" class="form-control"  [value]="userDTO?.bureau?.label"  disabled="true"/>
+                        </div>
+                    </ng-container>
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="userDTO?.typeUser=='DEC'">
+                    <ng-container *ngIf="userDTO?.etablissement!==null">
+                        <div   class="col-sm-4">
+                            <label class="form-label">Etablissement/CFP/EEF</label>
+                            <input type="text" class="form-control"  [value]="userDTO?.etablissement?.label"  disabled="true"/>
+                        </div>
+                    </ng-container>
+                    <!--ng-container *ngIf="userDTO?.cfp!==null">
+                        <div   class="col-sm-4">
+                            <label class="form-label">CFP</label>
+                            <input type="text" class="form-control"  [value]="userDTO?.cfp?.label"  disabled="true"/>
+                        </div>
+                    </ng-container-->
+            
+                </ng-container>
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Téléphone</label>
+                    <input type="text" class="form-control" [value]="userDTO?.telephone" disabled="true"/>
+                </div>
+                <div class="col-sm-12" >
+                    <label class="form-label">Pièces Justificatives</label>
+                    <ngx-dropzone (change)="onSelect($event)"formControlName='files' >
+                        <ngx-dropzone-label>  <i class="material-icons">cloud_upload</i>
+                            <p class="fw-semibold">Sélectionner les fichiers</p>
+                            <small>ou glisser et déposer les fichiers</small></ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                            <ngx-dropzone-label>{{f.name }}                                         </ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+
+                </div>
+                <div class="col-sm-12">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" formControlName="commentaire" rows="3"></textarea>
+
+                 </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" [disabled]="demandeActeForm.invalid" (click)="onSaveDemande()">Soumettre</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                    >Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

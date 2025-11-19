@@ -1,0 +1,368 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Modifier formation N° 1001</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <mat-stepper [linear]="true" [(selectedIndex)]="selectedIndex" #stepper class="custom-stepper"
+            [orientation]="(stepperOrientation | async)!">
+            <mat-step [stepControl]="planificationForm">
+                <form [formGroup]="planiForm">
+                    <ng-template matStepLabel>Planification</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Thème</label>
+                            <input type="text" class="form-control" [defaultValue]=theme disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Type de formation</label>
+                            <select class="form-select" formControlName="typeFormation">
+                                <option value="">Sélectionner</option>
+                                <option value="Diplômante">Diplômante</option>
+                                <option value="Continue">Continue</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Intitulé de la Formation</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="intitule" />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date début</label>
+                            <input type="date" class="form-control" formControlName="dateDebut"/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date fin</label>
+                            <input type="date" class="form-control" formControlName="dateFin">
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Durée de la formation</label>
+                            <input type="text" class="form-control" [defaultValue]=duree disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Coût</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="cout" />
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Formateur/Prestataire</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="prestataires"/>
+                        </div>
+                        
+                        <div class="col-lg-12">
+                            <label class="form-label">Objectifs de la formation</label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir" formControlName="description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" *ngIf="planiForm.get('typeFormation')?.value === 'Diplômante'">
+                        <label class="form-label">Insérer le cahier de charge <span class="text-danger fw-bold">*</span></label>
+                        <ngx-dropzone (change)="onSelectFiles($event, pjTypeFormationDiplomante)">
+                            <ngx-dropzone-label>
+                                <i class="material-icons">cloud_upload</i>
+                                <p class="fw-semibold">Sélectionner les fichiers</p>
+                                <small>ou glisser et déposer les fichiers</small>
+                            </ngx-dropzone-label>
+                            <ngx-dropzone-preview *ngFor="let f of pjTypeFormationDiplomante" [removable]="true"
+                                (removed)="onRemoveFile(f, pjTypeFormationDiplomante)">
+                                <ngx-dropzone-label>{{ f.originalName }} ({{ f.fileSize }})</ngx-dropzone-label>
+                            </ngx-dropzone-preview>
+                        </ngx-dropzone>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperNext type="button"
+                            class="button button-primary text-white">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step #stepHeader1 [stepControl]="convocationForm">
+                <form>
+                    <ng-template matStepLabel>
+                        <ng-container *ngIf="planiForm.get('typeFormation')?.value === 'Continue'">
+                            Convocation
+                        </ng-container>
+                        <ng-container *ngIf="planiForm.get('typeFormation')?.value === 'Diplômante'">
+                            Participants
+                        </ng-container>
+                    </ng-template>
+
+                    <ng-container *ngIf="planiForm.get('typeFormation')?.value === 'Diplômante'">
+                        <div class="row g-4 mt-3">
+                            <div class="col-lg-12">
+                                <label class="form-label">Pièces Jointes (Liste des candidats retenus) <span class="text-danger fw-bold">*</span></label>
+                                <ngx-dropzone (change)="onSelectFiles($event, pjCandidatsRetenus)">
+                                    <ngx-dropzone-label>
+                                        <i class="material-icons">cloud_upload</i>
+                                        <p class="fw-semibold">Sélectionner les fichiers</p>
+                                        <small>ou glisser et déposer les fichiers</small>
+                                    </ngx-dropzone-label>
+                                    <ngx-dropzone-preview *ngFor="let f of pjCandidatsRetenus" [removable]="true"
+                                        (removed)="onRemoveFile(f, pjCandidatsRetenus)">
+                                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                    </ngx-dropzone-preview>
+                                </ngx-dropzone>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="form-label">Dossier du participant(les fichiers du candidat) <span class="text-danger fw-bold">*</span></label>
+                                <ngx-dropzone (change)="onSelectFiles($event, pjDossierParticipants)">
+                                    <ngx-dropzone-label>
+                                        <i class="material-icons">cloud_upload</i>
+                                        <p class="fw-semibold">Sélectionner les fichiers</p>
+                                        <small>ou glisser et déposer les fichiers</small>
+                                    </ngx-dropzone-label>
+                                    <ngx-dropzone-preview *ngFor="let f of pjDossierParticipants" [removable]="true"
+                                        (removed)="onRemoveFile(f, pjDossierParticipants)">
+                                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                    </ngx-dropzone-preview>
+                                </ngx-dropzone>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="planiForm.get('typeFormation')?.value === 'Continue'">
+                    <div class="row mt-3">
+                        <div class="col-lg-5">
+                            <div class="row g-4">
+                                <div class="col-lg-12">
+                                    <label class="form-label">Nom du fichier <span class="text-danger fw-bold">*</span></label>
+                                    <input type="text" id="nom-fichier" class="form-control" placeholder="Saisir">
+                                </div>
+                                <div class="col-lg-12">
+                                    <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                                    <ngx-dropzone (change)="onSelectFiles($event, pjConvocation)">
+                                        <ngx-dropzone-label>
+                                            <i class="material-icons">cloud_upload</i>
+                                            <p class="fw-semibold">Sélectionner les fichiers</p>
+                                            <small>ou glisser et déposer les fichiers</small>
+                                        </ngx-dropzone-label>
+                                        <ngx-dropzone-preview *ngFor="let f of pjConvocation" [removable]="true"
+                                            (removed)="onRemoveFile(f, pjConvocation)">
+                                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                        </ngx-dropzone-preview>
+                                    </ngx-dropzone>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="action-steps-start">
+                                        <button class="button button-secondary" type="button" (click)="onAddFile()">Ajouter</button>
+                                    </div>
+                                </div>
+                    
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="table-responsive">
+                                <table class="table mt-3">
+                                    <thead>
+                                        <tr class="table-light">
+                                            <th scope="col">Nom Fichier</th>
+                                            <th scope="col">Taille</th>
+                                            <th scope="col">Pièces jointes</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngIf="fileListConvocation.length > 0; else listEmpty">
+                                            <tr *ngFor="let file of fileListConvocation; let index = index">
+                                                <td>
+                                                    {{ file?.nom }}
+                                                </td>
+                                                <td>
+                                                    {{ file?.tdr?.fileSize }}
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:(0)" class="text-decoration-underline text-green">{{
+                                                        file.tdr.originalName }}</a>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <button type="button" class="btn btn-sm" title="Supprimer"
+                                                            (click)="onDeleteFile(index)">
+                                                            <i class="fa fa-trash-alt icon-view text-danger"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <ng-template #listEmpty>
+                                            <tr>
+                                                <td [attr.colspan]="4">
+                                                    <p class="text-black-50 text-center m-0">
+                                                        Aucune donnée disponible
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    </ng-container>
+
+                    <!-- ===== Ancienne version Start ===== -->
+                    <!-- <div class="row g-4 mt-3">
+                        <div class="col-lg-6">
+                            <label class="form-label">Termes de références(TDR)</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, tdrFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner un fichier</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of tdrFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, tdrFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} {{ f["originalName"] }} </ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Convocation</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, convocationFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner un fichier</p>
+                                    <small>ou glisser et déposer le fichier</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of convocationFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, convocationFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} {{ f["originalName"] }}</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Liste des participants</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, participantsFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner un fichier</p>
+                                    <small>ou glisser et déposer le fichier</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of participantsFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, participantsFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} {{ f["originalName"] }} </ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Autres</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, othersFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer le fichier</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of othersFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, othersFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} </ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div> -->
+                    <!-- ===== Ancienne version end =====  -->
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button type="button" class="button button-primary text-white" (click)="addConvocation()">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="participantForm" [ngClass]="{'disabled-step': isPublished === false}">
+                <form>
+                    <ng-template matStepLabel>Participants</ng-template>
+                    <div class="row g-4 mt-3">
+                        <!-- <div class="col-lg-12">
+                            <div class="check-custom-radio row g-3">
+                                <label class="label-check-radio col-lg-6" for="FORM">
+                                    <input type="radio" id="FORM" class="form-check-input" name="participantType" value="FORM"
+                                        (change)="onDisciplineChange($any($event.target).value)" />
+                                    <div class="plan-content">
+                                        <div class="plan-details">
+                                            <span><i class="fa fa-edit me-2"></i>Saisir le formulaire</span>
+                                        </div>
+                                    </div>
+                                </label>
+                    
+                                <label class="label-check-radio col-lg-6" for="FILE">
+                                    <input type="radio" id="FILE" class="form-check-input" name="participantType" value="FILE"
+                                        (change)="onDisciplineChange($any($event.target).value)" />
+                                    <div class="plan-content">
+                                        <div class="plan-details">
+                                            <span><i class="fa fa-upload me-2"></i>Charger un fichier</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-12" *ngIf="selectedParticipantAdd === 'FORM'">
+                            <label class="form-label">Participants <span class="text-danger fw-bold">*</span></label>
+                            <tag-input [ngModel]="selectedParticipants" [placeholder]="'+ Nouveau participant'"
+                                [secondaryPlaceholder]="'+ Nouveau participant'" [ngModelOptions]="{standalone: true}">
+                                <tag-input-dropdown [autocompleteItems]="autocompleteParticipants" [showDropdownIfEmpty]="true"
+                                    [dynamicUpdate]="true">
+                                </tag-input-dropdown>
+                            </tag-input>
+                        </div> -->
+                        <div class="col-lg-12">
+                            <label class="form-label">Liste des participants</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, participantsBisFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner un fichier</p>
+                                    <small>ou glisser et déposer le fichier</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of participantsBisFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, participantsBisFiles)">
+                                    <ngx-dropzone-label>{{ f?.generatedName }} {{ f?.name }} ({{ f?.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="rapportForm" [ngClass]="{'disabled-step': isPublished === false}">
+                <form>
+                    <ng-template matStepLabel>Rapport</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-12">
+                            <label class="form-label">Pièces jointes</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, rapportFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of rapportFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f, rapportFiles)">
+                                    <ngx-dropzone-label>{{ f.generatedName }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                        <div class="col-lg-12">
+                            <label class="form-label">Commentaire</label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir" [defaultValue]=commentaire></textarea>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white"
+                            (click)="onSaveFormation()">Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

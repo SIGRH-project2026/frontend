@@ -1,0 +1,8 @@
+<div class="row g-3">
+    <div class="col-lg-6" *ngFor="let stat of statistiques">
+        <div class="statistique-item" (click)="goDetails(stat.path)">
+            <img [src]="stat.icon" [alt]="stat.label" width="64px">
+            <h6 class="statistique-item-title">{{stat.label}}</h6>
+        </div>
+    </div>
+</div>

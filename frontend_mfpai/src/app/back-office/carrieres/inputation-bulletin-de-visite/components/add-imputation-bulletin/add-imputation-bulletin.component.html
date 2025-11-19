@@ -1,0 +1,144 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Enregistrement Imputation/Bulletin</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <mat-stepper linear #stepper>
+            <mat-step [stepControl]="firstFormGroup">
+                <form>
+                    <ng-template matStepLabel>Informations demandeur</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Matricule</label>
+                            <input type="text" class="form-control" value={{utilisateur?.matricule}}  disabled/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" value={{utilisateur?.prenom}} disabled/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" value= {{utilisateur?.nom}} disabled/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="utilisateur?.typeUser=='CEN'">
+                            <label class="form-label">Fonction</label>
+                            <input type="text" class="form-control" value={{utilisateur?.fonction?.label}} disabled>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="utilisateur?.typeUser=='CEN' ">
+                            <label class="form-label">Direction</label>
+                            <input type="text" class="form-control" value={{utilisateur?.direction?.label}}  disabled/>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="utilisateur?.typeUser=='CEN' && utilisateur?.direction?.label != 'DRH'">
+                            <label class="form-label">Bureau</label>
+                            <input type="text" class="form-control" value={{utilisateur?.bureau?.label}} disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="utilisateur?.typeUser=='DEC'">
+                            <label class="form-label">Etablissement</label>
+                            <input type="text" class="form-control" value={{utilisateur?.etablissement?.label}} disabled/>
+                        </div>
+                        
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" value={{utilisateur?.adresse}} disabled/>
+                        </div>
+
+
+                    </div>
+
+                    <div class="action-steps">
+                        <button   type="button"
+                                  class="button button-light-red mx-2" (click)="onCancel()">Annuler</button>
+                        <button matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+
+            <mat-step [stepControl]="secondFormGroup">
+                <form [formGroup]="imputationForm">
+                    <ng-template matStepLabel>Information Bénéficiaires</ng-template>
+
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Type de demande</label>
+                            <select class="form-select" formControlName="typeDemande" required>
+                                <option value="" selected>Sélectionner</option>
+                                <option value="Imputation budgétaire" *ngIf="utilisateur.typeMatricule.code=='MATFONC' || utilisateur.typeMatricule.code=='MATDEE'" >Imputation budgétaire</option>
+                                <option value="Bulletin de visite" >Bulletin de visite</option>
+                            </select>
+                        </div>
+                        <!-- <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Numéro demande</label>
+                            <input type="number" class="form-control" placeholder="Saisir" formControlName="numeroDemande" required/>
+                        </div> -->
+
+                        <!-- <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date demande</label>
+                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateImputation" required/>
+                        </div> -->
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Statut bénéficiaire</label>
+                            <select class="form-select"  (change)="onSelectionChange($any($event.target).value)" formControlName="statusBeneficiere" required>
+                                <option value="" selected>Sélectionner</option>
+                                <option value="Soi">Soi</option>
+                                <option value="Époux">Époux</option>
+                                <option value="Épouse">Épouse</option>
+                                <option value="Enfant">Enfant</option>
+                            </select>
+                        </div>
+
+
+                        <ng-container  *ngIf="selectedValue ==='Soi'">
+                            <div class="col-lg-4 col-sm-6" >
+                                <label class="form-label">Prénom bénéficiaire</label>
+                                <input type="text" class="form-control" value={{utilisateur?.prenom}} disabled/>
+                            </div>
+                            <div class="col-lg-4 col-sm-6" >
+                                <label class="form-label">Nom bénéficiaire</label>
+                                <input type="text" class="form-control" value={{utilisateur?.nom}} disabled />
+                            </div>
+                        </ng-container>
+                        <ng-container  *ngIf="selectedValue != 'Soi'">
+                            <div class="col-lg-4 col-sm-6" >
+                                <label class="form-label">Prénom bénéficiaire</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="prenomBeneficiere" required/>
+                            </div>
+                            <div class="col-lg-4 col-sm-6" >
+                                <label class="form-label">Nom bénéficiaire</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="nomBeneficiere" required/>
+                            </div>
+                        </ng-container>
+                        <div class="col-sm-12">
+                            <label class="form-label">Justificatifs</label>
+                            <ngx-dropzone (change)="onSelect($event)" formControlName='file' class="">
+                                <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button   type="button"
+                                  class="button button-light-red mx-2" (click)="onCancel()">
+                            Annuler
+                        </button>
+                        <button  matStepperPrevious type="button"
+                                 class="button button-secondary mx-2">Précédent</button>
+                        <button  type="button" class="button button-primary text-white " (click)="onSaveImputationBulletin()" [disabled]="!((imputationForm.valid || isSoi) && (selectedFile))">Enregister</button>
+                    </div>
+                </form>
+            </mat-step>
+
+
+        </mat-stepper>
+    </div>
+</div>

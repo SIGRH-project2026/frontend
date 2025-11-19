@@ -1,0 +1,301 @@
+.button {
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    background: 0 0;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    cursor: pointer;
+    transition: all 3s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1.5px solid transparent;
+
+}
+
+.button i.material-icons {
+    margin: 0;
+    padding: 0;
+}
+
+.button.focus-visible {
+    -webkit-box-shadow: 0 0 0 2px var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.button:focus:not(:disabled) {
+    outline: 0;
+}
+
+
+a.button-primary,
+button.button-primary {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1.5px solid transparent;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--primary-color);
+    color: #fff;
+}
+
+a.button-primary:hover,
+button.button-primary:hover {
+    background-color: var(--primary-color);
+}
+
+a.button-outline-primary,
+button.button-outline-primary {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1.5px solid transparent;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+a.button-outline-primary:hover,
+button.button-outline-primary:hover {
+    background-color: rgba(28, 94, 171, .30)
+}
+
+/* BUTTON DISABLED EFFECT */
+button:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+
+/* 
+  =====
+  01. GREEN VARIANT
+  Fill - Light - Outline
+  =====
+*/
+
+a.button-green,
+button.button-green {
+    background: var(--color-green);
+    color: #fff;
+}
+
+a.button-green:hover,
+button.button-green:hover {
+    background-color: var(--color-green-focus);
+}
+
+a.button-light-green,
+button.button-light-green {
+    background: var(--color-light-green);
+    color: var(--color-green);
+}
+
+a.button-light-green:hover,
+button.button-light-green:hover {
+    background-color: var(--color-light-green-focus);
+}
+
+a.button-outline-green,
+button.button-outline-green {
+    background: #fff;
+    color: var(--color-green);
+    border-color: var(--color-green);
+}
+
+a.button-outline-green:hover,
+button.button-outline-green:hover {
+    background-color: var(--color-light-green);
+}
+
+/* 
+  =====
+  02. YELLOW VARIANT
+  Fill - Light - Outline
+  =====
+*/
+
+a.button-yellow,
+button.button-yellow {
+    background: var(--color-yellow);
+    color: #fff;
+}
+
+a.button-yellow:hover,
+button.button-yellow:hover {
+    background-color: var(--color-yellow-focus);
+}
+
+a.button-light-yellow,
+button.button-light-yellow {
+    background: var(--color-light-yellow);
+    color: var(--color-yellow);
+}
+
+a.button-light-yellow:hover,
+button.button-light-yellow:hover {
+    background-color: var(--color-light-yellow-focus);
+}
+
+a.button-outline-yellow,
+button.button-outline-yellow {
+    background: #fff;
+    color: var(--color-yellow);
+    border-color: var(--color-yellow);
+}
+
+a.button-outline-yellow:hover,
+button.button-outline-yellow:hover {
+    background-color: var(--color-light-yellow);
+}
+
+/* 
+  =====
+  03. RED VARIANT
+  Fill - Light - Outline
+  =====
+*/
+
+a.button-red,
+button.button-red {
+    background: var(--color-red);
+    color: #fff;
+}
+
+a.button-red:hover,
+button.button-red:hover {
+    background-color: var(--color-red-focus);
+}
+
+a.button-light-red,
+button.button-light-red {
+    background: var(--color-light-red);
+    color: var(--color-red);
+}
+
+a.button-light-red:hover,
+button.button-light-red:hover {
+    background-color: var(--color-light-red-focus);
+}
+
+a.button-outline-red,
+button.button-outline-red {
+    background: #fff;
+    color: var(--color-red);
+    border-color: var(--color-red);
+}
+
+a.button-outline-red:hover,
+button.button-outline-red:hover {
+    background-color: var(--color-light-red);
+}
+
+/* 
+  =====
+  04. GREY VARIANT
+  Fill - Light - Outline
+  =====
+*/
+
+a.button-grey,
+button.button-grey {
+    background: var(--color-grey);
+    color: #fff;
+}
+
+a.button-grey:hover,
+button.button-grey:hover {
+    background-color: var(--color-grey-focus);
+}
+
+a.button-light-grey,
+button.button-light-grey {
+    background: var(--color-light-grey);
+    color: var(--color-grey);
+}
+
+a.button-light-grey:hover,
+button.button-light-grey:hover {
+    background-color: var(--color-light-grey-focus);
+}
+
+a.button-outline-grey,
+button.button-outline-grey {
+    background: #fff;
+    color: var(--color-grey);
+    border-color: var(--color-grey);
+}
+
+a.button-outline-grey:hover,
+button.button-outline-grey:hover {
+    background-color: var(--color-light-grey);
+}
+
+
+.button-filter {
+    display: flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 8px;
+    border: 1px solid #D0D5DD;
+    background: #F1F2F6;
+    text-wrap: nowrap;
+
+    /* Shadow/xs */
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+}
+
+.button-return {
+    display: flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 8px;
+    border: 1px solid #F5F6FA;
+    background: #F5F6FA;
+    text-wrap: nowrap;
+
+    /* Shadow/xs */
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    transition: all .3s;
+
+    margin-top: 20px;
+}
+
+.button-return:active {
+    transform: scale(0.9);
+    transition: 0.2s;
+}
+
+.button-return:hover {
+    border: 1px solid #D0D5DD;
+    background-color: #D0D5DD;
+}

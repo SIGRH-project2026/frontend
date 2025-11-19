@@ -1,0 +1,133 @@
+<div class="panel-form">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+        <div class="panel-list-text flex-column align-items-start w-100">
+            <h3>Détail participant - {{participation?.centralLevel?.prenom}} {{participation?.centralLevel?.nom}}</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Intitulé de la formation : </span>
+                    <span>{{participation?.formation?.intitule}}</span>
+                </li>
+                <li>
+                    <span>Durée de la formation : </span>
+                    <span>{{participation?.formation?.duree}}</span>
+                </li>
+                <li>
+                    <span>Période : </span>
+                    <span>Du {{participation?.formation?.dateDebut}} au {{participation?.formation?.dateFin}}</span>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="panel-body py-0">
+        <div class="row details pb-3 g-3">
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Prénom</span>
+                    <span>{{participation?.centralLevel?.prenom}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Nom</span>
+                    <span>{{participation?.centralLevel?.nom}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Matricule</span>
+                    <span>{{participation?.centralLevel?.matricule}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Région</span>
+                    <span>{{participation?.centralLevel?.region?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Direction</span>
+                    <span>{{participation?.centralLevel?.direction?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Division</span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Bureau</span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Services</span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Fonction</span>
+                    <span>{{participation?.centralLevel?.fonction?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Corps</span>
+                    <span>{{participation?.centralLevel?.corpsGrade?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Grade</span>
+                    <span>{{participation?.centralLevel?.grade?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Date d'entrée</span>
+                    <span>{{participation?.centralLevel?.dateDEntreeFonctionPub}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Profil</span>
+                    <span>{{participation?.centralLevel?.profils[0]?.label}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Téléphone</span>
+                    <span>{{participation?.centralLevel?.telephone}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Email</span>
+                    <span>{{participation?.centralLevel?.email}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Sexe</span>
+                    <span>{{participation?.centralLevel?.sexe}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Adresse</span>
+                    <span>{{participation?.centralLevel?.adresse}}</span>
+                </div>
+            </div>
+        </div>
+
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+</div>

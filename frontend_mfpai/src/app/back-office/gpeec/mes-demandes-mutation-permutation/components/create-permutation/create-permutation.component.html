@@ -1,0 +1,187 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Fomulaire de demande de permutation</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="card-user">
+                    <div class="card-user-icon">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="card-user-body">
+                        <div class="card-info-user">
+                            <h6>{{currentUser?.prenom+" "+currentUser?.nom}} </h6>
+                            <p>{{currentUser?.matricule}}</p>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Corps</span>
+                                        <span>{{currentUser?.corpsGrade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Grade</span>
+                                        <span>{{currentUser?.grade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Adresse</span>
+                                        <span>{{currentUser?.adresse}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Email</span>
+                                        <span>{{currentUser?.email}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Région</span>
+                                        <span>{{currentUser?.region?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>IA</span>
+                                        <span>{{currentUser?.ia?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" *ngIf="currentUser?.ief">
+                                    <div class="details-item">
+                                        <span>IEF</span>
+                                        <span>{{currentUser?.ief?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Etablissement</span>
+                                        <span>{{currentUser?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{currentUser?.speciality?.label}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card-user">
+                    <div class="card-user-icon">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="card-user-body">
+                        <div class="card-info-user">
+                            <h6>{{user2?.prenom+" "+user2?.nom}}</h6>
+                            <p>{{user2?.matricule}}</p>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Corps</span>
+                                        <span>{{user2?.corpsGrade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Grade</span>
+                                        <span>{{user2?.grade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Adresse</span>
+                                        <span>{{user2?.adresse}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Email</span>
+                                        <span>{{user2?.email}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Région</span>
+                                        <span>{{user2?.region?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>IA</span>
+                                        <span>{{user2?.ia?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" *ngIf="user2?.ief">
+                                    <div class="details-item">
+                                        <span>IEF</span>
+                                        <span>{{user2?.ief?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Etablissement</span>
+                                        <span>{{user2?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{user2?.speciality?.label}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="motif-rejet" *ngIf="!permutationPossible">
+                <p>Les deux profils n'ont pas la même spécialité et le même corps</p>
+            </div>
+
+            <form [formGroup]="permutationForm">
+                <div class="col-lg-12">
+                    <label class="form-label">Motif <span class="text-danger fw-bold">*</span></label>
+                    <textarea class="form-control" formControlName="motifPermutation" cols="30" rows="3" placeholder="Saisir"></textarea>
+                </div>
+            </form>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" (click)="onSaveDemande()" [disabled]="!permutationPossible">Envoyer</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset" (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

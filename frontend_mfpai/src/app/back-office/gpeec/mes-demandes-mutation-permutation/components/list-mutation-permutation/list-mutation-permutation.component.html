@@ -1,0 +1,609 @@
+
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <div class="flex-between-row">
+                <h3>{{ tabTitle }}  </h3>
+
+                <ng-container *ngIf="tabIndex === 0">
+                    <button *ngIf="!pourTraitement" class="button button-primary" type="button" (click)="onCreateMutation()">
+                        <i class="fa fa-add"></i>
+                        Demander une mutation
+                    </button>
+                    <ng-container >
+                        <button *ngIf="pourTraitement" class="button button-primary" type="button" (click)="genererOSMutation(true, 0)">
+                            <i class="fa fa-add"></i>
+                            Générer OS
+                        </button>
+
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="tabIndex === 1">
+                    <button  *ngIf="!pourTraitement" class="button button-primary" type="button" (click)="openModalSearch(FORMDEMANDEPERMUTATION)">
+                        <i class="fa fa-add"></i>
+                        Demander une permutation
+                    </button>
+
+                </ng-container>
+
+                <ng-container *ngIf="tabIndex === 1 && permutations.length > 0" >
+                    <button  *ngIf="pourTraitement && profilConnecte[0].code=='Chef-division-dgpeec' || profilConnecte[0].code=='bureau-mo-rec' " class="button button-primary" type="button" (click)="genererOS()">
+                        <i class="fa fa-add"></i>
+                        Générer OS
+                    </button>
+
+                </ng-container>
+
+            </div>
+            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+                <mat-tab *ngIf="!dashboardPermutation" label="Mutations">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher"  [(ngModel)]="searchQuery">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                                <select class="form-select" (change)="listmutations()"  [(ngModel)]="statutMutation" *ngIf="!dashboardMutation">
+                                    <option value="">Tous les status</option>
+                                    <option value="SOUMISE">Soumise</option>
+                                    <option value="AMODIFIER">A modifier</option>
+                                    <option value="VALIDER">Validée</option>
+                                    <option value="REJETER">Rejetée</option>
+                                    <option value="RECUE">Accepter</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="button-filter" (click)="openModalSearch(FILTREAVANCEMUTATION)">
+                                <i class="fa fa-filter"></i>
+                                Filtre avancé</button>
+                        </div>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                <tr class="table-light">
+                                    <th scope="col" *ngFor="let head of headersMutation">{{ head }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <ng-container *ngIf="demandes.length > 0;else listEmpty;">
+                                    <tr *ngFor="let demande of demandes">
+                                        <ng-container *ngIf="matchSearchQuery(demande)">
+                                            <td>
+                                                {{ demande?.numeroRef }}
+                                            </td>
+                                            <td>
+                                                {{ demande?.dateDemande }}
+                                            </td>
+                                            <td>
+                                                {{ demande?.regionSouhaitee?.label }}
+                                            </td>
+                                            <td *ngIf="demande?.origineDemandeurLog?.origineUserType === 'DEC'">
+                                                {{ demande?.origineDemandeurLog?.etablissement?.label }}
+                                            </td>
+                                            <td *ngIf="demande?.origineDemandeurLog?.origineUserType === 'CEN'">
+                                                {{ demande?.origineDemandeurLog?.direction?.label }}
+                                            </td>
+                                            <td *ngIf="demande?.destinataireType === 'DEC'">
+                                                {{ demande?.etablissementSouhaitee?.label }}
+                                            </td>
+                                            <td *ngIf="demande?.destinataireType === 'CEN'">
+                                                {{ demande?.directionSouhaitee?.label }}
+                                            </td>
+                                            <td *ngIf="demande.traitementMutation.statut.code !=='REJETER'">
+                                                <div [appStatus]="demande.traitementMutation.statut.code" class="status-badge"></div>
+                                            </td>
+                                            <td *ngIf="demande.traitementMutation.statut.code ==='REJETER'">
+                                                <div [appStatus]="demande.traitementMutation.statut.code+'MUT'" class="status-badge"></div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                               (click)="onViewDetailMutation(demande)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="(pourTraitement && doitTraiter(demande, profile) && demande.traitementMutation.statut.code !=='VALIDER' &&
+                                                                    demande.traitementMutation.statut.code !=='REJETER' && 
+                                                                    demande.traitementMutation.statut.code !=='AMODIFIER' && !demande?.osgenerated)  ">
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="onTraitMutation(demande)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Traiter</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="pourTraitement && doitTraiter(demande, profile)">
+                                                            <a class="dropdown-item" href="javascript:(0)"  (click)="visualiser2(demande.currentBordereauTransmission)">
+                                                                <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
+                                                                <span>BE/lettre de transmission</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="!pourTraitement && demande?.traitementMutation?.statut?.code==='AMODIFIER'">
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditMutation(demande)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Modifier</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a  *ngIf="pourTraitement && isDGPEEC && demande?.traitementMutation?.statut?.code==='REC-DGPEEC'" class="dropdown-item" href="javascript:(0)"  (click)="genererOSMutation(false, demande.id)" >
+                                                                <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                                <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
+                                                                <span>Générer OS</span>
+                                                            </a>
+                                                            <a  *ngIf="pourTraitement && isDGPEEC && demande.traitementMutation.statut.code ==='REC-DGPEEC' && demande?.osgenerated" class="dropdown-item" href="javascript:(0)"  (click)="openModal(GENERER_OS, demande.id)">
+                                                                <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                                <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
+                                                                <span>Chargement OS</span>
+                                                            </a>
+                                                            <a  *ngIf=" demande.traitementMutation.statut.code ==='VALIDER'" class="dropdown-item" href="javascript:(0)"  (click)="Telecharger(demande.ordreService)">
+                                                                <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                                <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
+                                                                <span>Téléchager OS </span>
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                                <!-- <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="onViewDetailMutation(demande)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="demande.traitementMutation.statut.libelle==='AMODIFIER'">
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditMutation(demande)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Modifier</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div> -->
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-container>
+                                <ng-template #listEmpty>
+                                    <tr>
+                                        <td [attr.colspan]="headersMutation.length">
+                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter"
+                                        [(ngModel)]="pageSize" (ngModelChange)="listmutations()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="pageSize"
+                                            (pageChange)="listmutations()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab *ngIf="!dashboardMutation" label="Permutations">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)] = "searchText">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                                <form [formGroup]="statutFilterForm" *ngIf="!dashboardPermutation">
+                                    <select class="form-select" formControlName="statut" (change)="onChangeValueFilter()">
+                                        <option value="">Tous les status</option>
+                                        <option value="SOUMISE">Soumise</option>
+                                        <option value="AMODIFIER">A modifier</option>
+                                        <option value="ACCEPTER">Acceptée</option>
+                                        <option value="VALIDER">Validée</option>
+                                        <option value="REJETER">Rejetée</option>
+                                        <option value="TRAITEMENT">En cours de traitement</option>
+                                    </select>
+                                </form>
+                            </div>
+
+                            <button type="button" class="button-filter" (click)="openModalSearch(FILTREAVANCEPERMUTATION)">
+                                <i class="fa fa-filter"></i>
+                                Filtre avancé</button>
+                        </div>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom table-form table-bordered">
+                                <thead>
+                                <tr class="table-light">
+                                    <th scope="col" rowspan="2">N° Demande</th>
+                                    <th scope="col" rowspan="2">Date Demande</th>
+                                    <th scope="col" colspan="3">Formateur 1/Professeur 1</th>
+                                    <th scope="col" colspan="3">Formateur 2/Professeur 2</th>
+                                    <th scope="col" rowspan="2">Statut</th>
+                                    <th scope="col" rowspan="2">Action</th>
+                                </tr>
+                                <tr class="table-light">
+                                    <th scope="col">Matricule</th>
+                                    <th scope="col">Prénom</th>
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Matricule</th>
+                                    <th scope="col">Prénom</th>
+                                    <th scope="col">Nom</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <ng-container *ngIf="permutations.length > 0;else listEmpty;">
+                                    <tr *ngFor="let demande of permutations|SearchPermutationPipe:searchText">
+                                        <td>
+                                            {{ demande?.id }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.datePermutation | date : 'dd/MM/yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur1?.matricule }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur1?.prenom }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur1?.nom }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur2?.matricule }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur2?.prenom }}
+                                        </td>
+                                        <td>
+                                            {{ demande?.utilisateur2?.nom }}
+                                        </td>
+                                        <td *ngIf="!pourTraitement">
+                                            <div [appStatus]="demande?.traitementPermutation?.statut?.code.toUpperCase()" class="status-badge"></div>
+                                        </td>
+                                        <td *ngIf="pourTraitement">
+                                            <div [appStatus]="demande?.traitementPermutation?.statut?.code.toUpperCase()" class="status-badge"></div>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="javascript:(0)"
+                                                           (click)="onViewDetailPermutation(demande.id)">
+                                                            <i class="fa fa-eye me-2"></i>
+                                                            <span>Voir détails</span>
+                                                        </a>
+                                                    </li>
+                                                    <li *ngIf="demande?.utilisateur2?.id == userId && demande?.traitementPermutation?.statut?.code ==='SOUMISE'">
+                                                        <a class="dropdown-item" href="javascript:(0)"
+                                                           (click)="onAccept(demande.id)">
+                                                            <i class="fa fa-edit me-2"></i>
+                                                            <span>Accepter</span>
+                                                        </a>
+                                                    </li>
+                                                    <li *ngIf="demande?.traitementPermutation?.statut?.code==='AMODIFIER'">
+                                                        <a class="dropdown-item" href="javascript:(0)" (click)="onEditPermutation(demande.id)">
+                                                            <i class="fa fa-edit me-2"></i>
+                                                            <span>Modifier</span>
+                                                        </a>
+                                                    </li>
+                                                    <li   *ngIf="pourTraitement && isDGPEEC && demande.traitementPermutation?.statut?.code ==='TRAITEE'">
+                                                        <a class="dropdown-item" href="javascript:(0)"  (click)="openModalUploadPermuationOs(UPLOAD_PERMUTATION_OS, demande.id)">
+                                                            <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                            <img src="assets/icons/generate.svg" alt="Soumettre OS" title="Soumettre OS">
+                                                            <span>Soumettre OS signé</span>
+                                                        </a>
+                                                    </li>
+                                                    <li   *ngIf="isProfOrFormateur && demande.traitementPermutation?.statut?.code ==='VALIDER'">
+                                                        <a class="dropdown-item" href="javascript:(0)"  (click)="Telecharger(demande.ordreService)">
+                                                            <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                            <img src="assets/icons/download.svg" alt="Téléchager OS" title="Téléchager OS">
+                                                            <span>Téléchager OS signé</span>
+                                                        </a>
+                                                    </li>
+                                                    <!-- <li *ngIf="demande?.traitement.statut.code === 'VALIDER' && pourTraitement || demande?.statut?.code == 'ACCEPTER' && pourTraitement">
+                                                        <a
+                                                          class="dropdown-item"
+                                                          href="javascript:(0)"
+                                                          (click)="generate(demande.id)"
+                                                        >
+                                                          <i class="fa fa-edit me-2"></i>
+                                                          <span>Générer OS</span>
+                                                        </a>
+                                                      </li> -->
+                                                    <li *ngIf="demande?.traitementPermutation?.statut?.code === 'SOUMISE' && pourTraitement && profile !=='Directeur-DRH' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_IA' && pourTraitement && profile !=='Directeur-DRH' && profile =='Representant-IA'||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRAITEMENT' && pourTraitement && profile !=='Directeur-DRH' && profile =='Chef-division-dgpeec' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRAITEMENT' && pourTraitement && profile !=='Directeur-DRH' && profile =='bureau-mo-rec' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-etablissement'||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-EFF'||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-cfp'||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_IEF' && pourTraitement && profile !=='Directeur-DRH' && profile =='Représentant-IEF' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_DRH' && pourTraitement && profile =='Directeur-DRH' ">
+                                                        <a
+                                                                class="dropdown-item"
+                                                                href="javascript:(0)"
+                                                                (click)="onEditPermutation(demande.id)"
+                                                        >
+                                                            <i class="fa fa-edit me-2"></i>
+                                                            <span>Traiter</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                                <ng-template #listEmpty>
+                                    <tr>
+                                        <td [attr.colspan]="headersMutation.length">
+                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                                        (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="pageSize"
+                                            (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <ng-template #FILTREAVANCEMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="reachForm">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Reference</label>
+                        <input type="text" class="form-control" formControlName="numeroRef"  placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Région souhaitée</label>
+                        <select class="form-select" formControlName="region">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listReg" [value]="reg.label">{{reg?.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IA souhaitée</label>
+                        <select class="form-select" formControlName="ia">
+                            <option *ngFor="let reg of listIa" [value]="reg.label">{{reg?.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IEF souhaitée</label>
+                        <select class="form-select" formControlName="ief">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listIef" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Etablissement souhaité</label>
+                        <select class="form-select" formControlName="etablissement">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listEtab" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Bureau souhaité</label>
+                        <select class="form-select" formControlName="bureau">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listBur" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Direction souhaitée</label>
+                        <select class="form-select" formControlName="direction">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listDir" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Division souhaitée</label>
+                        <select class="form-select" formControlName="division">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listDiv" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Service souhaité</label>
+                        <select class="form-select" formControlName="service">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of listServ" [value]="reg.label">{{reg?.label}}</option>
+
+                        </select>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- Modal -->
+    <ng-template #FILTREAVANCEPERMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel2">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Demande</label>
+                        <input type="text" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- Modal -->
+    <ng-template #FORMDEMANDEPERMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Demande de permutation</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="createPermutationForm">
+                <div class="row g-3">
+
+                    <div class="col-sm-12">
+                        <label class="form-label">Matricule Formateur 1</label>
+                        <input type="text" class="form-control" value={{currentUser.matricule}} disabled />
+                    </div>
+                    <div class="col-sm-12">
+                        <label class="form-label">Matricule Formateur 2</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeUtilisateur2" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onDemandePermutation()">Demander</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+</div>
+
+<ng-template #GENERER_OS let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="rejetModalLabel">Charger OS signé</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form>
+            <div class="row g-3">
+                <div class="col-lg-12">
+                    <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                    <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                        <ngx-dropzone-label>
+                            <i class="material-icons">cloud_upload</i>
+                            <p class="fw-semibold">Sélectionner les fichiers</p>
+                            <small>ou glisser et déposer les fichiers</small>
+                        </ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                              (removed)="onRemoveFile(f, piecesJointesFiles)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="onSaveDemandeOS()">Enregistrer</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+<ng-template #UPLOAD_PERMUTATION_OS let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="rejetModalLabel">Chargement OS</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form>
+            <div class="row g-3">
+                <div class="col-lg-12">
+                    <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                    <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFilesPermutationOs)">
+                        <ngx-dropzone-label>
+                            <i class="material-icons">cloud_upload</i>
+                            <p class="fw-semibold">Sélectionner les fichiers</p>
+                            <small>ou glisser et déposer les fichiers</small>
+                        </ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of piecesJointesFilesPermutationOs" [removable]="true"
+                                              (removed)="onRemoveFile(f, piecesJointesFilesPermutationOs)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="UploadPermutationOS()">Enregistrer</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

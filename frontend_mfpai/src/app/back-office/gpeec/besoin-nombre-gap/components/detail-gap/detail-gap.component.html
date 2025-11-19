@@ -1,0 +1,81 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Détails Gap</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Discipline : </span>
+                    <span>{{allData[0].discipline?.libelle}}</span>
+                </li>
+                <li>
+                    <span>Heures dûes : </span>
+                    <span>{{totaleHeureDispensee}}</span>
+                </li>
+                <li>
+                    <span>Heures effectuées : </span>
+                    <span>{{totaleHeureAttribuee}}</span>
+                </li>
+               
+            </ul>
+           
+        </div>
+        
+        
+    </div>
+    <div class="panel-list-search">
+        <div class="search">
+            <div class="search-box">
+                <input class="search-input" type="text" placeholder="Rechercher">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+        </div>
+  
+    </div>
+  
+    <div class="panel-list-body">
+           <!-- Table -->
+           <table class="table table-custom">
+            <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+                
+            </thead>
+            <tbody>
+                <ng-container *ngIf="listDisciplineDeficitaire.length > 0;">
+                    <tr *ngFor="let gap of listDisciplineDeficitaire">
+                        <td>
+                            {{ gap.etablissement.label }}
+                        </td>
+                        <td>
+                            {{ gap.totalHeuresDispensee - gap.totalHeuresAttribuees  }} Heures
+                        </td> 
+        
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="listEtablissementAyantDeficitSurUneDiscipline()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="listEtablissementAyantDeficitSurUneDiscipline()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+      
+        <button type="button"  class="button-return" (click)=" goBack()">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+</div>

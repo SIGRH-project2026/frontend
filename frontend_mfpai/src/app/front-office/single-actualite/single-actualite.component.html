@@ -1,0 +1,75 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Actualités</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb section-breadcrumb">
+                <li class="breadcrumb-item"><a [routerLink]="['/']">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{actualite?.titre}}</li>
+            </ol>
+        </nav>
+    </div>
+</aside>
+
+<section class="container my-5 pb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="panel-form">
+                <div class="dflex-row mb-3">
+                    <button class="btn btn-light" (click)="goBack()"><i class="fa fa-arrow-left-long"></i></button>
+                </div>
+                <span class="tag">{{actualite?.typeArticle?.libelle}}</span>
+                <h3>{{actualite?.titre}}</h3>
+
+                <p><small class="text-yellow"><i class="fa fa-calendar-alt me-2"></i>{{actualite?.datePublication | date : 'dd/MM/yyyy'}}</small></p>
+
+                <a [href]="" target="_blank">
+                    <img
+                        [src]="'data:' + actualite.image.fileType + ';base64,' + actualite.image.base64"
+                        alt="{{actualite.image.fileType}}"
+                        class="img-fluid rounded-start"
+                        height="100"                    
+                    />                
+                </a>
+
+                <p class="mt-3">
+                   {{content}}
+                </p>
+
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="panel-form">
+                <div class="row gy-3">
+                    <div class="col-lg-12">
+                        <h6 class="fw-bold">Dernières Actualités</h6>
+                        <hr>
+                    </div>
+                    <div class="col-lg-12" *ngFor="let item of actualites">
+                        <div class="card card-horiz card-horiz-sm h-auto" (click)="onViewActu(item.id)">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img [src]="'data:' + actualite.image.fileType + ';base64,' + actualite.image.base64" [alt]="item.titre" class="img-fluid rounded-start"
+                                        height="100">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <span class="tag tag-sm">{{ item?.categorieActualite?.libelle }}</span>
+                                        <h5 class="card-title card-title-sm">{{ item.titre }}</h5>
+                                        <!-- <p class="card-text card-desc-sm">{{ item.description }}</p> -->
+                                        <p class="card-text"><small class="text-muted"><i
+                                                    class="fa fa-calendar-alt"></i> {{
+                                                item.datePublication | date : "dd/MM/yyyy"
+                                                }}</small></p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

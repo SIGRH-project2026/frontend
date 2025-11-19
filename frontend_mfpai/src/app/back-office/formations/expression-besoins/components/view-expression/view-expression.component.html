@@ -1,0 +1,97 @@
+<div class="panel-form">
+    <div class="panel-form-header" *ngIf="expressionDeBesoin">
+        <div class="panel-form-text flex-column align-items-start">
+            <h3>Détails expression besoin N° {{ expressionDeBesoin.reference }}</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Titre campagne : </span>
+                    <span>{{expressionDeBesoin.campagneResponseDTO.nom}}</span>
+                </li>
+                <li>
+                    <span>Date Début : </span>
+                    <span>{{expressionDeBesoin.campagneResponseDTO.dateDebut }}</span>
+                </li>
+                <li>
+                    <span>Date Fin : </span>
+                    <span>{{ expressionDeBesoin.campagneResponseDTO.dateFin }}</span>
+                </li>
+                <li>
+                    <span>Statut : </span>
+                    <span *ngIf="expressionDeBesoin.campagneResponseDTO.statut === 'NEW_CAMPAGNE'">Nouvelle</span>
+                    <span *ngIf="expressionDeBesoin.campagneResponseDTO.statut === 'STARTED_CAMPAGNE'"> En cours</span>
+                    <span *ngIf="expressionDeBesoin.campagneResponseDTO.statut === 'ENDED_CAMPAGNE'">Clôturée</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row details g-3" *ngIf="expressionDeBesoin">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Matricule</span>
+                        <span>{{ expressionDeBesoin.utilisateurResponseDTO.matricule}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{ expressionDeBesoin.utilisateurResponseDTO.prenom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{ expressionDeBesoin?.utilisateurResponseDTO?.nom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6"  *ngIf="expressionDeBesoin?.utilisateurResponseDTO?.direction">
+                    <div class="details-item">
+                        <span>Direction</span>
+                        <span>{{ expressionDeBesoin?.utilisateurResponseDTO?.direction?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6" *ngIf="expressionDeBesoin?.utilisateurResponseDTO?.service">
+                    <div class="details-item">
+                        <span>Service</span>
+                        <span>{{ expressionDeBesoin?.utilisateurResponseDTO?.service?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6"  *ngIf="expressionDeBesoin?.utilisateurResponseDTO?.fonction">
+                    <div class="details-item">
+                        <span>Fonction</span>
+                        <span>{{ expressionDeBesoin?.utilisateurResponseDTO?.fonction?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date</span>
+                        <span>{{ expressionDeBesoin.date}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Besoin en compétence/ en formation</span>
+                        <span>{{ expressionDeBesoin.besoin}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6" *ngIf="expressionDeBesoin.themeProvisoire">
+                    <div class="details-item">
+                        <span>Théme provisoire</span>
+                        <span>{{ expressionDeBesoin.themeProvisoire}}</span>
+                    </div>
+                </div>
+                <hr class="h-divider">
+                <div class="col-lg-12 col-sm-12">
+                    <div class="details-item">
+                        <span>Motif du choix</span>
+                        <span>{{ expressionDeBesoin.motif}}</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>

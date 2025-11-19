@@ -1,0 +1,498 @@
+<div class="card-user">
+    <div class="card-user-icon">
+        <i class="fa fa-user-circle"></i>
+    </div>
+    <div class="card-user-body">
+        <div class="dflex-start pe-3">
+            <div class="card-info-user">
+                <h3>{{ utilisateur?.prenom }}  {{ utilisateur?.nom }}</h3>
+                <p>{{ profile?.label }}</p>
+            </div>
+
+            <a href="javascript:(0)" type="button" (click)="openModal(FORMULAIRE)" class="text-link">Réinitialiser mon
+                mot de passe</a>
+        </div>
+        <div ngbAccordion class="pe-3">
+            <!-- Niveau Central - Division et Bureaux -->
+            <ng-container *ngIf="utilisateur?.typeUser === 'CEN'">
+                <div ngbAccordionItem [collapsed]="false">
+                    <h2 ngbAccordionHeader>
+                        <button ngbAccordionButton>Division et Bureaux
+                        </button>
+                    </h2>
+                    <div ngbAccordionCollapse>
+                        <div ngbAccordionBody>
+                            <ng-template>
+                                <div class="row details g-3">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Région</span>
+                                            <span>{{ utilisateur?.region?.label }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Service</span>
+                                            <span>{{ utilisateur?.direction?.label }}</span>
+                                        </div>
+                                    </div>
+
+                                    <ng-container *ngIf="utilisateur?.division">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Division</span>
+                                                <span>{{ utilisateur?.division?.label }}</span>
+                                            </div>
+                                        </div>
+
+                                        <ng-container *ngIf="utilisateur?.bureau">
+                                            <div class="col-lg-4 col-sm-6">
+                                                <div class="details-item">
+                                                    <span>Bureau</span>
+                                                    <span>{{ utilisateur?.bureau?.label }}</span>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+
+
+                                    <!--div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Services</span>
+                                            <span>Lorem</span>
+                                        </div>
+                                    </div-->
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- Niveau Déconcentré - Emplacement -->
+            <ng-container *ngIf="utilisateur?.typeUser === 'DEC'">
+
+                <div ngbAccordionItem [collapsed]="false">
+                    <h2 ngbAccordionHeader>
+                        <button ngbAccordionButton>Emplacement
+                        </button>
+                    </h2>
+                    <div ngbAccordionCollapse>
+                        <div ngbAccordionBody>
+                            <ng-template>
+                                <div class="row details g-3">
+
+                                    <ng-container *ngIf="utilisateur?.structure?.code === 'IA' ;else structure">
+
+                                        <div class="col-sm-6">
+                                            <div class="details-item">
+                                                <span>Région</span>
+                                                <span>{{ utilisateur?.region?.label }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="details-item">
+                                                <span>IA</span>
+                                                <span>{{ utilisateur?.ia?.label }}</span>
+                                            </div>
+                                        </div>
+
+                                        <ng-container *ngIf="utilisateur?.ief">
+                                            <div class="col-sm-6">
+                                                <div class="details-item">
+                                                    <span>IEF</span>
+                                                    <span>{{ utilisateur?.ief?.label }}</span>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+
+
+                                        <div class="col-sm-6">
+                                            <div class="details-item">
+                                                <span>Etablissements/CFP/EEF</span>
+                                                <span>{{ utilisateur?.etablissement?.label }}</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-template #structure>
+                                        <div class=" col-sm-6">
+                                            <div class="details-item">
+                                                <span>EEF</span>
+                                                <span>{{ utilisateur?.etablissement?.label }}
+                                                    ( {{ utilisateur?.etablissement?.code }} )</span>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+
+            </ng-container>
+            <!-- Informations personnelles -->
+            <div ngbAccordionItem>
+                <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>Informations personnelles
+                    </button>
+                </h2>
+                <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                        <ng-template>
+                            <div class="row details g-3">
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Matricule</span>
+                                        <span>{{ utilisateur?.matricule }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Prénom</span>
+                                        <span>{{ utilisateur?.prenom }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Nom</span>
+                                        <span>{{ utilisateur?.nom }}</span>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Sexe</span>
+                                        <span>{{ utilisateur?.sexe }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Téléphone</span>
+                                        <span>{{ utilisateur?.telephone }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Email</span>
+                                        <span>{{ utilisateur?.email }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Date de naissance</span>
+                                        <span>{{ utilisateur?.dateNaissance }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Lieu de naissance</span>
+                                        <span>{{ utilisateur?.lieuDeNaissance }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>CNI</span>
+                                        <span>{{ utilisateur?.cni }}</span>
+                                    </div>
+                                </div>
+
+                                <ng-container *ngIf="utilisateur?.sexe === 'Masculin'">
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Marié (e)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Marié</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Célibataire'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Célibataire</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Veuf (ve)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Veuf</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Divorcé (e)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Divorcé</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                </ng-container>
+
+
+                                <ng-container *ngIf="utilisateur?.sexe === 'Féminin'">
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Marié (e)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Mariée</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Célibataire'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Célibataire</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Veuf (ve)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Veuve</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="utilisateur?.situationMatrimoniale === 'Divorcé (e)'">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="details-item">
+                                                <span>Situation matrimoniale</span>
+                                                <!--span>{{ utilisateur?.situationMatrimoniale}}</span-->
+                                                <span>Divorcée</span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+                                </ng-container>
+
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Nombre Enfants</span>
+                                        <span>{{ utilisateur?.nombreEnfants }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Nationalité</span>
+                                        <span>{{ utilisateur?.nationalite }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <!-- Informations professionnelles -->
+            <div ngbAccordionItem>
+                <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>Informations professionnelles
+                    </button>
+                </h2>
+                <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                        <ng-template>
+                            <div class="row details g-3">
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Corps</span>
+                                        <span>{{ utilisateur?.corpsGrade?.label }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Grade</span>
+                                        <span>{{ utilisateur?.grade?.label }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Date Corps</span>
+                                        <span>{{ utilisateur?.dateCorp }}</span>
+                                    </div>
+                                </div>
+                                <ng-container *ngIf="utilisateur?.diplomeACA">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Diplôme ACA</span>
+                                            <span>{{ utilisateur?.diplomeACA?.label }}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="utilisateur?.diplomePROF">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Diplôme PROF</span>
+                                            <span>{{ utilisateur?.diplomePROF?.label }}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="utilisateur?.diplomePED">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Diplôme PED</span>
+                                            <span>{{ utilisateur?.diplomePED?.label }}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Profile</span>
+                                        <span> {{ profile?.label }} </span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{ utilisateur?.speciality?.label }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Fonction</span>
+                                        <span>{{ utilisateur?.fonction?.label }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Type Poste</span>
+                                        <span>{{ utilisateur?.typePoste?.label }}</span>
+                                    </div>
+                                </div>
+
+                                <ng-container *ngIf=" utilisateur?.dateDEntreeFonctionPub">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Date Entrée Fonction Publique</span>
+                                            <span>{{ utilisateur?.dateDEntreeFonctionPub | date: 'd/MM/ y' }}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container *ngIf="utilisateur?.dateEntreEnseignement">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="details-item">
+                                            <span>Date Recrutement</span>
+                                            <span>{{ utilisateur?.dateEntreEnseignement | date: 'd/MM/ y' }}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Date Entrée Etablissement</span>
+                                        <span>{{ utilisateur?.dateEntreEtablissement | date: 'd/MM/ y' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <!-- <div class="row g-3 mt-2">
+            <div class="col-lg-2 col-sm-6">
+                <button class="button button-primary w-100" (click)="onUpdateInfos()" type="button">Modifier</button>
+            </div>
+            <div class="col-lg-2 col-sm-6">
+                <button class="button button-outline-primary w-100" type="reset" (click)="onReset()">Annuler</button>
+            </div>
+        </div> -->
+    </div>
+</div>
+
+
+<!-- Modal -->
+<ng-template #FORMULAIRE let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Réinitialisation du mot de passe</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="resetPasswordForm">
+            <div class="row g-3">
+
+                <div class="col-sm-12">
+                    <label class="form-label">Mot de passe actuel</label>
+                    <div class="input-group input-custom-group" #password>
+                        <input [type]="hideCurrentPassword ? 'password' : 'text'" autocomplete="off"
+                               class="form-control"
+                               formControlName="password"
+                               placeholder="*******">
+                        <button mat-icon-button type="button" matSuffix
+                                (click)="hideCurrentPassword = !hideCurrentPassword" [attr.aria-label]="'Hide password'"
+                                [attr.aria-pressed]="hideCurrentPassword">
+                            <i class="material-icons">{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <label class="form-label">Nouveau mot de passe</label>
+                    <div class="input-group input-custom-group" #password>
+                        <input [type]="hideNewPassword ? 'password' : 'text'" autocomplete="off" class="form-control"
+                               formControlName="newPassword"
+                               placeholder="*******">
+                        <button mat-icon-button type="button" matSuffix (click)="hideNewPassword = !hideNewPassword"
+                                [attr.aria-label]="'Hide password'"
+                                [attr.aria-pressed]="hideNewPassword">
+                            <i class="material-icons">{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <label class="form-label">Confirmez mot de passe</label>
+                    <div class="input-group input-custom-group" #passwordConfirmed>
+                        <input [type]="hideConfirmPassword ? 'password' : 'text'" autocomplete="off"
+                               class="form-control"
+                               formControlName="passwordConfirmed"
+                               placeholder="*******">
+                        <button mat-icon-button type="button" matSuffix
+                                (click)="hideConfirmPassword = !hideConfirmPassword"
+                                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
+                            <i class="material-icons">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="onUpdatePassword()"
+                [disabled]="resetPasswordForm.invalid">Modifier
+        </button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+
+

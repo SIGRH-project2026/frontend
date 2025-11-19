@@ -1,0 +1,148 @@
+<form [formGroup]="classProfForm">
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text w-100">
+            <h3>Ajout Classe</h3>
+        </div>
+    </div>
+    <div class="panel-list-body py-0">
+
+    <div class="row g-4 mt-3">
+        <div class="col-lg-4">
+            <div class="row g-4">
+                <span style="color: red;">{{classNameError}}</span>
+                <div class="col-lg-12"  *ngIf="typeFormation === 'cserie'">
+                    <label  class="form-label">Séries</label>
+                    <select class="form-select" formControlName="serie" >
+                        <option value="0">Sélectionner</option>
+                        <option [value]="serie.id" *ngFor="let serie of series">{{
+                                serie?.libelle }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">Nom classe</label>
+                    <input formControlName="nomClasse" type="text" class="form-control" placeholder="Saisir" />
+                </div>
+                <!-- <div class="col-lg-12">
+                    <label class="form-label">Quantum horaire Classe</label>
+                    <input formControlName="quantum" type="number" min="0" class="form-control" placeholder="Saisir" />
+                </div> -->
+                <span style="color: red;">{{profError}}</span>
+                <div class="col-lg-12">
+                    <label class="form-label">Professeur</label>
+                    <tag-input  formControlName="professeur" [maxItems]="1" [ngModel]="selectedFormateurs" [placeholder]="'+ Nouveau Professeur'"
+                        [secondaryPlaceholder]="'+ Nouveau Professeur'">
+                        <tag-input-dropdown [autocompleteItems]="autocompleteFormateurs" [showDropdownIfEmpty]="true"
+                            [dynamicUpdate]="true">
+                        </tag-input-dropdown>
+                    </tag-input>
+                </div>
+                <div class="col-lg-12" *ngIf="typeFormation === 'cserie'">
+                    <label class="form-label">Niveau</label>
+                    <select  formControlName="niveau" class="form-select">
+                        <option value="0">Sélectionner</option>
+                        <option [value]="type.id" *ngFor="let type of niveauFST">{{
+                                type?.libelle }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-lg-12" *ngIf="typeFormation === 'cfiliere'">
+                    <label class="form-label">Niveau</label>
+                    <select  formControlName="niveau" class="form-select">
+                        <option value="0">Sélectionner</option>
+                        <option [value]="type.id" *ngFor="let type of niveauFPT">{{
+                                type?.libelle }}
+                        </option>
+                    </select>
+                </div>
+                <!-- <div class="col-lg-12">
+                    <label class="form-label">Quantum Horaire Annuel</label>
+                    <input type="number" min="0" class="form-control" value="1" disabled />
+                </div> -->
+                <span style="color: red;">{{disciplineClassError}}</span>
+                <div class="col-lg-12">
+                    <label class="form-label d-block">Disciplines</label>
+                    <select formControlName="disciplines" id="selectDisciplineClasse" class="w-100" multiple title="Sélectionner..." data-width="auto"
+                        data-live-search="true">
+                        <option [value]="discipline" *ngFor="let discipline of listDisciplines">
+                            {{ discipline?.libelle }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <button type="button" class="button button-secondary w-100" (click)="addClassProfs()" >Ajouter classe</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-lg-8">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-custom table-form  w-100">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col" *ngFor="let head of headersClasses">{{ head }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let classe of classProfsList ; let k = index">
+                            <ng-container *ngFor="let professeur of classe.profDiscipline; let i=index">
+                                <ng-container *ngFor="let discipline of professeur.disciplineQuantums; let j=index">
+                                    <tr>
+                                        <ng-container *ngIf="i === 0 && j === 0">
+                                            <td [attr.rowspan]="countRows(classe)">
+                                                {{ classe?.nomClasse }}
+                                            </td>
+                                            <!-- <td [attr.rowspan]="countRows(classe)">
+                                                {{ classe.quantum }}
+                                            </td> -->
+                                        </ng-container>
+                                        <ng-container *ngIf="j === 0">
+                                            <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                {{ professeur?.professeur?.prenom + ' ' + professeur?.professeur?.nom }}
+                                            </td>
+                                            <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                {{ professeur?.professeur?.quantumHoraire }}
+                                            </td>
+                                        </ng-container>
+                                        <td>
+                                            {{ discipline?.discipline?.libelle }}
+                                        </td>
+                                        <td>
+                                            <input type="number" min="0"
+                                                [value]="discipline.quantum"
+                                                class="form-control form-control-sm"
+                                                style="width: 100px;"
+                                                (change)="quatumsValues(k, i, j, $event)">
+                                        </td>
+                                        <td>
+                                            <button class="btn" type="button" (click)="onDelete(k ,professeur.disciplineQuantums, j )"><i class="fa fa-trash text-danger"></i></button>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #listEmpty>
+                            <tr>
+                                <td [attr.colspan]="headersClasses.length">
+                                    <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                    </p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="action-steps">
+                <button  *ngIf="typeFormation === 'cfiliere'" type="button" class="button button-primary" (click)="onSaveClasse(false)">Enregistrer</button>
+                <button  *ngIf="typeFormation === 'cserie'" type="button" class="button button-primary" (click)="onSaveClasse(true)">Enregistrer</button>
+                <button type="button" class="button button-light" (click)="onReset()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+</form>

@@ -1,0 +1,94 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des besoin en nombre gap</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+
+                </div>
+                <select class="form-select" (change)="rechercherParDiscipline($event)">
+                    <option value="">Tous les discipline</option>
+                    <option [value]="discipline.libelle" *ngFor="let discipline of listDisciplines">{{discipline.libelle}}</option>
+
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="disciplinesDef.length > 0;else listEmpty;">
+                        <tr *ngFor="let gap of disciplinesDef ">
+                            <ng-container *ngIf="matchSearchQuery(gap)">
+                            <td>
+                                {{ gap.discipline.libelle }}
+                            </td>
+                            <td>
+                                {{ gap.totalHeuresDispensee }}
+                            </td>
+                            <td>
+                                {{ gap.totalHeuresAttribuees}}
+                            </td>
+                            <td>
+                                {{ gap.totalHeuresDispensee - gap.totalHeuresAttribuees }} Heures
+                            </td>
+                           
+                           
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" (click)="onViewGap(gap.discipline.id)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </ng-container>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="getDisciplineAyantDeficit()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="getDisciplineAyantDeficit()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>

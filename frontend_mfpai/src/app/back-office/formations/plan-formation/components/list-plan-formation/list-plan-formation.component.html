@@ -1,0 +1,174 @@
+<div class="row g-4">
+
+    <div class="col-lg-12" *ngIf="this.userInfos?.profil[0].code=='Chef-division-dfc'">
+        <button type="button" class="button-lg-add" (click)="onCreatePlan()">
+            <img src="assets/icons/circle-add.svg" alt="Créer un plan de formation">
+            Créer un plan de formation
+        </button>
+    </div>
+
+    <div class="col-lg-12">
+        <aside class="panel-header">
+            <div class="panel-header-content">
+                <h4 class="panel-title">
+                    Liste des plans de formation
+                    <span>({{plansFormationsList.length.toString()}}) plans de formation</span>
+                </h4>
+                <div class="actions-group">
+                    <select class="form-select">
+                        <option value="">Filter par année</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                    <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                        <i class="fa fa-filter"></i>
+                        Filtre avancé</button>
+                </div>
+            </div>
+            <ul class="legende">
+                <li>
+                    <div class="dot-blue"></div>
+                    <span class="text">Plan de Formation Brouillon</span>
+                </li>
+                <li>
+                    <div class="dot-yellow"></div>
+                    <span class="text">Plan de formation en cours</span>
+                </li>
+                <li>
+                    <div class="dot-white"></div>
+                    <span class="text">Plan de Formation clôturé</span>
+                </li>
+            </ul>
+        </aside>
+    </div>
+
+    <!-- Display list of plans -->
+    <div class="col-lg-12">
+        <div class="row g-4">
+            <ng-container *ngIf="plansFormationsList.length > 0; else listEmpty;">
+                <div class="col-lg-4" *ngFor="let plan of plansFormationsList">
+                    <div class="card-plan" [ngClass]="renderClass(plan.statutPlanFormation.code)">
+                        <div class="card-plan-header">
+                            <h5 class="title-plan">{{ plan["titre"] }} {{ plan["dateDebut"] }} - {{ plan["dateFin"] }}
+                            </h5>
+                            <div class="dropdown">
+                                <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li *ngIf="plan.statutPlanFormation.code !== 'CLOTURE' && plan.statutPlanFormation.code !== 'ENCOURS' && this.userInfos?.profil[0].code=='Chef-division-dfc'">
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="onEditPlan(plan)">
+                                            <i class="fa fa-edit me-2"></i>
+                                            <span>Modifier le plan de formation</span>
+                                        </a>
+                                    </li>
+                                    <li *ngIf="plan.statutPlanFormation.code !== 'CLOTURE' && plan.statutPlanFormation.code !== 'ENCOURS'">
+                                        <a class="dropdown-item" href="javascript:(0)"
+                                            (click)="onCreateThemeFormation(plan)">
+                                            <i class="fa fa-plus me-2"></i>
+                                            <span>Créer un thème de formation</span>
+                                        </a>
+                                    </li>
+                                    <li *ngIf="plan.statutPlanFormation.code == 'BROUILLON' && this.userInfos?.profil[0].code=='Chef-division-dfc'">
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="onPublishPlan(plan)">
+                                            <i class="fa fa-play me-2"></i>
+                                            <span>Publier un plan de Formation</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="onViewDetailPlan(plan)">
+                                            <i class="fa fa-eye me-2"></i>
+                                            <span>Voir détails</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="downloadFiles(plan.files)">
+                                            <i class="fa fa-download me-2"></i>
+                                            <span>Télécharger les documents joints</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-plan-body">
+                            <ul class="card-plan-details">
+                                <li>
+                                    <i class="fa fa-adjust"></i>
+                                    <span>{{ plan.themesFormation.length.toString() }} thèmes</span>
+                                </li>
+                                <li *ngIf="plan.datePublication">
+                                    <i class="fa fa-dot-circle"></i>
+                                    <span>Publié le {{ plan.datePublication }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- liste vide -->
+            <ng-template #listEmpty>
+                <div class="col-lg-12">
+                    <div class="empty-list">
+                        <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+                        <p>Aucune donnée disponible</p>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="5" [defaultSelected]="true">5</option>
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label">Statut</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option value="Brouillon">Plan de Formation Brouillon</option>
+                        <option value="En cours">Plan de formation en cours</option>
+                        <option value="Clôturer">Plan de Formation clôturé</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Date de publication</label>
+                    <input type="date" class="form-control" placeholder="Saisir" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100"
+            (click)="onSearch();modal.close('Save click')">Rechercher</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

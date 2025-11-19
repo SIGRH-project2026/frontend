@@ -1,0 +1,194 @@
+.centre-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.centre-box .centre-box-container {
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 2px 2px 64px -4px rgba(0, 0, 0, 0.11);
+    padding: 0;
+    margin: 0;
+}
+
+.card-form #logo {
+    display: block;
+    margin: 0 auto 30px auto;
+}
+
+.bg-grey {
+    background-color: #E5F0F7;
+}
+
+.img-left {
+    max-height: 420px;
+    display: block;
+    margin: 0 auto;
+}
+
+.dropdown-item.active,
+.dropdown-item:active{
+    text-decoration: none;
+    background-color: #DFE3E8;
+}
+
+.dropdown-item.active{
+    color: var(--color-primary) !important;
+}
+
+.dropdown-item:active {
+    color: #fff !important;
+}
+
+#btnScrollToTop {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    transform: scale(0);
+    transition: bottom 200ms, transform 200ms;
+    cursor: pointer;
+    outline: none;
+}
+
+#btnScrollToTop.show {
+    transform: scale(1);
+}
+
+#btnScrollToTop:hover {
+    box-shadow: 0px 1px 16px rgba(0, 0, 0, 0.2);
+}
+
+#btnScrollToTop:active {
+    background-color: var(--color-yellow-focus);
+}
+
+/* 
+
+=======
+  01. Nabvar
+=======
+
+*/
+
+.navbar.ld-navbar {
+    background-color: #fff;
+    transition: top 0.3s ease-in-out;
+    z-index: 9999;
+}
+
+.navbar.ld-navbar.sticky {
+    box-shadow: 0px 1px 16px rgba(0, 0, 0, 0.16);
+    position: sticky;
+    top: 0;
+}
+
+.navbar.ld-navbar .navbar-brand img.logo {
+    width: 220px;
+}
+
+.navbar.ld-navbar.sticky .navbar-brand img.logo {
+    width: 140px;
+}
+
+.navbar.ld-navbar .navbar-brand .logo-name {
+    color: var(--color-primary);
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.navbar.ld-navbar.sticky .navbar-brand img {
+    width: 55px;
+}
+
+.navbar.ld-navbar .navbar-nav {
+    gap: 15px;
+}
+
+.navbar.ld-navbar .nav-link {
+    color: #111111;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+}
+
+.navbar.ld-navbar .nav-link.active {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.navbar.ld-navbar .nav-link::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    visibility: hidden;
+    transition: .3s ease-in-out;
+}
+
+.navbar.ld-navbar .nav-link:hover::before,
+.navbar.ld-navbar .nav-link.active::before {
+    width: 100%;
+    visibility: visible;
+}
+
+.navbar.ld-navbar .navbar-brand img {
+    width: 80px;
+}
+
+.user-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.user-wrapper .user-avatar {
+    background-color: var(--color-white);
+    border: solid 1.5px var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 100px;
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: auto;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+.user-content {
+    display: flex;
+    flex-direction: column;
+    /* color: var(--color-white); */
+    font-size: 14px;
+}
+
+.user-content span:first-child {
+    font-weight: 600;
+}
+
+.user-wrapper button {
+    background: none;
+    border: none;
+    /* color: #fff; */
+    margin-left: 10px;
+}

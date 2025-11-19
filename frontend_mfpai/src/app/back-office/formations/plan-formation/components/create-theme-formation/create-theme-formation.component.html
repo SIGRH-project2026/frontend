@@ -1,0 +1,87 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column">
+            <h3>Nouveau thème de formation</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Titre : </span>
+                    <span>{{titre}}</span>
+                </li>
+                <li>
+                    <span>Statut : </span>
+                    <span>{{statut}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="themeFormationForm">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Thème</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="theme"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Durée</label>
+                    <input type="number" min="0" class="form-control" placeholder="Saisir" formControlName="duree"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Modalités</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="modalites"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Opérateurs</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="operateur"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Bailleurs(PAD)</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="bailleur"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Budget</label>
+                    <input type="number" min="0" class="form-control" placeholder="Saisir" formControlName="budget"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Direction/services Responsable</label>
+                    <select class="form-select" formControlName="direction" (change)="getListUser($any($event.target).value)">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Responsable du suivi</label>
+                    <select class="form-select"  formControlName="responsable">
+                        <option value="">Sélectioner</option>
+                        <option *ngFor="let user of users" [value]="user.id">{{user?.prenom + " " +user.nom}}</option>
+                    </select>
+                </div>
+                <hr class="h-divider">
+                <!-- add Cibles/Bénéficiaires -->
+                <div class="col-sm-12">
+                    <label class="form-label">Cibles/Bénéficiaires</label>
+                        <div class="col-lg-4">
+                            <tag-input [ngModel]="selectedFormateurs" [placeholder]="'Ajouter des cibles'"
+           [secondaryPlaceholder]="'Ajouter des cibles'" [ngModelOptions]="{standalone: true}"
+           (ngModelChange)="updateSelectedFormateurs($event)">
+        <tag-input-dropdown [autocompleteItems]="autocompleteProfils" [showDropdownIfEmpty]="true"
+                      [dynamicUpdate]="true"></tag-input-dropdown>
+        </tag-input>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button"
+                            (click)="onSaveThemeFormation()">Enregistrer</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                            (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

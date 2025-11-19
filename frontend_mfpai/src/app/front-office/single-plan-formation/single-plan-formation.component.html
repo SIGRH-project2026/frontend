@@ -1,0 +1,153 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Formations</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb section-breadcrumb">
+                <li class="breadcrumb-item"><a [routerLink]="['/']">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Plan de formation</li>
+            </ol>
+        </nav>
+    </div>
+</aside>
+
+<section class="container my-5 pb-5">
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="panel-form">
+
+                <div class="dflex-row mb-3">
+                    <button class="btn btn-light" (click)="goBack()"><i class="fa fa-arrow-left-long"></i></button>
+                    <button class="button button-outline-primary rounded-pill" type="button"  (click)="Telecharger(planFormation.files[0].originalName)"><i
+                            class="fa fa-download me-2"></i> Télécharger le document</button>
+                </div>
+                
+                <h3>{{planFormation?.titre}} {{planFormation?.dateDebut | date : 'dd/MM/yyyy'}} - {{planFormation?.dateFin  | date : 'dd/MM/yyyy' }}</h3>
+
+                <div class="detail-info mt-2">
+                    <span><i class="fa fa-circle-half-stroke me-2 text-blue"></i>{{themes?.length}} thèmes</span>
+                    <!-- <span class="text-black-50">|</span> -->
+                </div>
+
+                <p class="fw-semibold"><i>Publiée le {{planFormation?.datePublication | date : 'dd/MM/yyyy'}}</i></p>
+
+                <h4 class="fw-semibold my-3">Description</h4>
+                <p>
+                    {{planFormation?.commentaire}}
+                </p>
+
+                <hr class="h-divider">
+                <h4 class="fw-semibold my-3">Thème(s)</h4>
+                <div ngbAccordion>
+                    <div ngbAccordionItem [collapsed]="false" *ngFor="let theme of themes; let i = index">
+                        <h2 ngbAccordionHeader>
+                            <button ngbAccordionButton>Thème {{i+1}} : {{theme?.libelle}}
+                            </button>
+                        </h2>
+                        <div ngbAccordionCollapse>
+                            <div ngbAccordionBody>
+                                <ng-template>
+                                   <!--  <p>
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis id vel quasi, doloremque natus praesentium! Quisquam eligendi, doloribus libero omnis tempora totam. Saepe magnam vel libero iusto maiores voluptatibus voluptas.
+                                    </p> -->
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <span><strong>Durée: </strong></span>
+                                            <span>{{theme.duree}} heures</span>
+                                        </li>
+                                        <li>
+                                            <span><strong>Modalités: </strong></span>
+                                            <span>{{theme?.modalites}}</span>
+                                        </li>
+                                        <li>
+                                            <span><strong>Responsable suivi: </strong></span>
+                                            <span>{{theme?.responsableSuivi?.prenom +" "+theme?.responsableSuivi?.nom}}</span>
+                                        </li>
+                                    </ul>
+                                  <div class="row" *ngIf="theme.formations">
+                                    <div class="col-lg-6" *ngFor="let item of theme.formations">
+                                        <div class="card card-horiz card-plf" (click)="onViewFormation(item.id, item.typeFormation)">
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <img src="assets/images/formation06.png" [alt]="item.title" class="img-fluid rounded-start" style="height: 100%;">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title fs-4">{{ item.intitule }}</h5>
+                                                        <p class="card-text card-desc">{{ item.description }}</p>
+                                                        <p class="card-text"><small class="text-muted"><i class="fa fa-calendar-alt"></i> Date début :  {{
+                                                                item.dateDebut | date : 'dd/MM/yyyy' 
+                                                                }}</small></p>
+                                                        <p class="card-text"><small class="text-muted"><i class="fa fa-calendar-alt"></i> Date fin : {{
+                                                            item.dateFin | date : 'dd/MM/yyyy' 
+                                                            }}</small></p>
+                                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div ngbAccordionItem>
+                        <h2 ngbAccordionHeader>
+                            <button ngbAccordionButton>Thème 2: Gestion de projet
+                            </button>
+                        </h2>
+                        <div ngbAccordionCollapse>
+                            <div ngbAccordionBody>
+                                <ng-template>
+                                    <p>
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis id vel quasi, doloremque natus praesentium!
+                                        Quisquam eligendi, doloribus libero omnis tempora totam. Saepe magnam vel libero iusto maiores voluptatibus
+                                        voluptas.
+                                    </p>
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <span><strong>Durée: </strong></span>
+                                            <span>02 heures</span>
+                                        </li>
+                                        <li>
+                                            <span><strong>Modalités: </strong></span>
+                                            <span>Modalité XX</span>
+                                        </li>
+                                        <li>
+                                            <span><strong>Responsable suivi: </strong></span>
+                                            <span>Responsable suivi XX</span>
+                                        </li>
+                                    </ul>
+                                    <div class="row">
+                                        <div class="col-lg-6" *ngFor="let item of formations">
+                                            <div class="card card-horiz card-plf" (click)="onViewFormation(item.id, item.typeFormation)">
+                                                <div class="row g-3">
+                                                    <div class="col-md-4">
+                                                        <img [src]="item.image" [alt]="item.title" class="img-fluid rounded-start"
+                                                            style="height: 100%;">
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title fs-4">{{ item.title }}</h5>
+                                                            <p class="card-text card-desc">{{ item.description }}</p>
+                                                            <p class="card-text"><small class="text-muted"><i class="fa fa-calendar-alt"></i> {{
+                                                                    item.isPublishedDate
+                                                                    }}</small></p>
+                                
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

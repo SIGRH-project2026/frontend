@@ -1,0 +1,336 @@
+<div class="panel-list mb-3">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Rechercher</h3>
+           <ng-container *ngIf="userInfos?.profil[0]?.code === 'ADMIN-DRH'">
+               <button class="button button-primary" type="button" (click)="onCreateUser()">
+                   <i class="fa fa-add"></i>
+                   Nouvel utilisateur
+               </button>
+           </ng-container>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="advancedSearchForm" (click)="onAdvancedSearchForm()">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Région</label>
+                    <select class="form-select" formControlName="region">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Direction</label>
+                    <select class="form-select" #directionValue formControlName="direction"
+                            (change)="getProfileDirection($any($event.target).value);">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
+                    </select>
+                </div>
+
+                <ng-container *ngIf="directionValue.value === 'DRH'">
+
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Division </label>
+                        <select class="form-select" formControlName="division" (change)="getListBureau($any($event.target).value);
+                                getProfileDivision($any($event.target).value);" #CheckDivision>
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let div of division" [value]="div.code">{{div?.label}}</option>
+                        </select>
+                    </div>
+
+                    <ng-container *ngIf="CheckDivision.value === 'ADIV'">
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau </label>
+                            <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                                     getProfileDivision( CheckDivision.value);
+                              ">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                            </select>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="
+                    CheckDivision.value === 'DGCAA' ||
+                     CheckDivision.value === 'DFC' ||
+                      CheckDivision.value === 'DAS' ||
+                     CheckDivision.value === 'DGPEEC'
+                   ">
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau </label>
+                            <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                              ">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                            </select>
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Corps</label>
+                    <select class="form-select" formControlName="corps"
+                            (change)="getGradeFromCorps($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let corp of corpsGrade" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+
+
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Grade </label>
+                    <select class="form-select" formControlName="grade">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let corp of grade" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Spécialité </label>
+                    <select class="form-select" formControlName="specialite">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let sp of speciality" [value]="sp.code">{{sp?.label}}</option>
+                    </select>
+
+
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Matricule</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir"  formControlName="matricule" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Prénom</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir" formControlName="prenom" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Nom</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir" formControlName="nom" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Date de naissance</label>
+                    <input type="date" class="form-control form-control-sm" placeholder="Saisir" formControlName="dateNaissance" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">CNI</label>
+                    <input type="text" class="form-control form-control-sm"
+                           formControlName="cni"
+                           placeholder="Saisir(min: 13 chiffres, max: 14 chiffres)" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Téléphone</label>
+                    <input type="text" class="form-control form-control-sm"
+                           formControlName="telephone"
+                           placeholder="Saisir" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Email</label>
+                    <input type="email" class="form-control form-control-sm"
+                           formControlName="email"
+                           placeholder="Saisir" />
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-secondary w-100" type="button" (click)="onSearchUser()">Rechercher</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" (click)="onCancel()"  type="reset">Annuler</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<ng-container *ngIf="isSearchUser">
+    <div class="panel-list">
+        <div class="panel-list-header">
+            <div class="panel-list-text">
+                <h3>Résultat de recherche</h3>
+                <!--button type="button" class="button button-outline-green ms-3">
+                    <img src="assets/icons/file-type-excel.svg" alt="Exporter le résultat" title="Exporter le résultat"
+                        width="24px">
+                    Exporter le résultat</button-->
+            </div>
+            <!-- <div class="panel-list-search">
+                <div class="search">
+                    <div class="search-box">
+                        <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="filterValue"
+                            (keyup)="onSearch()">
+                        <button class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <select class="form-select" (change)="onSearchProfile()" [(ngModel)]="profile">
+                        <option value="">Tous les profils</option>
+                        <option *ngFor="let pro of profils" [value]="pro?.code">{{pro?.label}}</option>
+                    </select>
+                </div>
+                <div class="d-flex">
+                    <button type="button" class="button button-light-red me-3" *ngIf="isSearchResult"
+                        (click)="onResetfiltre()">
+                        <i class="fa fa-close"></i>
+                        Annuler le filtre</button>
+                    <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                        <i class="fa fa-filter"></i>
+                        Filtre avancé</button>
+                </div>
+            </div> -->
+        </div>
+        <div class="panel-list-body">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="userList!.length > 0;else listEmpty;">
+                            <tr *ngFor="let user of userList">
+                                <td>
+                                    {{ user?.matricule }}
+                                </td>
+                                <td>
+                                    {{ user?.prenom }}
+                                </td>
+                                <td>
+                                    {{ user?.nom }}
+                                </td>
+                                <td>
+                                    {{ user.profils[0]?.label || '' }}
+                                </td>
+                                <td>
+                                    {{ user?.direction?.label || '' }}
+                                </td>
+                                <td>
+                                    <div [appStatus]="user.status" class="status-badge" (click)="changeStatus(user)"></div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)" (click)="onEditUser(user)">
+                                                    <i class="fa fa-edit me-2"></i>
+                                                    <span>Modifier</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="user.status">
+                                                <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(user)">
+                                                    <i class="fa fa-lock me-2" title="Activer" id="status"
+                                                        type="button"></i>
+                                                    <span>Activer</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="!user.status">
+                                                <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(user)">
+                                                    <i class="fa fa-lock-open me-2" title="Activer" id="status"
+                                                        type="button"></i>
+                                                    <span>Activer</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)" (click)="onViewUser(user)">
+                                                    <i class="fa fa-eye me-2"></i>
+                                                    <span>Voir détails</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <ng-template #listEmpty>
+                            <tr>
+                                <td [attr.colspan]="headers.length">
+                                    <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="size"
+                        (ngModelChange)="refreshData()">
+                        <option [ngValue]="10">10</option>
+                        <option [ngValue]="20">20</option>
+                        <option [ngValue]="30">30</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <!--ngb-pagination [collectionSize]="collectionSize" (click)="refreshData1($event)" [(page)]="totalPages"
+                    [pageSize]="size" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                </ngb-pagination-->
+
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                (pageChange)="refreshData2()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                </ngb-pagination>
+            </div>
+        </div>
+    
+        <!-- Modal -->
+        <ng-template #filterAvancer let-modal>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+            </div>
+    
+            <div class="modal-body py-md-3">
+                <form [formGroup]="searchForm">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Matricule</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="nom" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Entité</label>
+                            <select class="form-select" formControlName="direction">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let dir of direction" [value]="dir.code">{{ dir.label }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+    
+            <div class="modal-footer">
+                <button type="submit" class="button button-secondary w-100"
+                    (click)="onAdvancedSearch();">Rechercher</button>
+                <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')"
+                    [disabled]="!searchForm.valid">
+                    Annuler
+                </button>
+            </div>
+        </ng-template>
+    </div>
+
+</ng-container>
+<ng-container *ngIf="!isSearchUser">
+        <div class="col-lg-12">
+            <div class="empty-list shadow-none">
+                <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+                <p>Aucun utilisateur</p>
+            </div>
+        </div>
+</ng-container>

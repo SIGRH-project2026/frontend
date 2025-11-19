@@ -1,0 +1,162 @@
+<div class="panel-form mb-3">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Compétences professionnelles des Formateurs/Professeurs</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Type utilisateur</label>
+                    <select class="form-select form-select-sm">
+                        <option value="">Sélectionner</option>
+                        <option value="Formateur">Formateur</option>
+                        <option value="Professeur">Professeur</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Indicateur</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir" disabled />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Région</label>
+                    <select class="form-select form-select-sm">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">IA</label>
+                    <select class="form-select form-select-sm">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">IEF</label>
+                    <select class="form-select form-select-sm">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Établissement</label>
+                    <select id="selectEtablissement" class="w-100 bootstrap-select-sm" multiple title="Sélectionner..." data-width="auto"
+                        data-live-search="true" data-actions-box="true">
+                        <option [value]="etab.label" *ngFor="let etab of etablissements">
+                            {{ etab.label }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Date de début</label>
+                    <input type="date" class="form-control form-control-sm" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Date fin</label>
+                    <input type="date" class="form-control form-control-sm" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label form-label-sm">Graphe</label>
+                    <select id="selectGraphe" class="w-100 bootstrap-select-sm" multiple title="Sélectionner..." data-width="auto"
+                        data-live-search="true" data-actions-box="true">
+                        <option [value]="graph.label" *ngFor="let graph of graphe">
+                            {{ graph.label }}
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-secondary w-100" type="button" (click)="onSearch()">Rechercher</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset" (click)="onResetSearch()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+  
+<ng-container *ngIf="searchResult">
+    <div class="row g-3 mb-3">
+        <div class="col-lg-7">
+            <div class="panel-form h-100">
+                <div class="panel-list-body">
+                    <canvasjs-chart [options]="chartOptionsBatonnet"></canvasjs-chart>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel-form h-100">
+                <div class="panel-list-body">
+                    <canvasjs-chart [options]="chartOptionsCirculaire"></canvasjs-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="panel-list">
+        <div class="panel-list-header">
+            <div class="panel-list-text">
+                <h3>Pourcentage de formateurs de la région de Dakar</h3>
+                <div class="dropdown">
+                    <button aria-expanded="false" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" type="button">
+                        <i class="fa fa-file-export me-2"></i>
+                        Exporter
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a (click)="exportToPdf()" class="dropdown-item" href="javascript:(0)">Format PDF</a>
+                        </li>
+                        <li>
+                            <a (click)="exportToExcel()" class="dropdown-item" href="javascript:(0)">Format EXCEL</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <div class="panel-list-body">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="dataResults.length > 0;else listEmpty;">
+                            <tr *ngFor="let data of dataResults">
+                                <td>
+                                    {{ data.ia }}
+                                </td>
+                                <td>
+                                    {{ data.ief }}
+                                </td>
+                                <td>
+                                    {{ data.etablissement }}
+                                </td>
+                                <td>
+                                    {{ data.percent }}
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <ng-template #listEmpty>
+                            <tr>
+                                <td [attr.colspan]="headers.length">
+                                    <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</ng-container>

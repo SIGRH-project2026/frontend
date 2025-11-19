@@ -1,0 +1,245 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Détail d'un tableau de suivi élaboré</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Référence : </span>
+                    <span>{{tableauSuivi.formation.reference}}</span>
+                </li>
+                <li>
+                    <span>Présences : </span>
+                    <span>{{tableauSuivi.presences}}</span>
+                </li>
+                <li>
+                    <span>Absences : </span>
+                    <span>{{tableauSuivi.abscences}}</span>
+                </li>
+                <li>
+                    <span>Période : </span>
+                    <span>Du {{tableauSuivi.formation.dateDebut}} au {{tableauSuivi.formation.dateFin}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-search">
+        <div class="search">
+            <div class="search-box">
+                <input class="search-input" type="text" placeholder="Rechercher">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="participantList.length > 0;else listEmpty;">
+                        <tr *ngFor="let demande of participantList">
+                            <td>
+                                {{ demande.matricule }}
+                            </td>
+                            <td>
+                                 {{ demande.nom }}
+                            </td>
+                            <td>
+                                {{ demande.formation.typeFormation.code==="DIPLOMANTE" ? demande.formation.effCode : demande.division}}
+                            </td>
+                            <td>
+<div class="dropdown">
+    <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-ellipsis-v"></i>
+    </button>
+    <ul class="dropdown-menu">
+        <li>
+            <a class="dropdown-item" href="javascript:(0)" (click)="openModalSearch(CreateRapportPersonnel)">
+                <i class="fa fa-file-circle-plus me-2"></i>
+                <span>Rapport personnel</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="javascript:(0)" (click)="openModalSearch(ViewRapportPersonnel)">
+                <i class="fa fa-eye me-2"></i>
+                <span>Voir rapport personnel</span>
+            </a>
+        </li>
+    </ul>
+</div>
+                            </td>
+
+                             <!-- Modal Voir Rapport Personnel -->
+<ng-template #ViewRapportPersonnel let-modal>
+    <div class="modal-header flex-column align-items-start">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Détail Rapport personnel - {{demande.nom}}</h1>
+        <ul class="panel-infos">
+            <li>
+                <span>Matricule : </span>
+                <span>{{demande.matricule}}</span>
+            </li>
+            <li>
+                <span>Division/Etablissement : </span>
+                <span> {{ demande.formation.typeFormation.code==="DIPLOMANTE" ? demande.formation.effCode : demande.division}}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-body py-md-3">
+
+        <div class="row details py-3 g-3">
+            <div class="col-lg-4">
+                <div class="details-item">
+                    <span>Assidu</span>
+                    <span>{{demande?.assidu===false? "Non":"Oui"}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details-item">
+                    <span>Compétences acquises</span>
+                    <span>{{demande?.competences===false ? "Non":"Oui"}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details-item">
+                    <span>Admis</span>
+                    <span>{{demande?.admis===false ? "Non":"Oui"}}</span>
+                </div>
+            </div>
+            <div class="col-lg-12" *ngIf="demande?.assidu===false">
+                <div class="details-item">
+                    <span>Commentaire</span>
+                    <span>{{demande?.commentaire}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Fermer
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- Modal Create Rapport Personnel -->
+<ng-template #CreateRapportPersonnel let-modal>
+    <div class="modal-header flex-column align-items-start">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Création Rapport personnel - {{demande.nom}}</h1>
+        <ul class="panel-infos">
+            <li>
+                <span>Matricule : </span>
+                <span>{{demande.matricule}}</span>
+            </li>
+            <li>
+                <span>Division/Etablissement : </span>
+                <span><span> {{ demande.formation.typeFormation.code==="DIPLOMANTE" ? demande.formation.effCode : demande.division}}</span></span>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-body py-md-3">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Assidu</label>
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="assidu" [(ngModel)]="assidu" id="oui" value="oui">
+                            <label class="form-check-label" for="oui">
+                                Oui
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="assidu" [(ngModel)]="assidu" id="non" value="non">
+                            <label class="form-check-label" for="non">
+                                Non
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Compétences acquises</label>
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="comptencesAcquises" [(ngModel)]="competences" id="oui" value="oui">
+                            <label class="form-check-label" for="oui">
+                                Oui
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="comptencesAcquises" [(ngModel)]="competences" id="non" value="non">
+                            <label class="form-check-label" for="non">
+                                Non
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Admis</label>
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="admis" [(ngModel)]="admis" id="oui" value="oui">
+                            <label class="form-check-label" for="oui">
+                                Oui
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="admis" [(ngModel)]="admis" id="non" value="non">
+                            <label class="form-check-label" for="non">
+                                Non
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12" *ngIf="assidu === 'non'">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" placeholder="Saisir le motif" rows="3" id="comment" #commentInput></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-primary w-100" (click)="SendRapportPersonnel(demande.id)">Enregistrer</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+                            
+                        </tr>
+                       
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>

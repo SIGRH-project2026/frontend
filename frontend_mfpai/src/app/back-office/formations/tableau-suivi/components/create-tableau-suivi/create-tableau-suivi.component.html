@@ -1,0 +1,52 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouveau Courrier</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">N° Référence</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [defaultValue]="demandeList.reference" disabled/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Titre de la formation</label>
+                    <input type="text" class="form-control" placeholder="Saisir" [defaultValue]="demandeList.intitule" disabled/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date début</label>
+                    <input type="date" class="form-control" placeholder="Saisir" [defaultValue]="demandeList.dateDebut" disabled/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" class="form-control" placeholder="Saisir" [defaultValue]="demandeList.dateFin" disabled/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nombre de sessions</label>
+                    <input type="text" class="form-control" [defaultValue]="nbrSession" disabled/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Présences</label>
+                    <input type="number" class="form-control" placeholder="Saisir" id="presence" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Abscences</label>
+                    <input type="number" class="form-control" placeholder="Saisir" id="abscence"/>
+                </div>                
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button"
+                        (click)="onSaveTS()">Enregistrer</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

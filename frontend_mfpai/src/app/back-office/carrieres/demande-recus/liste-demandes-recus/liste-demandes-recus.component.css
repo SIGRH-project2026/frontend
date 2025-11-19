@@ -1,0 +1,11 @@
+.buttons-group{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.posDate{
+    display: flex;
+    justify-content:center;
+}

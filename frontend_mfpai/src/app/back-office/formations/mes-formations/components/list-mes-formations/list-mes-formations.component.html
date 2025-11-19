@@ -1,0 +1,235 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>{{ tabTitle }}</h3>
+            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+                <mat-tab label="Formations à venir">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                                <i class="fa fa-filter"></i> Filtre avancé
+                            </button>
+                        </div>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="formations.length > 0; else listEmpty;">
+                                        <tr *ngFor="let formation of formations">
+                                            <td>{{ formation?.reference }}</td>
+                                            <td>{{ formation?.typeFormation.libelle }}</td>
+                                            <td>{{ formation?.intitule }}</td>
+                                            <td>{{ formation?.themeFormation?.direction?.label }}</td>
+                                            <td>{{ formation?.dateDebut }}</td>
+                                            <td>{{ formation?.dateFin }}</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li *ngIf="formation?.statutFormation?.code !== 'CLOTUREER'">
+                                                            <a class="dropdown-item" href="javascript:void(0)" (click)="onParticipe(formation)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Confirmer participation</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)" (click)="onViewDetailFormation(formation)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                        <!--li
+                                                            *ngIf="formation?.typeFormation?.libelle === 'Diplômante' && this.userInfos?.profil[0].code==='Chef-EFF' && this.user?.data?.etablissement?.code===formation?.effCode">
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="sendOffersTechniques(formation)">
+                                                                <i class="fa fa-paper-plane me-2"></i>
+                                                                <span>Envoyer offres techniques et financières</span>
+                                                            </a>
+                                                        </li>
+                                                        <li
+                                                            *ngIf="formation?.typeFormation?.libelle === 'Diplômante' && this.user?.data?.etablissement?.code===formation?.effCode && (this.userInfos?.profil[0].code=='Chef-EFF' || this.userInfos?.profil[0].code=='Chef-etablissement' || this.userInfos.profil[0].code=='Formateurs' || this.userInfos.profil[0].code=='Directeur-Censeur' || this.userInfos.profil[0].code=='Representant-IA' || this.userInfos.profil[0].code=='Représentant-IEF') ">
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="sendFicheCanditature(formation)">
+                                                                <i class="fa fa-paper-plane me-2"></i>
+                                                                <span>Envoyer Fichier Canditature</span>
+                                                            </a>
+                                                        </li>
+                                                        <li
+                                                            *ngIf="formation?.typeFormation?.libelle === 'Diplômante' && (this.userInfos?.profil[0].code=='Chef-EFF' || this.userInfos?.profil[0].code=='DRH') || this.userInfos.profil[0].code=='Chef-division' || this.userInfos.profil[0].code=='Chef-division-dgcaa' || this.userInfos.profil[0].code=='Chef-division-dgpeec' || this.userInfos.profil[0].code=='Chef-division-dfc' || this.userInfos.profil[0].code=='Directeur-DRH'">
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="viewOffers(formation)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir Offres</span>
+                                                            </a>
+                                                        </li-->
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="headers.length">
+                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                                        (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                            (pageChange)="refreshData2()"  [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Formations participées">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                                <i class="fa fa-filter"></i> Filtre avancé
+                            </button>
+                        </div>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="formationsCloturees && formationsCloturees.length > 0; else listEmpty;">
+                                        <tr *ngFor="let participant of formationsCloturees">
+                                            <td>{{ participant?.formation?.reference }}</td>
+                                            <td>{{ participant?.formation?.typeFormation?.libelle }}</td>
+                                            <td>{{ participant?.formation?.intitule }}</td>
+                                            <td *ngIf="participant.formation.typeFormation.code==='CONTINUE'">{{ participant?.direction }}</td>
+                                            <td *ngIf="participant.formation.typeFormation.code==='DIPLOMANTE'">{{ participant?.formation?.effCode }}</td>
+                                            <td>{{ participant?.formation?.dateDebut }}</td>
+                                            <td>{{ participant?.formation?.dateFin }}</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)" (click)="onViewDetailFormation(participant?.formation)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="headers.length">
+                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize" (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Type formation</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                            <option value="Diplômante">Diplômante</option>
+                            <option value="Continue">Continue</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Titre de formation</label>
+                        <input type="text" class="form-control" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Direction Responsable</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+</div>

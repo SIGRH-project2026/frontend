@@ -1,0 +1,334 @@
+<div class="panel-list">
+
+  <div class="panel-list-body">
+ 
+    <div class="row">
+      <div class="col-lg-4 section-left">
+        <div class="box-action">
+          <div class="box-liste">
+            <h5>Plan de Travail Annuel de la DRH 2024</h5>
+            <div class="liste-title">
+              <h3>Liste des actions</h3>
+            </div>
+          </div>
+          <div class="single-box mt-2 d-flex justify-content-between align-items-center" *ngFor="let action of actionPTAs"
+            (click)="selectAction(action)"
+            [ngClass]="{'active-box': action === selectedAction}">
+
+
+            <div class="items-left">
+              <h4>{{ action?.libelleAction }}</h4>
+              <p>Résultats : {{ action?.resultActions?.length || 0 }} </p>
+            </div>
+            <div class="items-right">
+              <i class="fa fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div *ngIf="selectedAction">
+          <div class="content d-flex justify-content-between align-items-center py-3">
+            <h4>{{ selectedAction?.libelleResultat }}</h4>
+            <div class=" d-flex">
+              <button class="button button-outline-primary me-2" (click)="openModal(EDIT_ACTION , 'lg', selectedAction)">Modifier</button>
+              <button class="button button-primary" (click)="openModalResult(CREAT_RESULTAT,'lg', null)">Créer un resultat</button>
+            </div>
+          </div>
+          <div class="result-list-title py-3">
+            <h6>Liste des resultars ajoutés</h6>
+          </div>
+          <table class="table table-custom">
+            <thead>
+              <tr class="table-light">
+                <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="resultliteList.length > 0;else listEmpty;">
+                <tr *ngFor="let result of resultliteList">
+
+                  <td>
+                    {{ result?.libelleResultat }}
+                  </td>
+
+                  <td>
+                    {{ result?.tauxAtteint }}
+                  </td>
+                  <td>
+                    {{ result?.cible }}
+                  </td>
+
+                  <td>
+                    <div class="dropdown">
+                      <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-ellipsis-v"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <a class="dropdown-item" href="javascript:(0)" (click)="openModalSubAction(FORM_CREATION_SOUSACTION , 'lg', result)" >
+                            <i class="fa fa-edit me-2" title="Activer" type="button"></i>
+                            <span>Créer une sous action</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item"(click)="openModalResult(FORM_EDIT_RESULTAT , 'lg', result)">
+                            <i class="fa fa-edit me-2" title="Activer" type="button"></i>
+                            <span>Modifier</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="javascript:(0)" (click)="onViewSousAction(result?.id)">
+                            <i class="fa fa-eye me-2" title="Activer" type="button"></i>
+                            <span>Voir la liste des sous actions</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+
+                </tr>
+              </ng-container>
+              <ng-template #listEmpty>
+                <tr>
+                  <td [attr.colspan]="headers.length">
+                    <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+
+        </div>
+
+        <div *ngIf="!selectedAction">
+          <p>Veuillez sélectionner une action pour voir les détails.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Modal Creation Sous Action-->
+
+
+<ng-template #FORM_CREATION_SOUSACTION let-modal>
+  <div class="modal-header modal-header-with-sub">
+    <h1 class="modal-title fs-5" id="FORM_CREATION_SOUSACTIONLabel">
+      Création sous action
+    </h1>
+    <nav aria-label="breadcrumb" class="breadcrumb-sub">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="javascript:(0)">Gestion des effectifs et des emplois</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <div class="modal-body py-md-3">
+      <form [formGroup]="subActionForm">
+          <div class="row g-4">
+              <div class="col-sm-4">
+                  <label class="form-label">Libellé sous action</label>
+                  <input type="text" class="form-control" placeholder="Saisir (Ex: Sous action 1.1.1)"
+                         formControlName="libelleSubAction" />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Libellé Indicateur</label>
+                  <select class="form-select" formControlName="indicateur" #indicateur
+                          (change)="getIndicateur($any($event.target).value)">
+                      <option value="">Sélectionner</option>
+                      <option *ngFor="let ind of indicateurs" [value]=ind.id>{{ind?.libelle}}</option>
+                  </select>
+              </div>
+
+              <ng-container *ngIf="indicateur.value">
+                  <div class="col-sm-4">
+                      <label class="form-label">Responsable Activité</label>
+                      <input type="text" class="form-control" placeholder="Saisir" value="{{responssableAct}}" disabled />
+                  </div>
+                  <div class="col-sm-4">
+                      <label class="form-label">Divisions/Bureaux/Services</label>
+                      <input type="text" class="form-control" placeholder="Saisir" value="{{listDivisions}}" disabled />
+                  </div>
+              </ng-container>
+              <div class="col-sm-4">
+                  <label class="form-label">Cible</label>
+                  <input type="text" class="form-control" placeholder="Saisir" value="{{resultFromSub?.cible}}" disabled />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Budget</label>
+                  <input type="number" min="0" formControlName="budget" class="form-control" placeholder="Saisir" />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Date début</label>
+                  <input type="date" formControlName="dateDebut" class="form-control" placeholder="Saisir" />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Date fin</label>
+                  <input type="date" formControlName="dateFin" class="form-control" placeholder="Saisir" />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Moyen Tech/RH</label>
+                  <input type="text" formControlName="moyenRH" class="form-control" placeholder="Saisir" />
+              </div>
+              <div class="col-sm-4">
+                  <label class="form-label">Source de Financement</label>
+                  <input type="text" formControlName="sourceFinancement" class="form-control" placeholder="Saisir" />
+              </div>
+          </div>
+      </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="button button-primary" (click)="onCreateSousAction()">
+      Ajouter
+    </button>
+    <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+      Annuler
+    </button>
+  </div>
+</ng-template>
+
+<!-- Modal Edit Résultat -->
+<ng-template #FORM_EDIT_RESULTAT let-modal>
+  <div class="modal-header modal-header-with-sub">
+    <h1 class="modal-title fs-5" id="FORM_EDIT_RESULTATLabel">
+      Modifier  {{resultatData?.libelleResultat}}
+    </h1>
+  
+  </div>
+  <div class="modal-body py-md-3">
+      <form [formGroup]="resultActionForm">
+          <div class="row g-4">
+              <div class="col-lg-12">
+                  <label class="form-label">Libellé action</label>
+                  <input type="text" class="form-control" placeholder="Saisir (Ex: Résultat n°1.1)" value="{{actionPTA?.libelleAction}}" readonly />
+              </div>
+              <div class="col-lg-12">
+                  <label class="form-label">Libellé Résultat</label>
+                  <input type="text" class="form-control" placeholder="Saisir (Ex: Résultat n°1.1)" formControlName="libelleResultat" />
+              </div>
+
+              <div class="col-lg-6">
+                  <label class="form-label">Taux atteint</label>
+                  <input type="number" min="0" class="form-control" placeholder="Saisir (Ex: 80%)" formControlName="tauxAtteint"  />
+              </div>
+
+              <div class="col-lg-6">
+                  <label class="form-label">Cible (%)</label>
+                  <input type="text" class="form-control" value="100%" disabled />
+              </div>
+          </div>
+      </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="button button-primary" (click)="onUpdateResulat()" [disabled]="resultActionForm.invalid">
+      Modifier
+    </button>
+    <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+      Annuler
+    </button>
+  </div>
+</ng-template>
+<!-- Modal creat Résultat -->
+<ng-template #CREAT_RESULTAT let-modal>
+  <div class="modal-header modal-header-with-sub">
+    <h1 class="modal-title fs-5" id="FORM_EDIT_RESULTATLabel">
+      Création résultat </h1>
+
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="resultActionForm">
+      <div class="row g-4">
+        <div class="col-lg-12">
+          <label class="form-label">Libellé action</label>
+          <input type="text" class="form-control" placeholder="Saisir (Ex: Résultat n°1.1)" value="{{actionPTA?.libelleAction}}" readonly />
+        </div>
+        <div class="col-lg-12">
+          <label class="form-label">Libellé Résultat</label>
+          <input type="text" class="form-control" placeholder="Saisir (Ex: Résultat n°1.1)" formControlName="libelleResultat" />
+        </div>
+
+        <div class="col-lg-6">
+          <label class="form-label">Taux atteint</label>
+          <input type="number" min="0" class="form-control" placeholder="Saisir (Ex: 80%)" formControlName="tauxAtteint"  />
+        </div>
+
+        <div class="col-lg-6">
+          <label class="form-label">Cible (%)</label>
+          <input type="text" class="form-control" value="100%" disabled />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="button button-primary" (click)="onCreateResulat()" [disabled]="resultActionForm.invalid">
+      Enregisrer
+    </button>
+    <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+      Annuler
+    </button>
+  </div>
+</ng-template>
+<!-- Modal creat Résultat -->
+<ng-template #EDIT_ACTION let-modal>
+  <div class="modal-header modal-header-with-sub">
+    <h1 class="modal-title fs-5" id="FORM_EDIT_RESULTATLabel">
+      Modifier action </h1>
+
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="actionPTAForm">
+      <div class="row g-4">
+        <div class="col-lg-12">
+          <label class="form-label">Libellé action</label>
+          <input type="text" class="form-control" placeholder="Saisir (Ex: Résultat n°1.1)"  formControlName="libelleAction" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="button button-primary" (click)="onUpdateAction()" [disabled]="actionPTAForm.invalid">
+      Modifier
+    </button>
+    <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+      Annuler
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #add let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="addDossier">Création IA</h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form>
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <label class="form-label">Région</label>
+          <select class="form-select">
+            <option value='val1'>selectionner</option>
+          </select>
+        </div>
+        <div class="col-lg-12">
+          <label class="form-label">IA</label>
+          <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="button button-primary " (click)="modal.close()">Enregistrer</button>
+    <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
+      Annuler
+    </button>
+  </div>
+</ng-template>

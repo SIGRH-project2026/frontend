@@ -1,0 +1,304 @@
+<div class="panel-list">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Demande de mutation N° {{mutation?.numeroRef}}</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Demande : </span>
+                    <span>{{mutation?.numeroRef}}</span>
+                </li>
+                <li>
+                    <span>Date demande : </span>
+                    <span>{{mutation?.dateDemande}}</span>
+                </li>
+                <li>
+                    <span>Status : </span>
+                    <span>{{mutation?.traitementMutation?.statut?.libelle}}</span>
+                </li>
+            </ul>
+
+            <div id="motif-modification">
+                <h6 class="title-motif">Motif de modification</h6>
+                <p>{{mutation?.traitementMutation?.motif}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body py-0 mt-3">
+        <mat-stepper linear #stepper>
+            <mat-step [stepControl]="infosBeneficiairesGroup">
+                <form>
+                    <ng-template matStepLabel>Information demandeur</ng-template>
+                    <div class="row g-4 mt-3">
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Matricule</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.matricule" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Prénom demandeur</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.prenom" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Nom demandeur</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.nom" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date de naissance</label>
+                            <input type="text" class="form-control" [value]="mutation.demandeur.dateNaissance" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Lieu de naissance</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.lieuDeNaissance" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.telephone" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Email</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.email" disabled />
+                        </div>
+
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" [value]="mutation?.demandeur?.adresse" disabled />
+                        </div>
+
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation.origineDemandeurLog?.region">
+                            <label class="form-label">Région</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.region?.label" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Spécialité</label>
+                            <input type="text" class="form-control" [value]="mutation.demandeur?.speciality?.label" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Corps</label>
+                            <input type="text" class="form-control" [value]="mutation.demandeur?.corpsGrade?.label" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Grade</label>
+                            <input type="text" class="form-control" [value]="mutation.demandeur?.grade?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation.origineDemandeurLog?.ia">
+                            <label class="form-label">IA</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.ia?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation.origineDemandeurLog?.ief">
+                            <label class="form-label" >IEF</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.ief?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation.origineDemandeurLog?.etablissement">
+                            <label class="form-label">Établissement</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.etablissement?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation.origineDemandeurLog?.direction ">
+                            <label class="form-label">Direction</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.direction?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.service">
+                            <label class="form-label" >Service</label>
+                            <input type="text" class="form-control" [value]="mutation.origineDemandeurLog?.service?.label" disabled />
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.division">
+                            <label class="form-label">Division</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.division?.label" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.bureau">
+                            <label class="form-label">Bureau</label>
+                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.bureau?.label" disabled />
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="infosDemandeursGroup">
+                <!-- <form [formGroup]="demandePecForm">
+                    <ng-template matStepLabel>Destination souhaitée</ng-template>
+
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-6">
+                            <label class="form-label">Niveau souhaité <span style="color: red">*</span></label>
+                            <select class="form-select" formControlName ="typeDestinationSouhaitee" (change)="onLevelSelected($event)" >
+                                <option value="SEL">Sélectionner</option>
+                                <option value="DEC">Niveau déconcentré</option>
+                                <option value="CEN">Niveau central </option>
+
+                            </select>
+
+                        </div>
+
+                        <div *ngIf="typeDestinationSouhaitee === 'SEL'" class="col-lg-12">
+                            <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
+                            <textarea class="form-control" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
+                        </div>
+                    </div>
+
+
+                </form> -->
+                <form *ngIf="typeDestinationSouhaitee === 'DEC'" [formGroup]="demandePecForm">
+                    <ng-template matStepLabel>Destination souhaitée</ng-template>
+
+                    <div class="row g-4 mt-3">
+
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Région <span style="color: red">*</span></label>
+                            <select class="form-select" formControlName="region" [(ngModel)]="mutation.regionSouhaitee.code"
+                                    (change)="getListIA($any($event.target).value)">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                            </select>
+                            <div style="color: red" *ngIf="f1['region'].touched && f1['region'].hasError('required')">Région
+                                <strong>obligatoire!</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">IA <span style="color: red">*</span></label>
+                            <select class="form-select" formControlName="ia" (change)="getListEF($any($event.target).value);
+                                getListEtabByIA($any($event.target).value)" >
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
+                            </select>
+                            <div style="color: red" *ngIf="f1['ia'].touched && f1['ia'].hasError('required')">IA
+                                <strong>obligatoire!</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">IEF</label>
+                            <select class="form-select" formControlName="ief" (change)="
+                                        getListEtablissement($any($event.target).value);">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Etablissements <span style="color: red">*</span></label>
+                            <select class="form-select" formControlName="etablissement">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+                            </select>
+                            <div style="color: red" *ngIf="f1['etablissement'].touched && f1['etablissement'].hasError('required')">L'établissement
+                                <strong>obligatoire!</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
+                            <textarea class="form-control" [(ngModel)]="mutation.commentaire" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white"
+                                (click)="onSaveDemande()">Enregistrer</button>
+                    </div>
+                </form>
+                <form *ngIf="typeDestinationSouhaitee === 'CEN'" [formGroup]="centralRegionForm">
+
+                    <div class="row g-4">
+                        <div class="col-sm-4">
+                            <label class="form-label">Région <span style="color: red">*</span></label>
+                            <select class="form-select" formControlName="region">
+                                <option value="" selected>Sélectionner</option>
+                                <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                            </select>
+                            <div style="color: red" *ngIf="f1['region'].touched && f1['region'].hasError('required')">Région
+                                <strong>obligatoire!</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <label class="form-label">Direction <span style="color: red">*</span></label>
+                            <select class="form-select" #directionValue formControlName="direction">
+                                <option value="" selected>Sélectionner</option>
+                                <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
+                            </select>
+                            <!-- <div style="color: red" *ngIf="f1['direction'].touched && f1['direction'].hasError('required')">
+                                Direction <strong>obligatoire!</strong></div> -->
+
+                        </div>
+
+                        <ng-container *ngIf="directionValue.value === 'DRH'">
+                            <div class="col-sm-4">
+                                <label class="form-label">Division </label>
+                                <select class="form-select" formControlName="division" [ngModel]="mutation.divisionSouhaitee.label" (change)="getListBureau($any($event.target).value); directionSelected($any($event.target).value)" >
+                                    <option value="">Sélectionner</option>
+                                    <option *ngFor="let div of division" [value]="div.code">{{div?.label}}</option>
+                                </select>
+                            </div>
+
+                            <ng-container *ngIf="CheckDivision === 'ADIV'">
+                                <div class="col-sm-4">
+                                    <label class="form-label">Bureau </label>
+                                    <select class="form-select" formControlName="bureau">
+                                        <option value="">Sélectionner</option>
+                                        <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                                    </select>
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="
+                             CheckDivision === 'DGCAA' ||
+                             CheckDivision === 'DFC' ||
+                             CheckDivision === 'DAS' ||
+                             CheckDivision === 'DGPEEC'">
+                                <div class="col-sm-4">
+                                    <label class="form-label">Bureau </label>
+                                    <select class="form-select" formControlName="bureau">
+                                        <option value="">Sélectionner</option>
+                                        <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                                    </select>
+                                </div>
+                            </ng-container>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="directionValue.value === 'AUD'">
+                            <div class="col-sm-4">
+                                <label class="form-label">Services </label>
+                                <select class="form-select" formControlName="services">
+                                    <option value="">Sélectionner</option>
+                                    <option *ngFor="let ser of service" [value]="ser.code">{{ser?.label}}</option>
+                                </select>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
+                        <textarea class="form-control" [(ngModel)]="mutation.commentaire" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
+                    </div>
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white"
+                                (click)="onSaveDemande()">Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

@@ -1,0 +1,364 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des demandes à traiter</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+
+                <select class="form-select" [(ngModel)]="typeActe" (ngModelChange)="onSelectedType($event)">
+                    <option value="">Tous les Actes</option>
+                    <option value="aa"  >Acte Administratif</option>
+                    <option value="ag">Acte de Gestion </option>
+                </select>
+            </div>
+            <!--   <div class="buttons-group">
+              <button class="button button-primary" type="button" (click)="envoyerFPMultiple()" [disabled]="!acteChecked">
+                  <i class="fa fa-share"></i> Envoyer FP
+              </button> -->
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+
+
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <table class="table table-custom">
+            <thead>
+            <tr class="table-light">
+                <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container *ngIf="actList.length > 0; else listEmpty;">
+                <tr *ngFor="let demandes of actList">
+                    <ng-container *ngIf="matchSearchQuery(demandes)">
+                        <td>
+                            {{demandes?.referenceActe}}
+                        </td>
+                        <td>
+                            {{demandes?.agent?.matricule }}
+                        </td>
+                        <td>
+                            {{demandes?.agent?.prenom }}
+                        </td>
+                        <td>
+                            {{demandes?.agent?.nom }}
+                        </td>
+                        <td>
+                            {{demandes?.typeActe?.libelleActe}}
+                        </td>
+                        <td>
+                            {{demandes?.dateDemandeActe}}
+                        </td>
+                        <td>
+                            {{demandes?.typeActe?.codeActe === 'aa' ? demandes?.typeAA?.libelle : demandes?.typeAG?.libelle }}
+                        </td>
+
+                        <td>
+                            <div [appStatus]="demandes.statutActe.code" class="status-badge">{{demandes?.statutActe?.libelle}}</div>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item"  [routerLink]="[demandes?.id , 'details']" >
+                                            <i class="fa fa-eye me-2"></i>
+                                            <span>Voir details</span>
+                                        </a>
+                                    </li>
+
+                                    <li >
+                                        <a *ngIf="demandes?.statutActe?.libelle !== 'REJETE'  && demandes?.statutActe?.code !== 'VALIDEDGCAA' && demandes?.statutActe?.code !== 'AMODIFIER' && demandes?.statutActe?.code !== 'RECUDGCAA'
+                                             &&((demandes?.statutActe?.code === 'SOUMIS' && profilContientCode(profil,'Chef-division') && profil.code!=='Chef-division-dgcaa')
+                                            ||(demandes?.statutActe?.code === 'SOUMIS' && profil.code==='Chef-etablissement')
+                                            ||(demandes?.statutActe?.code === 'SOUMIS' && profil.code==='Chef-service' ) )"class="dropdown-item" href="javascript:(0)" (click)="openModalTraitement(demandes.id, MODIIFER)">
+                                            <i class="fa fa-edit me-2" title="Activer" id="status"
+                                               type="button"></i>
+                                            <span>A modifier</span>
+                                        </a>
+                                    </li>
+                                    <li *ngIf="(demandes?.statutActe?.code === 'VALIDEDIV'&& profil.code==='Directeur-DRH' )
+                                         ||(demandes?.statutActe?.code === 'VALIDESUP'&& profil.code==='Directeur-DRH' )
+                                         ||(demandes?.statutActe?.code === 'VALIDEIA' && profil.code==='Directeur-DRH' )">
+                                        <a class="dropdown-item" href="javascript:void(0)" (click)="recuDRH(demandes.id)">
+                                            <i class="fa fa-share me-2"></i>
+                                            <span>Reçu DRH</span>
+                                        </a>
+                                    </li>
+                                    <a *ngIf="profil.code==='Chef-division-dgcaa' && demandes?.statutActe?.code === 'RECU-DRH'  " class="dropdown-item" href="javascript:(0)" (click)="encoursDGCAA(demandes.id)">
+                                        <i class="fa fa-check-circle me-2"></i>
+                                        <span>En cours traitement</span>
+                                    </a>
+                                    <li>
+                                        <a *ngIf="
+                                             (demandes?.statutActe?.code === 'SOUMIS' &&   profilContientCode(profil,'Chef') && profil.code!=='Chef-division-dgcaa' )
+
+                                            ||(demandes?.statutActe?.code === 'VALIDEIEF'&& profil.code==='Representant-IA' )
+                                            ||(demandes?.statutActe?.code === 'VALIDECE'&& profil.code==='Représentant-IEF' )"
+
+                                           class="dropdown-item" href="javascript:(0)" (click)="openJointureModal(demandes,JOINDRE)">
+                                            <i class="fa fa-check-circle me-2"></i>
+                                            <span>Valider</span>
+                                        </a>
+
+
+                                        <a *ngIf="profil.code==='Chef-division-dgcaa' && demandes?.statutActe?.code === 'ENCOURSDGCAA' " class="dropdown-item" href="javascript:(0)" (click)="openModalSearchValidation(idAgent, demandes, validation)">
+                                            <i class="fa fa-check-circle me-2"></i>
+                                            <span>Valider (avec chargement de l'acte)</span>
+                                        </a>
+
+                                    <li>
+                                        <a *ngIf="(demandes?.statutActe?.code === 'SOUMIS' && profilContientCode(profil,'Chef-division') && profil.code!=='Chef-division-dgcaa' )
+                                            ||(demandes?.statutActe?.code === 'ENCOURSDGCAA' && profilContientCode(profil,'Chef-division-dgcaa')
+                                            ||(demandes?.statutActe?.code === 'SOUMIS' && profil.code==='Chef-etablissement' )
+                                            ||(demandes?.statutActe?.code === 'SOUMIS' && profil.code==='Chef-service' ))"
+                                           class="dropdown-item" href="javascript:(0)" (click)="openTraitementRejet(demandes.id,REJETER)">
+                                            <i class="fa fa-xmark-circle me-2"></i>
+                                            <span>Rejeter</span>
+                                        </a>
+                                    </li>
+
+                                    <!--  <li  *ngIf="demandes.statutActe.code === 'TRANSMISFP'">
+                                         <a class="dropdown-item" href="javascript:(0)" (click)="telechargerBordereau(demandes.bordereau)">
+                                             <i class="fa fa-download me-2" title="Activer" id="status"
+                                                 type="button"></i>
+                                             <span>Télechargement bordereau de transmission</span>
+                                         </a>
+                                     </li > -->
+                                    <li *ngIf="demandes.statutActe.code === 'VALIDEDGCAA'">
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="telecharger(demandes.id)">
+                                            <i class="fa fa-download me-2"></i>
+                                            <span>Télécharger Acte</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </ng-container>
+                </tr>
+            </ng-container>
+            <ng-template #listEmpty>
+                <tr>
+                    <td [attr.colspan]="headers.length">
+                        <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                    </td>
+                </tr>
+            </ng-template>
+            </tbody>
+        </table>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="listAct()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                            (pageChange)="listAct()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="filtreAvanceForm">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label">Référence Acte</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="referenceActe"/>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date de demande</label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDemandeActe" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Type acte</label >
+                    <select class="form-select" formControlName="typeActe">
+                        <option value="">Sélectionner</option>
+                        <option value="Acte Administratif">Acte Administratif</option>
+                        <option value="Acte de Gestion">Acte de Gestion</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100"
+                (click)="onSearch();modal.close('Save click')">Rechercher</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+<!-- Modal -->
+<ng-template #validation let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Chargement Acte</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="retourForm">
+            <div class="row g-3">
+                <div class="col-lg-12 my-4">
+                    <label class="form-label">Pièces jointes</label>
+                    <ngx-dropzone (change)="onSelect($event)"formControlName='files' >
+                        <ngx-dropzone-label>Glissser et déposer le fichier</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+            </div>
+            <div >
+                <div *ngIf="(acteT?.typeActe?.codeActe==='ag' && acteT?.typeAG?.typeSortie==='STEM' || acteT?.typeActe?.codeActe==='aa'&& acteT?.typeAA?.typeSortie==='STEM')" class="posDate">
+                    <div class="col-sm-6">
+                        <div class="details-item py-md-3 me-3" >
+                            <label class="form-label">Date de Début</label>
+                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDebut" />
+                            <div *ngIf="retourForm.get('dateDebut')?.hasError('required') && retourForm.get('dateDebut')?.touched">
+                                La date de début est obligatoire</div>
+                            <div class="mt-1 alert alert-danger"  *ngIf="dateObligatoire('dateDebut')">La date de début est obligatoire</div>
+                            <!--<div class="mt-1 alert alert-danger"  *ngIf="dateInvalide('dateDebut')">La date de début est invalide</div> -->
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="details-item py-md-3 ">
+                            <label class="form-label">Date de Fin</label>
+                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateFin" />
+                            <div *ngIf="retourForm.get('dateFin')?.hasError('required') && retourForm.get('dateFin')?.touched">
+                                Date de fin est requise.
+                            </div>
+                            <div class="mt-1 alert alert-danger" *ngIf="retourForm.get('dateFin')?.hasError('dateRange') && retourForm.get('dateFin')?.touched">
+                                La différence entre les dates de début ne doit depasser {{maxYears}} ans.
+                            </div>
+                            <div class="mt-1 alert alert-danger"  *ngIf="dateObligatoire('dateFin')">La date de fin est obligatoire</div>
+                            <!--<div class="mt-1 alert alert-danger"  *ngIf="dateInvalide('dateFin')">La date de fin doit dépasser la date de début</div> -->
+                        </div>
+                    </div>
+                    <input type="hidden" formControlName="codetypeActe"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="valider()" [disabled]="retourForm.invalid">
+            Valider
+        </button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #REJETER let-modal>
+
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Motif du rejet</h1>
+    </div>
+    <form [formGroup]="modifRejetForm" (ngSubmit)="onSaveTraitementRejet()">
+        <div class="modal-body py-md-3">
+            <div class="row g-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1"
+                              rows="3" formControlName="motifRejetDemande"></textarea>
+                </div>
+                <div style="color: red" *ngIf="f['motifRejetDemande'].touched && f['motifRejetDemande'].hasError('required')">Motif Obligatoire <strong>obligatoire!</strong></div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="button button-secondary w-100">
+                Enregistrer
+            </button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #MODIIFER let-modal>
+
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Renvoi pour modification</h1>
+    </div>
+    <form [formGroup]="modifModiForm">
+        <div class="modal-body py-md-3">
+            <div class="row g-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" formControlName="motifModification" rows="3"></textarea>
+                </div>
+                <div style="color: red" *ngIf="f1['motifModification'].touched && f1['motifModification'].hasError('required')">Motif Obligatoire <strong>obligatoire!</strong></div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSaveTraitementModifier()">
+                Enregistrer
+            </button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #JOINDRE let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">BORDEREAU/LETTRE DE TRANSMISSION</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="joinForm">
+            <div class="row g-3">
+                <div class="col-lg-12 my-4">
+                    <label class="form-label">BE/Lettre de Transmission</label>
+                    <ngx-dropzone (change)="onSelect($event)"formControlName='files' >
+                        <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
+                        <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </ngx-dropzone>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="valideDiv()">
+            Valider
+        </button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+
+<button type="button" *ngIf="fromDashboard" (click)="goBack()" class="button-return">
+    <i class="fa fa-arrow-left"></i>
+    Retour</button>

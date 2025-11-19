@@ -1,0 +1,73 @@
+<div class="modal-header">
+    <h1 class="modal-title text-center" id="modal-basic-title">
+        {{ titleForm }}
+    </h1>
+</div>
+
+<div class="modal-body py-md-3">
+    <form [formGroup]="campagneForm">
+        <div class="row g-3">
+            <div class="col-sm-12">
+                <label class="form-label">Nom campagne</label>
+                <input type="text" class="form-control" placeholder="Saisir" formControlName="nom" />
+
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Date Début</label>
+                <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDebut" />
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Date Fin</label>
+                <input type="date" class="form-control" placeholder="Saisir" formControlName="dateFin" />
+            </div>
+        </div>
+        <div class="row g-3 mt-3">
+            <div class="col-lg-12">
+                <label class="form-label">Justificatif</label>
+                <div class="text-icon" *ngIf="editData?.pieceJoint[0] != undefined">
+
+
+                    <div class="text" *ngIf="listFiledForEdit.length != 0">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td>Nom Fichier</td>
+                                <td>Action</td>
+                            </tr>
+                            <tr *ngFor="let el of listFiledForEdit">
+                                <td>{{el.originalName}}</td>
+                                <td><button class="button button-remove w-100" (click)="deletePieceJoint(editData.id+'',el)"><i class="fa fa-remove" style="color: red"></i></button></td>
+                            </tr>
+                        </table>
+                        <br>
+                    </div>
+                </div>
+                <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                    <ngx-dropzone-label>
+                        <i class="material-icons">cloud_upload</i>
+                        <p class="fw-semibold">Sélectionner les fichiers</p>
+                        <small>ou glisser et déposer les fichiers</small>
+                    </ngx-dropzone-label>
+                    <div *ngIf="editData">
+                        <ngx-dropzone-preview  *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                               (removed)="onRemoveFile(f, piecesJointesFiles)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </div>
+                    <div *ngIf="!editData">
+                        <ngx-dropzone-preview  *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                               (removed)="onRemoveFile(f, piecesJointesFiles)">
+                            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                        </ngx-dropzone-preview>
+                    </div>
+                </ngx-dropzone>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="submit" class="button button-primary w-100" (click)="onSubmit()">{{ actionBtn }}</button>
+    <button type="button" class="button button-outline-primary w-100" (click)="onCancel()">
+        Annuler
+    </button>
+</div>

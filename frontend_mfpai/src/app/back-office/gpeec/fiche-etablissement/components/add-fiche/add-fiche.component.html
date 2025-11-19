@@ -1,0 +1,595 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Nouvelle demande</h3>
+        </div>
+    </div>
+    <div class="panel-list-body" style="overflow: visible;">
+        <mat-stepper linear #stepper>
+            <mat-step [stepControl]="infosGeneralesGroup">
+                <form>
+                    <ng-template matStepLabel>Informations personnelles</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-sm-4">
+                            <label class="form-label">Nom de l'établissement</label>
+                            <input type="text" class="form-control" value="{{user?.etablissement?.label}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">Région</label>
+                            <input type="text" class="form-control" value="{{user?.region?.label}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">IA</label>
+                            <input type="text" class="form-control" value="{{user?.ia?.label}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">IEF</label>
+                            <input type="text" class="form-control" value="{{user?.ief?.label}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">Prénom chef d'établissement</label>
+                            <input type="text" class="form-control" value="{{user?.prenom}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">Prénom chef d'établissement</label>
+                            <input type="text" class="form-control" value="{{user?.nom}}" disabled />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label">Secondaire Technique / Professionnelle et technique</label>
+                            <select id="selectTypeEtablissement" class="w-100" multiple title="Sélectionner..."
+                                    data-width="auto" data-live-search="true" [(ngModel)]="selectedTypeEtablissement"
+                                    [ngModelOptions]="{standalone: true}" (change)="onTypeEtablissementChange()">
+                                <option [value]="etab.code" *ngFor="let etab of typeEtablissement">{{ etab?.libelle }}
+                                </option>
+                            </select>
+                        </div>
+                        <!-- <ng-container *ngIf="selectedTypeEtablissement.includes('FST')">
+                            <div class="col-sm-4">
+                                <label class="form-label">Séries</label>
+                                <select id="selectSeries" class="w-100" multiple title="Sélectionner..."
+                                        data-width="auto" data-live-search="true" [(ngModel)]="selectedSeries"
+                                        [ngModelOptions]="{standalone: true}">
+                                    <option [value]="serie.libelle" *ngFor="let serie of series">{{ serie?.libelle }}
+                                    </option>
+                                </select>
+                            </div>
+                            <ng-container *ngIf="selectedSeries.includes('Autre')">
+                                <div class="col-sm-4">
+                                    <label class="form-label">Autre Série</label>
+                                    <input type="text" class="form-control" placeholder="Saisir" />
+                                </div>
+                            </ng-container>
+                            <div class="col-sm-4">
+                                <label class="form-label">Niveau</label>
+                                <select id="selectTypeNiveau" class="w-100" multiple title="Sélectionner..."
+                                        data-width="auto" data-live-search="true" [(ngModel)]="selectedTypeNiveau"
+                                        [ngModelOptions]="{standalone: true}">
+                                    <option [value]="type.libelle" *ngFor="let type of typeNiveau">{{ type?.libelle }}
+                                    </option>
+                                </select>
+                            </div>
+                            <ng-container *ngIf="selectedTypeNiveau.includes('Autre')">
+                                <div class="col-sm-4">
+                                    <label class="form-label">Autre Type de Niveau</label>
+                                    <input type="text" class="form-control" placeholder="Saisir" />
+                                </div>
+                            </ng-container>
+                        </ng-container> -->
+
+
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button *ngIf="fstSelected || fptSelected" matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="infosFilieresGroup">
+                <form [formGroup]="filiereDisciplinesForm">
+                    <ng-template matStepLabel>
+                        Disciplines
+                    </ng-template>
+                    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" #tabGroupDispclines>
+                        <mat-tab label="Filière matière" [disabled]="!fstSelected">
+                            <div class="py-3">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="row g-4">
+                                            <span style="color: red;">{{filiereError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Filière matière</label>
+                                                <select formControlName="filiere" class="form-select">
+                                                    <option value="0">Sélectionner</option>
+                                                    <option [value]="filiere.id" *ngFor="let filiere of listFilieres">
+                                                        {{filiere?.libelle}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Niveau</label>
+                                                <select  formControlName="niveau" class="form-select">
+                                                    <option value="0">Sélectionner</option>
+                                                    <option [value]="type.id" *ngFor="let type of niveauFPT">{{
+                                                            type?.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Quantum horaire Filière</label>
+                                                <input formControlName="quantum" type="number" min="0"
+                                                       class="form-control" placeholder="Saisir" />
+                                            </div>
+                                            <span style="color: red;">{{disciplineError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label d-block">Disciplines</label>
+                                                <select formControlName="disciplines" id="selectDisciplineFiliere"
+                                                        class="w-100" multiple title="Sélectionner..." data-width="auto"
+                                                        data-live-search="true">
+                                                    <option [value]="discipline"
+                                                            *ngFor="let discipline of listDisciplines">
+                                                        {{ discipline?.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button type="button" class="button button-secondary w-100"
+                                                        (click)="addFiliereDiscipline()">Ajouter
+                                                    Filière matière</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <!-- Table -->
+                                        <div class="table-responsive">
+                                            <table class="table table-custom table-form w-100">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    <th scope="col" *ngFor="let head of headersFileresDisciplines">
+                                                        {{ head
+                                                        }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <ng-container *ngIf="filiereDisciplines.length > 0;else     listEmpty;">
+                                                    <ng-container
+                                                            *ngFor="let filiere of filiereDisciplines; let i = index">
+                                                        <tr>
+                                                            <td [attr.rowspan]="countRows2(filiere)">
+                                                                {{ filiere?.filiere?.libelle }}
+                                                            </td>
+                                                            <td [attr.rowspan]="countRows2(filiere)">
+                                                                {{ filiere?.niveau?.libelle }}
+                                                            </td>
+                                                            <td [attr.rowspan]="countRows2(filiere)">
+                                                                {{ filiere.quantum }}
+                                                            </td>
+                                                        </tr>
+                                                        <ng-container
+                                                                *ngFor="let discipline of filiere.disciplineQuantums; let j = index">
+                                                            <tr>
+                                                                <td>
+                                                                    {{ discipline?.discipline?.libelle }}
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" min="0"
+                                                                           [value]="discipline.quantum"
+                                                                           class="form-control form-control-sm"
+                                                                           style="width: 100px;"
+                                                                           (change)="quatumsValues(true,false, 0, i, j, $event)">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn" type="button"
+                                                                            (click)="onDelete(i, filiere.disciplineQuantums, discipline.discipline.id)"><i
+                                                                            class="fa fa-trash text-danger"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+
+                                                </ng-container>
+                                                <ng-template #listEmpty>
+                                                    <tr>
+                                                        <td [attr.colspan]="headersFileresDisciplines.length">
+                                                            <p class="text-black-50 text-center m-0">Aucune donnée
+                                                                disponible
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </ng-template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Séries" [disabled]="!fptSelected">
+                            <div class="py-3">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="row g-4">
+                                            <!-- <span style="color: red;">{{filiereError}}</span> -->
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Séries</label>
+                                                <select class="form-select" formControlName="serie" >
+                                                    <option value="0">Sélectionner</option>
+                                                    <option [value]="serie.id" *ngFor="let serie of series">{{
+                                                            serie?.libelle }}</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- <ng-container *ngIf="selectedSeriesDisciplines === 'Autre'">
+                                                <div class="col-lg-12">
+                                                    <label class="form-label">Autre Série</label>
+                                                    <input type="text" class="form-control" placeholder="Saisir" />
+                                                </div>
+                                            </ng-container> -->
+
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Niveau</label>
+                                                <select class="form-select" formControlName="niveau">
+                                                    <option value="0">Sélectionner</option>
+                                                    <option [value]="type.id" *ngFor="let type of niveauFST">{{
+                                                            type?.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <!-- <ng-container *ngIf="selectedTypeNiveauDisciplines === 'Autre'">
+                                                                                            <div class="col-lg-12">
+                                                                                                <label class="form-label">Autre Type de Niveau</label>
+                                                                                                <input type="text" class="form-control" placeholder="Saisir" />
+                                                                                            </div>
+                                                                                        </ng-container> -->
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Quantum horaire Série</label>
+                                                <input formControlName="quantum" type="number" min="0" class="form-control"
+                                                       placeholder="Saisir" />
+                                            </div>
+
+
+                                            <div class="col-lg-12">
+                                                <label class="form-label d-block">Disciplines</label>
+                                                <select formControlName="disciplines" id="selectDisciplineFiliere"
+                                                    class="w-100" multiple title="Sélectionner..." data-width="auto"
+                                                    data-live-search="true">
+                                                <option [value]="discipline"
+                                                        *ngFor="let discipline of listDisciplines">
+                                                    {{ discipline?.libelle }}
+                                                </option>
+                                        </select>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button type="button" class="button button-secondary w-100"    (click)="addSerieeDiscipline()">Ajouter
+                                                    Série</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <!-- Table -->
+                                        <div class="table-responsive">
+                                            <table class="table table-custom table-form w-100">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    <th scope="col" *ngFor="let head of headersSeriesDisciplines">{{
+                                                            head
+                                                        }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <ng-container *ngIf="serieDisciplines.length > 0;else listEmpty;">
+                                                    <ng-container
+                                                            *ngFor="let serie of serieDisciplines; let i = index">
+                                                        <tr>
+                                                            <td [attr.rowspan]="countRows2(serie)">
+                                                                {{ serie?.serie?.libelle }}
+                                                            </td>
+                                                            <td [attr.rowspan]="countRows2(serie)">
+                                                                {{ serie?.niveau?.libelle }}
+                                                            </td>
+                                                            <td [attr.rowspan]="countRows2(serie)">
+                                                                {{ serie?.quantum }}
+                                                            </td>
+                                                        </tr>
+                                                        <ng-container
+                                                                *ngFor="let discipline of serie.disciplineQuantums; let j = index">
+                                                            <tr>
+                                                                <td>
+                                                                    {{ discipline?.discipline?.libelle }}
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" min="0"
+                                                                           [value]="discipline.quantum"
+                                                                           class="form-control form-control-sm"
+                                                                           style="width: 100px;"
+                                                                           (change)="quatumsValues(true,true, 0, i, j, $event)">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn" type="button"><i
+                                                                            class="fa fa-trash text-danger"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+
+                                                </ng-container>
+                                                <ng-template #listEmpty>
+                                                    <tr>
+                                                        <td [attr.colspan]="headersSeriesDisciplines.length">
+                                                            <p class="text-black-50 text-center m-0">Aucune donnée
+                                                                disponible
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </ng-template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="infosClassesGroup">
+                <form [formGroup]="classProfForm">
+                    <ng-template matStepLabel>Classes</ng-template>
+                    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" #tabGroupClasses>
+                        <mat-tab label="Filière matière" [disabled]="!fstSelected">
+                            <div class="py-3">
+                                <div class="row g-4 mt-3">
+                                    <div class="col-lg-4">
+                                        <div class="row g-4">
+
+                                            <span style="color: red;" *ngIf="classNameError">{{classNameError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Nom classe</label>
+                                                <input formControlName="nomClasse" type="text" class="form-control" placeholder="Saisir" />
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                                    <label class="form-label">Quantum horaire Filière</label>
+                                                                    <input formControlName="quantum" type="number" min="0" class="form-control" placeholder="Saisir" />
+                                                                </div> -->
+                                            <span style="color: red;" *ngIf="profError">{{profError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Professeur</label>
+                                                <tag-input formControlName="professeur" [onlyFromAutocomplete]="true" [maxItems]="1"
+                                                           [(ngModel)]="selectedFormateurs" [placeholder]="'+ Nouveau Professeur'"
+                                                           [secondaryPlaceholder]="'+ Nouveau Professeur'">
+                                                    <!-- [ngModelOptions]="{standalone: true}"  -->
+                                                    <tag-input-dropdown [autocompleteItems]="autocompleteFormateurs" [showDropdownIfEmpty]="true"
+                                                                        [dynamicUpdate]="true">
+                                                    </tag-input-dropdown>
+                                                </tag-input>
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                                    <label class="form-label">Quantum Horaire Annuel {{ selectedFormateurs[0] }}</label>
+                                                                    <input type="number" min="0" class="form-control"  [ngModel] = "quantumHoraireProf" disabled />
+                                                                </div> -->
+                                            <span style="color: red;" *ngIf="disciplineClassError">{{disciplineClassError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label d-block">Disciplines</label>
+                                                <select formControlName="disciplines" id="selectDisciplineClasse" class="w-100" multiple
+                                                        title="Sélectionner..." data-width="auto" data-live-search="true">
+                                                    <option [value]="discipline" *ngFor="let discipline of listDisciplines">
+                                                        {{ discipline?.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button type="button" (click)="addClassProfs(false)" class="button button-secondary w-100">Ajouter
+                                                    classe</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <!-- Table -->
+                                        <div class="table-responsive">
+                                            <table class="table table-custom table-form  w-100">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    <th scope="col" *ngFor="let head of headersClasses">{{ head }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <ng-container *ngFor="let classe of classProfsList ; let k=index">
+                                                    <ng-container *ngFor="let professeur of classe.profDiscipline; let i=index">
+                                                        <ng-container *ngFor="let discipline of professeur.disciplineQuantums; let j=index">
+                                                            <tr>
+                                                                <ng-container *ngIf="i === 0 && j === 0">
+                                                                    <td [attr.rowspan]="countRows(classe)">
+                                                                        {{ classe?.nomClasse }}
+                                                                    </td>
+                                                                    <!-- <td [attr.rowspan]="countRows(classe)">
+                                                                                            {{ classe.quantum }}
+                                                                                        </td> -->
+                                                                </ng-container>
+                                                                <ng-container *ngIf="j === 0">
+                                                                    <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                                        {{ professeur?.professeur?.prenom }}{{
+                                                                            professeur?.professeur?.nom }}
+                                                                    </td>
+                                                                    <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                                        {{ professeur?.professeur?.quantumHoraire }}
+                                                                    </td>
+                                                                </ng-container>
+                                                                <td>
+                                                                    {{ discipline.discipline.libelle }}
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" min="0" [value]="discipline.quantum"
+                                                                           class="form-control form-control-sm" style="width: 100px;"
+                                                                           (change)="quatumsValues(false,false, k, i, j, $event)">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn" type="button"
+                                                                            (click)="onDelete2(k ,professeur.disciplineQuantums, j)"><i
+                                                                            class="fa fa-trash text-danger"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-template #listEmpty>
+                                                    <tr>
+                                                        <td [attr.colspan]="headersClasses.length">
+                                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </ng-template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Séries" [disabled]="!fptSelected">
+                            <div class="py-3">
+                                <div class="row g-4 mt-3">
+                                    <div class="col-lg-4">
+                                        <div class="row g-4">
+
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Séries</label>
+                                                <select class="form-select" formControlName="serie">
+                                                    <option value="0">Sélectionner</option>
+                                                    <option [value]="serie.id" *ngFor="let serie of series">{{ serie.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <span style="color: red;" *ngIf="classNameError">{{classNameError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Nom classe</label>
+                                                <input formControlName="nomClasse" type="text" class="form-control" placeholder="Saisir" />
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                                    <label class="form-label">Quantum horaire Filière</label>
+                                                                    <input formControlName="quantum" type="number" min="0" class="form-control" placeholder="Saisir" />
+                                                                </div> -->
+                                            <span style="color: red;" *ngIf="profError">{{profError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label">Professeur</label>
+                                                <tag-input formControlName="professeur" [onlyFromAutocomplete]="true" [maxItems]="1"
+                                                           [(ngModel)]="selectedFormateurs" [placeholder]="'+ Nouveau Professeur'"
+                                                           [secondaryPlaceholder]="'+ Nouveau Professeur'">
+                                                    <!-- [ngModelOptions]="{standalone: true}"  -->
+                                                    <tag-input-dropdown [autocompleteItems]="autocompleteFormateurs" [showDropdownIfEmpty]="true"
+                                                                        [dynamicUpdate]="true">
+                                                    </tag-input-dropdown>
+                                                </tag-input>
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                                    <label class="form-label">Quantum Horaire Annuel {{ selectedFormateurs[0] }}</label>
+                                                                    <input type="number" min="0" class="form-control"  [ngModel] = "quantumHoraireProf" disabled />
+                                                                </div> -->
+                                            <span style="color: red;" *ngIf="disciplineClassError">{{disciplineClassError}}</span>
+                                            <div class="col-lg-12">
+                                                <label class="form-label d-block">Disciplines</label>
+                                                <select formControlName="disciplines" id="selectDisciplineClasse" class="w-100" multiple
+                                                        title="Sélectionner..." data-width="auto" data-live-search="true">
+                                                    <option [value]="discipline" *ngFor="let discipline of listDisciplines">
+                                                        {{ discipline?.libelle }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button type="button" (click)="addClassProfs(true)" class="button button-secondary w-100">Ajouter
+                                                    classe</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <!-- Table -->
+                                        <div class="table-responsive">
+                                            <table class="table table-custom table-form  w-100">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    <th scope="col" *ngFor="let head of headersClasses">{{ head }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <ng-container *ngFor="let classe of serieClassProfsList ; let k=index">
+                                                    <ng-container *ngFor="let professeur of classe.profDiscipline; let i=index">
+                                                        <ng-container *ngFor="let discipline of professeur.disciplineQuantums; let j=index">
+                                                            <tr>
+                                                                <ng-container *ngIf="i === 0 && j === 0">
+                                                                    <td [attr.rowspan]="countRows(classe)">
+                                                                        {{ classe?.nomClasse }}
+                                                                    </td>
+                                                                    <!-- <td [attr.rowspan]="countRows(classe)">
+                                                                                            {{ classe.quantum }}
+                                                                                        </td> -->
+                                                                </ng-container>
+                                                                <ng-container *ngIf="j === 0">
+                                                                    <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                                        {{ classe?.serie?.libelle}}
+                                                                    </td>
+                                                                    <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                                        {{ professeur?.professeur?.prenom +" " }}{{
+                                                                            professeur?.professeur?.nom }}
+                                                                    </td>
+                                                                    <td [attr.rowspan]="professeur.disciplineQuantums.length">
+                                                                        {{ professeur?.professeur?.quantumHoraire }}
+                                                                    </td>
+                                                                </ng-container>
+                                                                <td>
+                                                                    {{ discipline?.discipline?.libelle }}
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" min="0" [value]="discipline.quantum"
+                                                                           class="form-control form-control-sm" style="width: 100px;"
+                                                                           (change)="quatumsValues(false,true, k, i, j, $event)">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn" type="button"
+                                                                            (click)="onDelete2(k ,professeur.disciplineQuantums, j)"><i
+                                                                            class="fa fa-trash text-danger"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-template #listEmpty>
+                                                    <tr>
+                                                        <td [attr.colspan]="headersClasses.length">
+                                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </ng-template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+
+
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button type="button" class="button button-primary text-white"
+                                (click)="onSaveFiche()">Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

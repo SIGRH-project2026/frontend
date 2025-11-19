@@ -1,0 +1,473 @@
+<div class="panel-form">
+  <div class="panel-form-header">
+    <div class="panel-form-text flex-column align-items-start w-100">
+        <div class="flex-row-between">
+            <h3>Liste des formations</h3>
+            <button class="button button-primary" *ngIf="tabIndex == 1" type="button" (click)="onCreateFormationDiplomante()">
+                <i class="fa fa-add"></i>
+                Créer une formation diplômante
+            </button>
+        </div>
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+        <mat-tab label="Formations continues">
+          <div class="py-3">
+            <div class="panel-list-search">
+              <div class="search">
+                <div class="search-box">
+                  <input
+                    class="search-input"
+                    type="text"
+                    placeholder="Rechercher"
+                  />
+                  <button class="search-btn">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+                <!--select class="form-select">
+                                                <option value="">Tous les thèmes</option>
+                                                <option value="Thème 1">Thème 1</option>
+                                                <option value="Thème 2">Thème 2</option>
+                                                <option value="Thème x">Thème x</option>
+                                            </select-->
+              </div>
+              <button
+                type="button"
+                class="button-filter"
+                (click)="openModalSearch(filterAvancer)"
+              >
+                <i class="fa fa-filter"></i>
+                Filtre avancé
+              </button>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="table table-custom">
+                <thead>
+                  <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="demandeListContinue?.length > 0; else listEmpty">
+                    <tr *ngFor="let demande of demandeListContinue">
+                      <td>
+                        {{ demande?.themeFormation?.libelle }}
+                      </td>
+                      <td>
+                        {{ demande?.intitule }}
+                      </td>
+                      <td>
+                        {{ demande?.direction?.label }}
+                      </td>
+                      <td>
+                        {{ getCibles(demande?.themeFormation?.profils) }}
+                      </td>
+                      <td>
+                        {{ demande?.dateDebut }}
+                      </td>
+                      <td>
+                        {{ demande?.dateFin }}
+                      </td>
+                      <td>
+                        <div
+                          [appStatus]="demande.statutFormation.code"
+                          class="status-badge"
+                          id=""
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <button
+                            class="fab-button"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            <i class="fa fa-ellipsis-v"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li>
+                              <a
+                                class="dropdown-item"
+                                (click)="onViewFormation(demande)"
+                              >
+                                <i class="fa fa-eye me-2"></i>
+                                <span>Voir détails</span>
+                              </a>
+                            </li>
+                            <li  *ngIf="
+                                demande.statutFormation.code !== 'ENCOURS'
+                              ">
+                              <a
+                                class="dropdown-item"
+                                (click)="onCompleteFormation(demande)"
+                              >
+                                <i class="fa fa-edit me-2"></i>
+                                <span>Compléter Formation</span>
+                              </a>
+                            </li>
+                            <li *ngIf="
+                                demande.statutFormation.code !== 'ENCOURS'
+                              ">
+                              <a
+                                class="dropdown-item"
+                                (click)="onEditFormation(demande)"
+                              >
+                                <i class="fa fa-edit me-2"></i>
+                                <span>Modifier</span>
+                              </a>
+                            </li>
+                            <li
+                              *ngIf="
+                                demande.statutFormation.code === 'NONDEMARREER'
+                              "
+                            >
+                              <a
+                                class="dropdown-item"
+                                href="javascript:(0)"
+                                (click)="deleteFormation(demande.id)"
+                              >
+                                <i class="fa fa-trash me-2"></i>
+                                <span>Supprimer</span>
+                              </a>
+                            </li>
+                            <li
+                              *ngIf="
+                                demande.statutFormation.code === 'NONDEMARREER'
+                              "
+                            >
+                              <a
+                                class="dropdown-item"
+                                href="javascript:(0)"
+                                (click)="onDemarrerFormation(demande.id)"
+                              >
+                                <i class="fa fa-play-circle"></i>
+                                <span>Démarrer</span>
+                              </a>
+                            </li>
+                            <li
+                              *ngIf="demande?.statutFormation?.code === 'ENCOURS'"
+                            >
+                              <a
+                                class="dropdown-item"
+                                href="javascript:(0)"
+                                (click)="onCloturerFormation(demande.id)"
+                              >
+                                <i class="fa fa-stop me-2"></i>
+                                <span>Clôturer</span>
+                              </a>
+                            </li>
+                              <!-- Demandes de formations -->
+                              <li>
+                                <a class="dropdown-item" (click)="onViewDemandeFormation(demande)">
+                                  <i class="fa fa-users me-2"></i>
+                                  <span>Demandes de formations</span>
+                                </a>
+                              </li>
+                              <!-- Suivi des formations -->
+                              <li>
+                                <a class="dropdown-item" (click)="onViewSuivFormation(demande)">
+                                  <i class="fa fa-table me-2"></i>
+                                  <span>Suivi des formations</span>
+                                </a>
+                              </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+                  <ng-template #listEmpty>
+                    <tr>
+                      <td [attr.colspan]="headers.length">
+                        <p class="text-black-50 text-center m-0">
+                          Aucune donnée disponible
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+              <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select
+                  class="form-select form-select-sm mx-2 form-select-filter"
+                  [(ngModel)]="pageSize"
+                  (ngModelChange)="refreshData()"
+                >
+                  <option [ngValue]="10">10</option>
+                  <option [ngValue]="20">20</option>
+                  <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+              </div>
+              <ngb-pagination
+                [collectionSize]="collectionSize"
+                [(page)]="page"
+                [pageSize]="pageSize"
+                (pageChange)="refreshData()"
+                [maxSize]="2"
+                [rotate]="true"
+                [boundaryLinks]="true"
+              >
+              </ngb-pagination>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Formations diplômantes">
+        <div class="py-3">
+            <div class="panel-list-search">
+                <div class="search">
+                    <div class="search-box">
+                        <input class="search-input" type="text" placeholder="Rechercher" />
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <!--select class="form-select">
+                                                        <option value="">Tous les thèmes</option>
+                                                        <option value="Thème 1">Thème 1</option>
+                                                        <option value="Thème 2">Thème 2</option>
+                                                        <option value="Thème x">Thème x</option>
+                                                    </select-->
+                </div>
+                <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                    <i class="fa fa-filter"></i>
+                    Filtre avancé
+                </button>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col" *ngFor="let head of headersDiplomante">{{ head }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="demandeListDiplomante?.length > 0; else listEmpty">
+                            <tr *ngFor="let demande of demandeListDiplomante">
+                                <td>
+                                    {{ demande?.intitule }}
+                                </td>
+                                <td>
+                                  {{ demande?.effCode }}
+                              </td>
+                                <td>
+                                    {{ demande?.dateDebut }}
+                                </td>
+                                <td>
+                                    {{ demande?.dateFin }}
+                                </td>
+                                <td>
+                                    <div [appStatus]="demande.statutFormation.code" class="status-badge" id=""></div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" (click)="onViewFormation(demande)">
+                                                    <i class="fa fa-eye me-2"></i>
+                                                    <span>Voir détails</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="
+                                demande.statutFormation.code !== 'ENCOURS'
+                              ">
+                                                <a class="dropdown-item" (click)="onCompleteFormation(demande)">
+                                                    <i class="fa fa-edit me-2"></i>
+                                                    <span>Compléter Formation</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="
+                                demande.statutFormation.code !== 'ENCOURS'
+                              ">
+                                                <a class="dropdown-item" (click)="onEditFormation(demande)">
+                                                    <i class="fa fa-edit me-2"></i>
+                                                    <span>Modifier</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="
+                                        demande.statutFormation.code === 'NONDEMARREER'
+                                      ">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="deleteFormation(demande.id)">
+                                                    <i class="fa fa-trash me-2"></i>
+                                                    <span>Supprimer</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="
+                                        demande.statutFormation.code === 'NONDEMARREER'
+                                      ">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="onDemarrerFormation(demande.id)">
+                                                    <i class="fa fa-play-circle"></i>
+                                                    <span>Démarrer</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="(demande?.statutFormation?.code === 'ENCOURS' && pvStatusMap[demande.id] !== false && demande?.typeFormation?.code==='DIPLOMANTE')">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="onCloturerFormation(demande.id)">
+                                                    <i class="fa fa-stop me-2"></i>
+                                                    <span>Clôturer</span>
+                                                </a>
+                                            </li>
+                                            <!-- *ngIf="demande?.typeFormation?.libelle === 'Diplômante' && this.userInfos?.profil[0].code=='Chef-EFF'" -->
+                                            <li *ngIf="this.userInfos?.profil[0].code=='Chef-EFF'">
+                                              <a class="dropdown-item" href="javascript:(0)" (click)="sendOffersTechniques(demande)">
+                                                <i class="fa fa-paper-plane me-2"></i>
+                                                <span>Envoyer offres techniques et financières</span>
+                                              </a>
+                                            </li>
+                                            <!-- *ngIf="demande?.typeFormation?.libelle === 'Diplômante' && (this.userInfos?.profil[0].code=='Chef-EFF' ||
+                                            this.userInfos?.profil[0].code=='Chef-etablissement' || this.userInfos.profil[0].code=='Formateurs' ||
+                                            this.userInfos.profil[0].code=='Directeur-Censeur' || this.userInfos.profil[0].code=='Representant-IA' ||
+                                            this.userInfos.profil[0].code=='Représentant-IEF') " -->
+                                            <!-- <li
+                                              >
+                                              <a class="dropdown-item" href="javascript:(0)" (click)="sendFicheCanditature(demande)">
+                                                <i class="fa fa-paper-plane me-2"></i>
+                                                <span>Envoyer Fichier Canditature</span>
+                                              </a>
+                                            </li> -->
+                                            <!-- *ngIf="demande?.typeFormation?.libelle === 'Diplômante' && (this.userInfos?.profil[0].code=='Chef-EFF' ||
+                                            this.userInfos?.profil[0].code=='DRH') || this.userInfos.profil[0].code=='Chef-division' ||
+                                            this.userInfos.profil[0].code=='Chef-division-dgcaa' || this.userInfos.profil[0].code=='Chef-division-dgpeec' ||
+                                            this.userInfos.profil[0].code=='Chef-division-dfc' || this.userInfos.profil[0].code=='Directeur-DRH'" -->
+                                            <li *ngIf="demande?.typeFormation?.libelle === 'Diplômante' && (this.userInfos?.profil[0].code=='Chef-EFF' ||
+                                            this.userInfos?.profil[0].code=='DRH') || this.userInfos.profil[0].code=='Chef-division' ||
+                                            this.userInfos.profil[0].code=='Chef-division-dgcaa' || this.userInfos.profil[0].code=='Chef-division-dgpeec' ||
+                                            this.userInfos.profil[0].code=='Chef-division-dfc' || this.userInfos.profil[0].code=='Directeur-DRH'">
+                                              <a class="dropdown-item" href="javascript:(0)" (click)="viewOffers(demande)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir Offres</span>
+                                              </a>
+                                            </li>
+
+                                            <!-- Demandes de formations -->
+                                            <li>
+                                              <a class="dropdown-item" (click)="onViewDemandeFormation(demande)">
+                                                <i class="fa fa-users me-2"></i>
+                                                <span>Demandes de formations</span>
+                                              </a>
+                                            </li>
+                                            <!-- Suivi des formations -->
+                                            <li>
+                                              <a class="dropdown-item" (click)="onViewSuivFormation(demande)">
+                                                <i class="fa fa-table me-2"></i>
+                                                <span>Suivi des formations</span>
+                                              </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <ng-template #listEmpty>
+                            <tr>
+                                <td [attr.colspan]="headersDiplomante.length">
+                                    <p class="text-black-50 text-center m-0">
+                                        Aucune donnée disponible
+                                    </p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshData()">
+                        <option [ngValue]="10">10</option>
+                        <option [ngValue]="20">20</option>
+                        <option [ngValue]="30">30</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                    (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                </ngb-pagination>
+            </div>
+        </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form>
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label">Titre de formation</label>
+          <input type="text" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Thèmes</label>
+          <select class="form-select">
+            <option value="">Tous les thèmes</option>
+            <option value="Thème 1">Thème 1</option>
+            <option value="Thème 2">Thème 2</option>
+            <option value="Thème x">Thème x</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Date début</label>
+          <input type="date" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Date fin</label>
+          <input type="date" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Statut</label>
+          <select class="form-select">
+            <option value="">Sélectionner</option>
+            <option value="PUBLIEER">Publiée</option>
+            <option value="NONDEMARREER">Non Démarree</option>
+            <option value="ENCOURS">En cours</option>
+            <option value="CLOTUREER">Clôcturée</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Direction Responsable</label>
+          <select class="form-select">
+            <option value="">Sélectionner</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="button button-secondary w-100"
+      (click)="onSearch()"
+    >
+      Rechercher
+    </button>
+    <button
+      type="button"
+      class="button button-outline-primary w-100"
+      (click)="modal.close('Save click')"
+    >
+      Annuler
+    </button>
+  </div>
+</ng-template>

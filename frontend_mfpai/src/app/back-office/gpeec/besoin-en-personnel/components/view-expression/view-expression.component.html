@@ -1,0 +1,159 @@
+<div class="panel-form">
+    <div *ngIf="demande" class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start">
+            <h3>Détails expression de besoin en recrutement N° {{demande.id}}</h3>
+             <ul class="panel-infos">
+                 <li>
+                     <span>N° Référence : </span>
+                     <span>{{demande.id}}</span>
+                 </li>
+                 <li>
+                     <span>Matricule : </span>
+                     <span>{{demande.utilisateur.matricule}}</span>
+                 </li>
+                 <li>
+                     <span>Statut : </span>
+                     <span>{{demande.statut.libelle}}</span>
+                 </li>
+             </ul>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <h6 class="title-section-infos">Informations personnelles</h6>
+            <div class="row details g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Matricule</span>
+                        <span>{{demande.utilisateur.matricule}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{demande.utilisateur.prenom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{demande.utilisateur.nom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Région</span>
+                        <span>{{demande.region.label}}</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>IA</span>
+                        <span>{{demande.ia.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>IEF</span>
+                        <span>{{demande.ief.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Etablissement ou Ecole de formation</span>
+                        <span>{{demande.etablissement.label}}</span>
+                    </div>
+                </div> 
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Année</span>
+                        <span>{{demande.annee}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Corps</span>
+                        <span>{{demande.corps.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Grade</span>
+                        <span>{{demande.grade.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Déficit</span>
+                        <span>{{demande.deficit}}</span>
+                    </div>
+                </div>
+            </div>
+            <h6 class="title-section-infos mt-3">Filières</h6>
+            <div class="row details g-3">
+                <!-- <div class="col-lg-12">
+                    <ul class="badges">
+                        <li class="badge-item" *ngFor="let item of demande.besoinEnPersonnelFilieres">
+                            Filiere <b>{{item.filiere.libelle}}({{item.nombreDePersonne}})</b>
+                        </li>
+                    </ul>
+                </div> -->
+                <div class="col-lg-12">
+                
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-custom table-form w-100">
+                            <thead>
+                                <tr class="table-light">
+                                    <th scope="col" *ngFor="let head of headersFiliere">{{ head }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="demande.bepFiliereDisciplines.length ;else listEmpty;">
+                                    <ng-container *ngFor="let filiere of demande.bepFiliereDisciplines">
+                                        <tr>
+                                            <td [attr.rowspan]="filiere.besoinEnNombreDisciplines.length + 1">
+                                                {{ filiere.filiere.libelle }}
+                                            </td>
+                
+                                        </tr>
+                                        <ng-container *ngFor="let discipline of filiere.besoinEnNombreDisciplines ">
+                                            <tr>
+                                                <td>
+                                                    {{ discipline.discipline.libelle }}
+                                                </td>
+                                                <td>
+                                                    {{discipline.nombreDePersonne}}
+                                                </td>
+                
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                
+                                </ng-container>
+                                <ng-template #listEmpty>
+                                    <tr>
+                                        <td [attr.colspan]="headersFiliere.length">
+                                            <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" rows="3" disabled="true"
+                        placeholder="Saisir">{{demande.commentaire}}</textarea>
+                </div>
+            </div>
+        </form>
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+</div>

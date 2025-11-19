@@ -1,0 +1,262 @@
+<div class="panel-form">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            
+            <ng-container *ngIf="typeView === 'Traiter'">
+                <h3>Traitement demande N° {{demande?.numeroDemande}}</h3>
+            </ng-container>
+
+            <ng-container *ngIf="typeView === 'Visualiser'">
+                <h3>Détails demande N°{{demande?.numeroDemande}}</h3>
+            </ng-container>
+
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Demande : </span>
+                    <span>{{demande?.numeroDemande}}</span>
+                </li>
+                <li>
+                    <span>Type de demande : </span>
+                    <span>{{demande?.typeDemandePeec?.libelle}}</span>
+                </li>
+                <li>
+                    <span>Date demande : </span>
+                    <span>{{demande?.dateDemande}}</span>
+                </li>
+                <li>
+                    <span>Status : </span>
+                    <span>{{demande?.statutPriseEnCharge?.libelle}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body py-0">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab label="Informations personnelles">
+                <div class="py-3">
+                    <div class="row details g-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Matricule</span>
+                                <span>{{demande?.utilisateur?.matricule}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Prénom</span>
+                                <span>{{demande?.utilisateur?.prenom}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Nom</span>
+                                <span>{{demande?.utilisateur?.nom}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Fonction</span>
+                                <span>{{demande?.utilisateur?.fonction?.label}}</span>
+                            </div>
+                        </div>
+
+                        <ng-container  *ngIf="demande?.utilisateur?.typeUser==='CEN'">
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Direction</span>
+                                    <span>{{demande?.utilisateur?.direction?.label}}</span>
+                                </div>
+                            </div>
+
+                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='DRH'">
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Division</label>
+                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.division?.label" disabled />
+                                </div>
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Bureau</label>
+                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.bureau?.label" disabled />
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='AUD'">
+                                <div  class="col-lg-4 col-sm-6">
+                                    <div class="details-item">
+                                        <span>Service</span>
+                                        <span>{{demande?.utilisateur?.service?.label}}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Région</span>
+                                <span>{{demande?.utilisateur?.region?.label}}</span>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="demande?.utilisateur?.typeUser==='DEC'">
+
+                            <div  class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>IA</span>
+                                    <span>{{demande?.utilisateur?.ia?.label}}</span>
+                                </div>
+                            </div>
+                            <div  class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>IEF</span>
+                                    <span>{{demande?.utilisateur?.ief?.label}}</span>
+                                </div>
+                            </div>
+                            <div  class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>CFP</span>
+                                    <span>{{demande?.utilisateur?.cfp?.label}}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+
+                    </div>
+                </div>
+            </mat-tab>
+           <mat-tab label="Informations de la demande">
+    <div class="py-3">
+        <div class="row details g-3">
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Type de demande</span>
+                    <span>{{demande?.typeDemandePeec?.libelle}}</span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="details-item">
+                    <span>Date demande</span>
+                    <span>{{demande?.dateDemande}}</span>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="details-item">
+                    <span>Objet de la demande</span>
+                    <span>{{demande?.objetDemande}}</span>
+                </div>
+ 
+                <div *ngIf="demande?.statutPriseEnCharge?.code==='AMODIFIER'">
+                    <div class="details-item">
+                        <span>Motif Modification </span>
+                        <span>{{demande?.motifModification}}</span>
+                    </div>
+                </div>
+
+                <div *ngIf="demande?.statutPriseEnCharge?.code==='REJETEE'">
+                    <div class="details-item">
+                        <span>Motif Rejet </span>
+                        <span>{{demande?.motifRejetDemande}}</span>
+                    </div>
+                </div>
+
+
+               <!--  <div *ngIf="demande?.statutPriseEnCharge?.code==='AMODIFIER' || demande?.statutPriseEnCharge?.code==='REJETEE'" class="col-lg-6 col-sm-6">
+                    <div class="details-item">
+                       <label class="form-label">{{ demande?.statutPriseEnCharge?.code === 'AMODIFIER' ? 'Motif modification' : 'Motif' }}</label>
+                         <input type="text" class="form-control" [value]="demande?.statutPriseEnCharge?.code === 'AMODIFIER' ? demande?.motifModification : demande?.motifRejetDemande" />
+                    </div>
+                </div> -->
+            </div>
+
+            <div class="col-lg-12 mt-3">
+                <hr class="h-divider">
+                <label class="form-label">Pièces jointes</label>
+                <div class="row gx-3 gy-1 doc-files">
+                    <div class="col-sm-4" *ngFor="let item of demande?.pieceJointes">
+                        <div class="doc-file-item">
+                            <div class="text-icon">
+                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                <div class="text">
+                                    <p>{{item?.originalName}}</p>
+                                    <span>{{item?.fileSize}}Ko</span>
+                                </div>
+                            </div>
+                            <button class="fab-button" type="button" (click)="telecharger(item.generatedName)">
+                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-tab>
+
+        </mat-tab-group>
+
+      <ng-container *ngIf="typeView === 'Traiter'">
+        <div class="action-steps-start">
+            <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+            <button type="button" class="button button-primary text-white" (click)="onValid()">Valider</button>
+            <button type="button" class="button button-yellow text-white" (click)="onModifier()">A
+                modifier</button>
+            <button type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="typeView === 'Visualiser'">
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+      </ng-container>
+    </div>
+
+
+        <!-- Modal Rejeter -->
+
+        <ng-template #rejetModal let-modal>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du rejet</h1>
+            </div>
+            <form [formGroup]="modifRejetForm">
+            <div class="modal-body py-md-3">
+                
+                    <div class="row g-3">
+                        <div class="col-sm-12">
+                            <label class="form-label">Motif du rejet</label>
+                            <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifRejetDemande"></textarea>
+                        </div>
+        
+                    </div>
+            </div>
+        
+            <div class="modal-footer">
+                <button type="button" class="button button-secondary w-100" (click)="onSaveRejet()">Enregistrer</button>
+                <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                    Annuler
+                </button>
+            </div>
+            </form>
+        </ng-template>
+        
+        <!-- Modal A modifier -->
+        <ng-template #amodifierModal let-modal>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du renvoie de modification</h1>
+            </div>
+            <form [formGroup]="modifModiForm">
+            <div class="modal-body py-md-3">
+                    <div class="row g-3">
+                        <div class="col-sm-12">
+                            <label class="form-label">Motif</label>
+                            <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifModification"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="button button-secondary w-100" (click)="onSaveModifier()">Enregistrer</button>
+                        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                            Annuler
+                        </button>
+                    </div>
+                
+            </div>
+        </form>
+        </ng-template>

@@ -1,0 +1,180 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des indicateurs</h3>
+            <button class="button button-primary" type="button" (click)="onCreateIndicateur()">
+                <i class="fa fa-add"></i>
+                Nouveau indicateur
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <form [formGroup]="searchForm">
+                    <div class="search-box">
+                        <input class="search-input" (keyup)="onSearchAll()"  type="text" formControlName="searchQuery" placeholder="Rechercher">
+                        <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <select class="form-select"  [(ngModel)]="selectedType" (change)="initFormFilterByStatut()">
+                    <option value="">Tous les status</option>
+                    <option value="ACTIF">Actif</option>
+                    <option value="INACTIF">Inactif</option>
+                </select>
+            </div>
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="indicateurs.length > 0;else listEmpty;">
+                        <tr *ngFor="let indicateur of indicateurs">
+                            <td>
+                                {{ indicateur?.numero }}
+                            </td>
+                            <td>
+                                {{ indicateur?.libelle }}
+                            </td>
+                            <td>
+                                {{ indicateur?.date }}
+                            </td>
+                            <td>
+                                {{ indicateur?.responsableActivite }}
+                            </td>
+                            <td>
+                                <ng-container *ngFor="let division of indicateur.divisions | slice:0:3; let last = last">
+                                    {{ division?.label }}
+                                    <ng-container *ngIf="!last">,</ng-container>
+                                </ng-container>
+                                <ng-container *ngIf="indicateur.divisions.length > 3">...</ng-container>
+                            </td>
+
+                            <td>
+                                <div *ngIf="indicateur?.statut === 'ACTIF'" [appStatus]="true" class="status-badge" (click)="changeStatus(indicateur)"></div>
+                                <div *ngIf="indicateur?.statut === 'INACTIF'" [appStatus]="false" class="status-badge" (click)="changeStatus(indicateur)"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditIndicateur(indicateur)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Modifier</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="indicateur?.statut=== 'ACTIF'">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(indicateur)">
+                                                <i class="fa fa-lock me-2" title="Activer"  type="button"></i>
+                                                <span>Désactiver</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="indicateur?.statut === 'INACTIF'">
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(indicateur)">
+                                                <i class="fa fa-lock-open me-2" title="Activer"  type="button"></i>
+                                                <span>Activer</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="onViewIndicateur(indicateur)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                           
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="col-lg-12">
+            <!-- PAGINATION -->
+            <div class="flex-row-between">
+                <div class="d-flex align-items-center">
+                    <span style="white-space: nowrap">Affichage par</span>
+                    <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"  (ngModelChange)="refreshData($event)">
+                        <option [ngValue]="5">5</option>
+                        <option [ngValue]="9">9</option>
+                        <option [ngValue]="18">18</option>
+                        <option [ngValue]="27">27</option>
+                    </select>
+                    <span style="white-space: nowrap">entrées</span>
+                </div>
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true" >
+                </ngb-pagination>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="AdvanceSearchForm">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Indicateur</label>
+                        <input type="text" class="form-control" formControlName="indicatorNumber" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Libelle</label>
+                        <input type="text" class="form-control" formControlName="libelle" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Responsable Activité</label>
+                        <input type="text" class="form-control" formControlName="responsibleActivity" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label d-block">Divisions impliqués</label>
+                        <select formControlName="involvedDivisions" id="selectDivisionImplique" class="w-100" multiple title="Sélectionner..."
+                                data-width="auto" data-live-search="true">
+                            <option [value]="division?.code" *ngFor="let division of divisionImpliques">
+                                {{ division?.label }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" formControlName="startDate" placeholder="Saisir">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="button button-secondary" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+
+    </ng-template>
+
+</div>

@@ -1,0 +1,172 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Nouvelle demande de prise en charge</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <mat-stepper linear #stepper>
+            <mat-step [stepControl]="infosBeneficiairesGroup">
+                <form>
+                    <ng-template matStepLabel>Information générale</ng-template>
+                    <div class="row g-4 mt-3">
+
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Matricule</label>
+                            <input type="text" class="form-control" [value]="userDTO?.matricule" disabled/>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" [value]="userDTO?.prenom" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" [value]="userDTO?.nom" disabled />
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Fonction</label>
+                            <input type="text" class="form-control" [value]="userDTO?.fonction?.label" disabled />
+                        </div>
+                        <ng-container *ngIf="userDTO?.typeUser==='CEN'">
+                             <ng-container *ngIf="userDTO?.direction?.code === 'AUD'">
+                                <ng-container *ngIf="userDTO.service!=null">
+                                 <div  class="col-lg-4 col-sm-6">
+                                     <div class="details-item">
+                                         <span>Service</span>
+                                         <span>{{userDTO?.service?.label}}</span>
+                                     </div>
+                                 </div>
+                                </ng-container>
+                             </ng-container>
+
+                            <ng-container *ngIf="userDTO.direction?.code==='DRH'">
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Division</label>
+                                    <input type="text" class="form-control" [value]="userDTO.division?.label" disabled />
+                                </div>
+                                <ng-container *ngIf="userDTO.bureau!=null">
+                                <div  class="col-lg-4 col-sm-6">
+                                    <label class="form-label">Bureau</label>
+                                    <input type="text" class="form-control" [value]="userDTO?.bureau?.label" disabled />
+                                </div>
+                            </ng-container>
+                            </ng-container>
+                        </ng-container>
+
+              <!--           <div *ngIf="userDTO?.typeUser=='CEN'" class="col-lg-4 col-sm-6">
+                            <label class="form-label">Direction</label>
+                            <input type="text" class="form-control" [value]="userDTO?.direction?.label" disabled />
+                        </div>
+
+                        <div *ngIf="userDTO?.direction?.code==='AUD'" class="col-lg-4 col-sm-6">
+                            <label class="form-label">Service</label>
+                            <input type="text" class="form-control" [value]="userDTO?.service?.label" disabled />
+                        </div> -->
+
+                        <div  class="col-lg-4 col-sm-6">
+                            <label class="form-label">Région</label>
+                            <input type="text" class="form-control" [value]="userDTO?.region?.label" disabled />
+                        </div>
+
+                        <ng-container  *ngIf="userDTO?.typeUser==='DEC'">
+                            <div   class="col-sm-4">
+                                <label class="form-label">IA</label>
+                                <input type="text" class="form-control"  [value]="userDTO?.ia?.label"  disabled="true"/>
+                            </div>
+                            <ng-container *ngIf="userDTO?.typeUser=='DEC'">
+                                <ng-container *ngIf="userDTO?.etablissement!==null">
+                                    <div   class="col-sm-4">
+                                        <label class="form-label">Etablissement/CFP/EEF</label>
+                                        <input type="text" class="form-control"  [value]="userDTO?.etablissement?.label"  disabled="true"/>
+                                    </div>
+                                </ng-container>
+                                <!--ng-container *ngIf="userDTO?.cfp!==null">
+                                    <div   class="col-sm-4">
+                                        <label class="form-label">CFP</label>
+                                        <input type="text" class="form-control"  [value]="userDTO?.cfp?.label"  disabled="true"/>
+                                    </div>
+                                </ng-container-->
+                        
+                            </ng-container>
+                        </ng-container>
+
+                       <!--  <div *ngIf="userDTO?.typeUser=='DEC'" class="col-lg-4 col-sm-6">
+                            <label class="form-label">IA</label>
+                            <input type="text" class="form-control" [value]="userDTO?.ia?.label" disabled />
+                        </div>
+                        
+
+                        <div *ngIf="userDTO?.typeUser=='DEC'" class="col-lg-4 col-sm-6">
+                            <label class="form-label">IEF</label>
+                            <input type="text" class="form-control" [value]="userDTO?.ief?.label" disabled />
+                        </div>
+                        <div *ngIf="userDTO?.typeUser=='DEC'" class="col-lg-4 col-sm-6">
+                            <label class="form-label">CFP</label>
+                            <input type="text" class="form-control" [value]="userDTO?.cfp?.label" disabled />
+                        </div> -->
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="infosDemandeursGroup">
+                <form [formGroup]="demandePecForm">
+                    <ng-template matStepLabel>Informations de la demande</ng-template>
+                    <div class="row g-4 mt-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Type de demande <span class="text-danger fw-bold">*</span></label>
+                            <select class="form-select" formControlName="codeTypeDemande">
+                                <option value="">Sélectionner</option>
+                                <option value="ES">Evacuation sanitaire</option>
+                                <option value="AP">Affaires personnelles</option>
+                                <option value="OC">Organisation Cérémonie</option>
+                            </select>
+                            <div style="color: red" *ngIf="f['codeTypeDemande'].touched && f['codeTypeDemande'].hasError('required')">Type Demande <strong>obligatoire!</strong></div>
+
+                        </div>
+
+                     <!--    <div class="col-lg-4 col-sm-6">
+                            <label class="form-label">Date demande</label>
+                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDemande">
+                        </div> -->
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Objet de la demande <span class="text-danger fw-bold">*</span></label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir" formControlName="objetDemande"></textarea>
+                       <div style="color: red" *ngIf="f['objetDemande'].touched && f['objetDemande'].hasError('required')">Objet demande <strong>obligatoire!</strong></div>
+ 
+                        </div>
+
+                        <div class="col-lg-12">
+                            <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                            <ngx-dropzone (change)="onSelectFiles($event)" formControlName='files'>
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                                    <small>ou glisser et déposer les fichiers</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                    (removed)="onRemoveFile(f)">
+                                    <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                            <div style="color: red" *ngIf="f['files'].touched && f['files'].hasError('required')">Fichier(s) Joint(s) <strong>obligatoire(s)!</strong></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="action-steps">
+                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                        <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
+                        <button matStepperNext type="button" class="button button-primary text-white" [disabled]="demandePecForm.invalid"
+                            (click)="onSaveDemande()"  >Enregistrer</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

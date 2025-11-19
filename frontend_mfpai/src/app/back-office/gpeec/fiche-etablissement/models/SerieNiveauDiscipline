@@ -1,0 +1,12 @@
+
+import { DisciplineQuantum } from "./DisciplineQuantum";
+import { Niveau } from "./Niveau";
+import { Serie } from "./Serie";
+export class FiliereDiscipline{
+    id !: number;
+    serie !: Serie
+    niveau !: Niveau
+    disciplineQuantums : DisciplineQuantum [] = []
+    quantum !: number
+
+}

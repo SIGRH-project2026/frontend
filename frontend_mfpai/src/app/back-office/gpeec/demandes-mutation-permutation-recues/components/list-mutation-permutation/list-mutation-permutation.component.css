@@ -1,0 +1,12 @@
+.flex-between-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.table-form tr td,
+.table-form tr th {
+    vertical-align: middle !important;
+}

@@ -1,0 +1,111 @@
+ngb-pagination{
+    display: flex;
+    justify-content: center;
+}
+.dflex-between{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.notif-operators {
+    position: relative;
+    height: calc(100vh - 200px);
+    overflow: hidden;
+    overflow: scroll;
+    border-right: solid 1px rgba(107, 114, 128, 0.2);
+    border-radius: 0;
+}
+
+.notif-operators .notif-operators-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    background-color: #fafafa;
+    z-index: 3;
+}
+
+.notif-operators .notif-operators-header h5 {
+    font-size: 18px;
+    color: #302F2E;
+}
+
+.notif-operators .notif-operator-name,
+.notif-operators .notif-operator-date,
+.notif-operators .notif-operator-username,
+.notif-operators .notif-operator-price {
+    color: #302F2E;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 0;
+    margin: 0;
+}
+
+.notif-operators .notif-operator-name {
+    font-size: 16px;
+    font-weight: 500;
+    position: relative;
+}
+
+.notif-operators .dots {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    margin-left: 8px;
+}
+
+.notif-operators .notif-operator-name.unread {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.notif-operators .notif-operator-message {
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    /* Limite le texte à 2 lignes */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-operators .list-group-item {
+    border-radius: 0 !important;
+    border: none;
+    border-bottom: solid 1px rgba(107, 114, 128, 0.1);
+    cursor: pointer !important;
+    border-left: 3px solid transparent;
+    transition: all .3s ease-in-out;
+    border-left: 3px solid transparent;
+}
+
+
+.notif-operators .list-group-item.active {
+    background-color: rgba(29, 74, 123, .1);
+    border-left: 3px solid var(--color-primary);
+}
+
+.emtpy-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    gap: 20px;
+ height: calc(100vh - 200px);
+    background-color: #f5f5f5;
+}
+
+.p-message{
+    font-size: 1.1rem;
+}

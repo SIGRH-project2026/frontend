@@ -1,0 +1,288 @@
+<div class="panel-list">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Demande de permutation {{permutation?.id}}</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Demande : </span>
+                    <span>{{permutation?.id}}</span>
+                </li>
+                <li>
+                    <span>Date demande : </span>
+                    <span>{{permutation?.datePermutation | date : 'dd/MM/yyyy'}}</span>
+                </li>
+                <li>
+                    <span>Status : </span>
+                    <span>{{permutation?.traitementPermutation?.statut?.libelle}}</span>
+                </li>
+            </ul>
+
+            <div id="motif-modification" *ngIf="permutation?.traitementPermutation?.statut?.code=='AMODIFIER'">
+                <h6 class="title-motif">Motif de modification</h6>
+                <p>{{permutation?.traitementPermutation?.motif}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body py-0 mt-3">
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="card-user">
+                    <div class="card-user-icon">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="card-user-body">
+                        <div class="card-info-user">
+                            <h6>{{permutation?.utilisateur1?.prenom+' '+permutation?.utilisateur1?.nom}}</h6>
+                            <p>{{permutation?.utilisateur1?.matricule}}</p>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Corps</span>
+                                        <span>{{permutation?.utilisateur1?.corpsGrade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Grade</span>
+                                        <span>{{permutation?.utilisateur1?.grade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Adresse</span>
+                                        <span>{{permutation?.utilisateur1?.adresse}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Email</span>
+                                        <span>{{permutation?.utilisateur1?.email}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Région</span>
+                                        <span>{{permutation?.utilisateur1?.region?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>IA</span>
+                                        <span>{{permutation?.utilisateur1?.ia?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6"  *ngIf="permutation?.utilisateur1?.ief">
+                                    <div class="details-item">
+                                        <span>IEF</span>
+                                        <span>{{permutation?.utilisateur1?.ief?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Etablissement</span>
+                                        <span>{{permutation?.utilisateur1?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{permutation?.utilisateur1?.speciality?.label}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card-user">
+                    <div class="card-user-icon">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="card-user-body">
+                        <div class="card-info-user">
+                            <h6>{{permutation?.utilisateur2?.prenom+' '+permutation?.utilisateur2?.nom}}</h6>
+                            <p>{{permutation?.utilisateur2?.matricule}}</p>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Corps</span>
+                                        <span>{{permutation?.utilisateur2?.corpsGrade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Grade</span>
+                                        <span>{{permutation?.utilisateur2?.grade?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Adresse</span>
+                                        <span>{{permutation?.utilisateur2?.adresse}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Email</span>
+                                        <span>{{permutation?.utilisateur2?.email}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="card-info-details">
+                            <div class="row details g-3">
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Région</span>
+                                        <span>{{permutation?.utilisateur2?.region?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>IA</span>
+                                        <span>{{permutation?.utilisateur2?.ia?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" *ngIf="permutation?.utilisateur2?.ief">
+                                    <div class="details-item">
+                                        <span>IEF</span>
+                                        <span>{{permutation?.utilisateur2?.ief?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Etablissement</span>
+                                        <span>{{permutation?.utilisateur2?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{permutation?.utilisateur2?.speciality?.label}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="row mt-3" *ngIf="permutation?.traitementPermutation?.bordereauValidation">
+                    <label class="form-label">Pièces Justificatives</label>
+                    <div class="row gx-3 gy-1 doc-files">
+                        <div class="col-sm-4">
+                            <div class="doc-file-item">
+                                <div class="text-icon">
+                                    <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                    <div class="text">
+                                        <p>{{permutation?.traitementPermutation?.bordereauValidation?.originalName}}</p>
+                                        <span>{{permutation?.traitementPermutation?.bordereauValidation?.fileSize}}Ko</span>
+                                    </div>
+                                </div>
+                                <button class="fab-button" type="button" (click)="Telecharger(permutation.traitementPermutation.bordereauValidation.generatedName)">
+                                    <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                                </button>
+    
+                                 <button class="fab-button" type="button" (click)="visualiser2(permutation.traitementPermutation.bordereauValidation.generatedName)">
+                                    <i class="fas fa-eye" title="Visualiser"></i> 
+                                  </button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            <form [formGroup]="aModifierForm">
+                <div class="col-lg-12" *ngIf="permutation?.motifPermutation">
+                    <label class="form-label">Motif <span class="text-danger fw-bold">*</span></label>
+                    <textarea class="form-control" cols="30" rows="3"
+                        placeholder="Saisir" [disabled]="pourTraitement" formControlName="amodifier" [ngModel]="permutation.motifPermutation">{{permutation.motifPermutation}}</textarea>
+                </div>
+            </form>
+            <div class="col-sm-12" *ngIf="!isProfOrFormateur && !isDGPEEC">
+                <label class="form-label">BE/lettre de transmission</label>
+                <ngx-dropzone (change)="onSelect($event)" formControlName='file' class="" cols="30" rows="3">
+                    <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+            </div>
+
+<!-- [disabled]="!isDGPEEC && !files[0] || !isProfOrFormateur && !files[0]" -->
+            <div class="action-steps">
+                <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
+                <button type="button" class="button button-primary text-white" (click)="modifier()"  *ngIf="!pourTraitement && permutation?.traitementPermutation?.statut?.code == 'AMODIFIER'" [disabled]="!aModifierForm.valid">Envoyer</button>
+                <button type="button" class="button button-primary text-white" (click)="onValid()"  *ngIf="pourTraitement">Valider</button>
+                <button type="button" class="button button-primary text-white" (click)="onAccept()" *ngIf="isProfOrFormateur">Accepter</button>
+                <button type="button" class="button button-yellow text-white" (click)="onModifier()" *ngIf="pourTraitement && permutation?.traitementPermutation?.statut?.code=='TRAITEMENT'">A modifier</button>
+                <button type="button" class="button button-red text-white" (click)="onRejet()" *ngIf="isDGPEEC || isProfOrFormateur ">Rejeter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Rejeter -->
+<ng-template #rejetModal let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du rejet</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="motifRejetForm">
+            <div class="row g-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif du rejet</label>
+                    <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifRejet"></textarea>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="onSaveRejet()" >Enregistrer</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+
+<!-- Modal A modifier -->
+<ng-template #amodifierModal let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du renvoie de modification</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="motifModifForm">
+            <div class="row g-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Motif</label>
+                    <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifModif"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100" (click)="onSaveModifier()">Enregistrer</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

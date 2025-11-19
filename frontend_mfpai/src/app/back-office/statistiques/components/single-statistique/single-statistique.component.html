@@ -1,0 +1,125 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>{{ titleStat }}</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row g-3">
+
+             <ng-container *ngIf="typeStat === CompetencesProfessionnelles || typeStat === CompetencesMisesAJour">
+                <div class="col-sm-4">
+                    <label class="form-label">Type utilisateur</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option value="Formateur">Formateur</option>
+                        <option value="Professeur">Professeur</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Indicateur</label>
+                    <input type="text" class="form-control" placeholder="Saisir" disabled />
+                </div>
+             </ng-container>
+
+            <ng-container *ngIf="typeStat === FormateursQualifies">
+                <div class="col-sm-4">
+                    <label class="form-label">Indicateur</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option value="Nombre de professeurs contractuels enrolés en formation diplomante">Nombre de professeurs contractuels enrolés en formation diplomante</option>
+                        <option value="Nombre de vaccataires enrolés en formation diplomante">Nombre de vaccataires enrolés en formation diplomante</option>
+                        <option value="Nombre d'éleves Formateur/Professeurs enrolés dans les EFF">Nombre d'éleves Formateur/Professeurs enrolés dans les EFF</option>
+                    </select>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="typeStat === PersonnelEncadrement">
+                <div class="col-sm-4">
+                    <label class="form-label">Indicateur</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option value="Nombre de professeur contractuel enrolés en formation diplomante">Nombre de professeur contractuel enrolés en formation diplomante</option>
+                        <option value="Nombre d'inspecteur de spécialité recruté (IS)">Nombre d'inspecteur de spécialité recruté (IS)</option>
+                        <option value="Pourcentage d'inspecteurs utilisés pour l'encadrement des Formateurs/Professeurs">Pourcentage d'inspecteurs utilisés pour l'encadrement des Formateurs/Professeurs</option>
+                    </select>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="typeStat === PersonnelAdministratif">
+                <div class="col-sm-4">
+                    <label class="form-label">Indicateur</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option selected value="% de chefs d'établissements ayant reçu un renforcement de capacités en management  et gestion d'un établissement de FPT ">% de chefs d'établissements ayant reçu un renforcement de capacités en management et gestion d'un établissement de FPT</option>
+                    </select>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="typeStat === RenforcementCapacites">
+                <div class="col-sm-4">
+                    <label class="form-label">Indicateur</label>
+                    <input type="text" class="form-control" placeholder="Saisir" value="Taux d'exécution du plan de renforcement de capacités" disabled />
+                </div>
+            </ng-container>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Date de début</label>
+                    <input type="date" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" class="form-control" placeholder="Saisir" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Région</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">IA</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">IEF</label>
+                    <select class="form-select">
+                        <option value="">Sélectionner</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Établissement</label>
+                     <select id="selectEtablissement" class="w-100" multiple title="Sélectionner..." data-width="auto"
+                        data-live-search="true">
+                        <option [value]="etab.label" *ngFor="let etab of etablissements">
+                            {{ etab.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Graphe</label>
+                    <select id="selectGraphe" class="w-100" multiple title="Sélectionner..." data-width="auto"
+                        data-live-search="true">
+                        <option [value]="graph.label" *ngFor="let graph of graphe">
+                            {{ graph.label }}
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-secondary w-100" type="button">Rechercher</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>

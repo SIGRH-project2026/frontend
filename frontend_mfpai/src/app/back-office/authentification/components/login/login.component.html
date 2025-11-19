@@ -1,0 +1,35 @@
+<div class="login-content">
+  <div class="login-form">
+    <h2 class="login-title">Se connecter</h2>
+    <p class="login-text">Bienvenue merci de remplir vos informations </p>
+    <br>
+    <div class="row">
+      <form  [formGroup]="loginForm" >
+        <div class="col-sm-12  mb-3">
+          <label class="form-label">Identifiant</label>
+          <input type="text" class="form-control" placeholder="Saisir" name="username" id="username" formControlName="login">
+        </div>
+        <div class="col-sm-12">
+          <label class="form-label">Mot de passe</label>
+          <div class="input-group input-custom-group">
+            <input [type]="hide ? 'password' : 'text'" autocomplete="on" class="form-control" placeholder="*******" name="password" id="password" formControlName="password">
+            <button mat-icon-button type="button" matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide">
+              <i class="material-icons">{{hide ? 'visibility_off' : 'visibility'}}</i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-12 mb-3">
+          <a [routerLink]="['/auth/forgot-password']" title="Mot de passe oublié"
+            class="text-span d-flex justify-content-end my-2" style="color: rgba(29, 74, 123, 1);"><small>Mot de passe
+              oublié
+              ?</small></a>
+        </div>
+        <div class="col-md-12">
+          <button class="w-100" id="button-login" type="button" (click)="onLogin()" [disabled]="loginForm.invalid">Se
+            connecter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

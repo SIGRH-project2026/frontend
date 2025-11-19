@@ -1,0 +1,89 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start">
+            <h3>Détails thème de formation N° 1003</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>N° Référence : </span>
+                    <span>ref001</span>
+                </li>
+                <li>
+                    <span>Titre : </span>
+                    <span>Plan de formation 2023 - 2025</span>
+                </li>
+                <li>
+                    <span>Statut : </span>
+                    <span>En cours</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <div class="row details g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Thème</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Durée</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Modalités</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Opérateurs</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Bailleurs(PAD)</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Budget</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Direction/services Responsable</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Responsable du suivi</span>
+                        <span>Lorem ispum</span>
+                    </div>
+                </div>
+                <hr class="h-divider">
+                <div class="col-lg-12">
+                    <div class="details-item">
+                        <span>Cibles/Bénéficiaires</span>
+                        <ul class="badges">
+                            <li class="badge-item" *ngFor="let item of [0, 1, 2, 3]">
+                                Cible {{item}}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>

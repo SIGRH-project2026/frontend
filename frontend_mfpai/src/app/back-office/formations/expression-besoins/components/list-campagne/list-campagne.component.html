@@ -1,0 +1,181 @@
+<div class="row g-4">
+
+    <div class="col-lg-12" *ngIf="isCreateOrEditCampagneEnable()">
+        <button type="button" class="button-lg-add" (click)="onCreateCampaign()" [disabled]="false">
+           <img src="assets/icons/circle-add.svg" alt="Créer une campagne d'expression de besoins">
+            Créer une campagne d'expression de besoins
+        </button>
+    </div>
+
+     <div class="col-lg-12">
+        <aside class="panel-header">
+            <div class="panel-header-content">
+                <h4 class="panel-title" *ngIf="searchData">
+                    Liste des campagnes
+                    <span *ngIf="campaigns">({{campaigns.length}}) campagnes</span>
+                </h4>
+                <div class="actions-group">
+<!--                    <select class="form-select" [(ngModel)]="selectedYear">-->
+                    <select class="form-select" [(ngModel)]="selectedYear" (change)="onYearSelected()">
+                        <option value="">Filter par année</option>
+                        <option *ngFor="let year of dates" value="{{year}}">{{ year }}</option>
+                    </select>
+                    <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                        <i class="fa fa-filter"></i>
+                        Filtre avancé</button>
+                </div>
+            </div>
+            <ul class="legende">
+                <li>
+                    <div class="dot-blue"></div>
+                    <span class="text">Nouvelles campagnes</span>
+                </li>
+                <li>
+                    <div class="dot-yellow"></div>
+                    <span class="text">Campagnes en cours</span>
+                </li>
+                <li>
+                    <div class="dot-white"></div>
+                    <span class="text">Campagnes clôturées</span>
+                </li>
+            </ul>
+            
+        </aside>
+     </div>
+
+     <!-- Display list of campaigns -->
+     <div *ngIf="campaigns.length > 0;else listEmpty;" class="col-lg-12">
+        <div class="row g-4">
+            <div class="col-lg-4" *ngFor="let campaign of campaigns">
+                <div class="card-campaign {{campaign.cardBackground}}" [ngClass]="renderClass(campaign.nom)">
+                   <div class="card-campaign-header">
+                     <h5 class="title-campaign">{{ campaign.nom }}</h5>
+                     <div class="dropdown">
+                         <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                             <i class="fa fa-ellipsis-v"></i>
+                         </button>
+                         <ul class="dropdown-menu">
+                             <li *ngIf="campaign.statut !== 'ENDED_CAMPAGNE' && isCreateOrEditCampagneEnable()">
+                                 <a class="dropdown-item" href="javascript:(0)" (click)="onEditCampaign(campaign)">
+                                     <i class="fa fa-edit me-2"></i>
+                                     <span>Modifier la campagne</span>
+                                 </a>
+                             </li>
+                             <li *ngIf="campaign.statut !== 'ENDED_CAMPAGNE' && campaign.statut !== 'NEW_CAMPAGNE'  && isSaveExpressionDeBesoin()">
+                                 <a class="dropdown-item" href="javascript:(0)" (click)="onSubmitExpression(campaign)">
+                                     <i class="fa fa-plus me-2"></i>
+                                     <span>Soumettre expressions des besoins</span>
+                                 </a>
+                             </li>
+                             <li *ngIf="campaign.statut !== 'NEW_CAMPAGNE'  && canTreateExport()">
+                                 <a class="dropdown-item" href="javascript:(0)" (click)="export(campaign)">
+                                     <i class="fa-solid fa-file-excel me-2"></i>
+                                     <span>Exporter EB</span>
+                                 </a>
+                             </li>
+
+<!--                             export-->
+                             <li *ngIf="campaign.statut !== 'ENDED_CAMPAGNE' && campaign.statut !== 'NEW_CAMPAGNE' && canTreateExpressionDeBesoin()">
+                                 <a class="dropdown-item" href="javascript:(0)"
+                                     (click)="onTraitementExpression(campaign)">
+                                     <i class="fa fa-edit me-2"></i>
+                                     <span>Traiter expression des besoins</span>
+                                 </a>
+                             </li>
+                             <li *ngIf="campaign.statut === 'NEW_CAMPAGNE' && isStartOrStopCampagne()">
+                                 <a class="dropdown-item" href="javascript:(0)" (click)="onDemarrer(campaign)">
+                                     <i class="fa fa-play me-2"></i>
+                                     <span>Démarrer</span>
+                                 </a>
+                             </li>
+                             <li *ngIf="campaign.statut === 'STARTED_CAMPAGNE' && isStartOrStopCampagne()">
+                                 <a class="dropdown-item" href="javascript:(0)" (click)="onCloturer(campaign)">
+                                     <i class="fa fa-stop me-2"></i>
+                                     <span>Clôturer</span>
+                                 </a>
+                             </li>
+                             <li>
+                                 <a class="dropdown-item" href="javascript:(0)"
+                                     (click)="onViewDetailCampagne(campaign)">
+                                     <i class="fa fa-eye me-2"></i>
+                                     <span>Voir détails</span>
+                                 </a>
+                             </li>
+                         </ul>
+                     </div>
+                   </div>
+                   <div class="card-campaign-body">
+                    <ul class="card-campaign-details">
+                        <li>
+                            <i class="fa fa-calendar-alt"></i>
+                            <span>Du {{campaign.dateDebut }} au {{ campaign.dateFin }}</span>
+                        </li>
+                        <li>
+                            <i class="fa fa-users"></i>
+                            <span>{{campaign.numberOfExpressionDeBesoin }} demandes</span>
+                        </li>
+                    </ul>
+                   </div>
+                </div>
+                </div>
+        </div>
+     </div>
+    <ng-template #listEmpty>
+        <p class="text-black-50 mt-3 text-center m-0">Aucune donnée disponible</p>
+    </ng-template>
+
+
+     <div class="col-lg-12">
+       <!-- PAGINATION -->
+       <div class="flex-row-between">
+           <div class="d-flex align-items-center">
+               <span style="white-space: nowrap">Affichage par</span>
+               <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"  (ngModelChange)="refreshData()">
+                   <option [ngValue]="5">5</option>
+                   <option [ngValue]="9">9</option>
+                   <option [ngValue]="18">18</option>
+                   <option [ngValue]="27">27</option>
+               </select>
+               <span style="white-space: nowrap">entrées</span>
+           </div>
+           <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+               (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true" >
+           </ngb-pagination>
+       </div>
+     </div>
+</div>
+
+
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form #searchForm="ngForm">
+            <div class="row g-3">
+                <div class="col-sm-12">
+                    <label class="form-label">Nom campagne</label>
+                    <input type="text" class="form-control" placeholder="Saisir" name="nom" [(ngModel)]="searchData.nom" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Date Début</label>
+                    <input type="date" class="form-control" placeholder="Saisir" name="dateDebut" [(ngModel)]="searchData.dateDebut" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Date Fin</label>
+                    <input type="date" class="form-control" placeholder="Saisir" name="dateFin" [(ngModel)]="searchData.dateFin" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="button button-secondary w-100" (click)="onSearch(); modal.close('Save click')" [disabled]="!searchForm.valid">
+            Rechercher
+        </button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

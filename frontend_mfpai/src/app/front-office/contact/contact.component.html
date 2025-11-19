@@ -1,0 +1,54 @@
+<aside class="section-page">
+    <div class="container">
+        <h3 class="title-page">Contact</h3>
+    </div>
+</aside>
+
+<section class="container my-5">
+    <p class="desc-contact">
+        Pour échanger directement avec l’un de nos collaborateurs, n’hésitez pas à nous appeler ou à nous contacter par e-mail
+        en remplissant le formulaire dédié. Nous nous engageons à vous répondre dans les plus brefs délais:
+    </p>
+
+    <div class="contact-panel">
+        <div class="row g-2">
+            <div class="col-lg-6">
+               <div class="p-5">
+                <h2 class="mb-3">Formulaire de contact</h2>
+                <div class="row g-3">
+                    <form [formGroup]="contactForm">
+                        <div class="col-sm-12">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="nomComplet">
+                        </div>
+                        <div class="col-sm-12">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="Saisir" formControlName="email">
+                        </div>
+                        <div class="col-sm-12">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="telephone">
+                        </div>
+                        <div class="col-sm-12">
+                            <label class="form-label">Commentaire</label>
+                            <textarea class="form-control" cols="30" rows="3" placeholder="Saisir" formControlName="commentaire"></textarea>
+                        </div>
+                        <div class="col-sm-12">
+                            <button class="button button-primary rounded-pill px-5" type="button" (click)="onSave()">
+                                Envoyer
+                            </button>
+                        </div>
+                    </form>
+                
+                </div>
+               </div>
+            </div>
+            <div class="col-lg-6">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3858.7481598659765!2d-17.204368300000002!3d14.7268253!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xec172a4911bc913%3A0xed9e4eec2b1fcb1!2sMinist%C3%A8re%20de%20la%20Formation%20Professionnelle%2C%20de%20l&#39;Apprentissage%20et%20de%20l&#39;Artisanat%20(MFPAA)!5e0!3m2!1sfr!2ssn!4v1715004616094!5m2!1sfr!2ssn"
+                width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </div>
+</section>

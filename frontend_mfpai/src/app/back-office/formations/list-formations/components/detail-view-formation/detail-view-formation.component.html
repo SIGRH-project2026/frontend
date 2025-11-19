@@ -1,0 +1,419 @@
+<div class="panel-form">
+    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Détails Formation N° {{FormationRef}}</h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Type de formation : </span>
+                    <span>{{demandeList?.typeFormation?.libelle}}</span>
+                </li>
+                <li>
+                    <span>Thème : </span>
+                    <span>{{theme}}</span>
+                </li>
+                <li>
+                    <span>Durée : </span>
+                    <span>{{demandeList?.duree}}</span>
+                </li>
+                <li>
+                    <span>Date de publication : </span>
+                    <span>01-03-2024</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-list-body py-0">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab label="Planification">
+                <div class="py-3">
+                    <div class="row details g-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Intitulé de la formation</span>
+                                <span>{{demandeList?.intitule}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date début</span>
+                                <span>{{debut}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date fin</span>
+                                <span>{{fin}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Durée de la formation</span>
+                                <span>{{demandeList?.duree}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Coût</span>
+                                <span>{{demandeList?.cout}}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Specialité</span>
+                                <span>{{demandeList?.specialiteCode}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="details-item">
+                                <span>Description</span>
+                                <span>{{demandeList?.description}}</span>
+                            </div>
+                        </div>
+                        <hr class="h-divider">
+                        <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle === 'Diplômante' && (demandeList?.effCode=='CFEN' || demandeList?.effCode=='ENFMEPT')">
+                            <div class="details-item">
+                                <span>Nombre de places</span>
+                                <span>{{demandeList?.nombrePlace}}</span>
+                            </div>
+                        </div>
+                     <hr class="h-divider">
+                        <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle === 'Diplômante' && userInfos.profil[0].code==='Chef-EFF'">
+                            <label class="form-label">Cachier de charges</label>
+                            <div class="row gx-3 gy-1 doc-files">
+                                <div class="col-sm-4">
+                                    <div class="doc-file-item">
+                                        <div class="text-icon">
+                                            <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                            <div class="text">
+                                                <p>{{this.cahiercharge?.originalName}}</p>
+                                                <span>{{this.cahiercharge?.fileSize}}</span>
+                                            </div>
+                                        </div>
+                                        <button class="fab-button" type="button" (click)="downloadFile(this.cahiercharge.generatedName)">
+                                            <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="demandeList?.typeFormation?.libelle === 'Diplômante' ? 'Convocation' : 'Participants'" [disabled]="isPublished">
+                <div class="py-3">
+                    <div class="col-lg-12">
+                        <div class="row gx-3 gy-1 doc-files">
+                            <div class="col-sm-4">
+                                <div class="doc-file-item">
+                                    <div class="text-icon">
+                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                        <div class="text">
+                                            <p>Termes de référence</p>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <button class="fab-button" type="button">
+                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger" (click)="downloadFile(tdr)">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="doc-file-item">
+                                    <div class="text-icon">
+                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                        <div class="text">
+                                            <p>Convocation</p>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <button class="fab-button" type="button">
+                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger" (click)="downloadFile(convo)">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="doc-file-item">
+                                    <div class="text-icon">
+                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                        <div class="text">
+                                            <p>Participants</p>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <button class="fab-button" type="button">
+                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger" (click)="downloadFile(particip)">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12" *ngIf="convocationList.length <= 0">
+                        <div class="empty-list shadow-none">
+                            <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+                            <p>Aucune donnée disponible</p>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab [label]="demandeList?.typeFormation?.libelle === 'Diplômante' ? 'Participants' : 'Planning'" [disabled]="isPublished">
+                <div class="py-3">
+                    <div class="col-lg-12">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                                    <i class="fa fa-filter"></i>
+                                    Filtre avancé</button>
+                                    <button type="button" class="button button-outline-green ms-3" (click)="downloadFile(fileParticipants.generatedName)">
+                                        <img src="assets/icons/file-type-excel.svg" alt="Exporter participants" title="Exporter participants" width="24px">
+                                        Télécharger la liste des participants</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <!-- Table -->
+                        <!-- <div class="table-responsive">
+                            <table class="table table-custom" id="dataTables">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="participantList.length > 0;else listEmpty;">
+                                        <tr *ngFor="let participant of participantList">
+                                            <td>
+                                                {{ participant.num_demande }}
+                                            </td>
+                                            <td>
+                                                {{ participant.matricule }}
+                                            </td>
+                                            <td>
+                                                {{ participant.prenom }} {{ participant.nom | uppercase }}
+                                            </td>
+                                            <td>
+                                                {{ participant.direction }}
+                                            </td>
+                                            <td>
+                                                {{ participant.corps }} {{ participant.grade }}
+                                            </td>
+                                            <td>
+                                                {{ participant.typeDemande }}
+                                            </td>
+                                            <td>
+                                                {{ participant.titreFormation }}
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="onViewDemande(participant)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="headers.length">
+                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div> -->
+
+                        <!-- PAGINATION -->
+                        <!-- <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter"
+                                    [(ngModel)]="pageSize" (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div> -->
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Rapport" [disabled]="isPublished">
+                <div class="py-3 details gy-4">
+                    <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle !== 'Diplômante'">
+                        <div class="row gx-3 gy-1 doc-files">
+                            <label class="form-label">Pièces jointes</label>
+                            <div class="col-sm-4" *ngFor="let item of piecesJointesList">
+                                <div class="doc-file-item">
+                                    <div class="text-icon">
+                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                        <div class="text">
+                                            <p>{{ item.originalName }}</p>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <button class="fab-button" type="button">
+                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger" (click)="downloadFile(item.generatedName)">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle !== 'Diplômante'">
+                        <div class="details-item pt-3">
+                            <span>Commentaire</span>
+                            <span>{{commentaire}}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle === 'Diplômante'">
+                        <div class="row gx-3 gy-1 doc-files">
+                            <label class="form-label">PV d'examen</label>
+                            <div class="col-sm-4" *ngFor="let item of pjPVExamen">
+                                <div class="doc-file-item">
+                                    <div class="text-icon">
+                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                        <div class="text">
+                                            <p>{{ item.file.originalName }}</p>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <button class="fab-button" type="button">
+                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger" (click)="downloadFile(item.file.generatedName)">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" *ngIf="demandeList?.typeFormation?.libelle === 'Diplômante'">
+                        <div class="details-item pt-3">
+                            <span>Sessions</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mt-3" title="Sessions">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col">Debut</th>
+                                        <th scope="col">Fin</th>
+                                        <th scope="col">Commentaire</th>
+                                        <th scope="col">Rapport</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="listSession!.length > 0; else listEmpty">
+                                        <tr *ngFor="let session of listSession; let index = index">
+                                            <td>
+                                                {{ session?.dateDebut }}
+                                            </td>
+                                            <td>
+                                                {{ session?.dateFin }}
+                                            </td>
+                                            <td>
+                                                {{ session?.commentaire }}
+                                            </td>
+                                            <td>
+                                                <a href="javascript:(0)" class="text-decoration-underline text-green" (click)="downloadFile(session?.generatedName)">{{
+                                                    session?.fileName }}</a>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <button type="button" class="btn btn-sm" title="Supprimer">
+                                                        <i class="fa fa-trash-alt icon-view text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="4">
+                                                <p class="text-black-50 text-center m-0">
+                                                    Aucune donnée disponible
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+        <button type="button" (click)="goBack()" class="button-return">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Matricule</label>
+                        <input type="text" class="form-control" placeholder="Saisir">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Corps</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Grade</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Direction</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Type demande</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100"
+                (click)="onSearch();modal.close('Save click')">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>

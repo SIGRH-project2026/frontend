@@ -1,0 +1,140 @@
+<div class="panel-list">
+  <div class="panel-list-header">
+    <div class="panel-list-text d-flex align-items-center justify-content-between">
+      <ng-container *ngIf="actionPTA; else notAction">
+        <h3>{{ pta?.initialPTA?.nomPTA}} {{pta?.initialPTA?.date}} / {{actionPTA?.libelleAction}}</h3>
+      </ng-container>
+      <ng-template #notAction>
+        <h3>{{ pta?.initialPTA?.nomPTA}} {{pta?.initialPTA?.date}}</h3>
+      </ng-template>
+
+    </div>
+  </div>
+  <div class="panel-list-body">
+      <form [formGroup]="actionPTAForm">
+    <div class="row d-flex align-items-end">
+
+           <div class="col-lg-6">
+               <label class="form-label">Libellé</label>
+               <input type="text" class="form-control" placeholder="Saisir (Ex : Action n°1 : Gestion des effectifs et des emplois)"  formControlName="libelleAction" />
+           </div>
+           <div class="col-lg-6">
+               <button class="button button-secondary" (click)="onCreateAction()">Ajouter</button>
+           </div>
+
+    </div>
+      </form>
+    <div class="section-action row g-3 my-4">
+      <h4>Liste des actions ajoutées</h4>
+      <div class="col-lg-6" *ngFor="let action of actionPTAs">
+        <div class="sub-action-contente">
+          <h6 class="m-0">{{ action?.libelleAction }}</h6>
+          <div class="icons d-flex">
+            <div class="icon-container-edit me-2">
+              <i class="fa fa-edit"></i>
+            </div>
+            <!-- div class="icon-container-delete" (click)="deleteAction(action)">
+              <i class="fa fa-trash"></i>
+            </div-->
+          </div>
+        </div>
+      </div>
+    </div>
+     <!-- ACTIONS -->
+     <div class="row g-3 mt-2">
+      <div class="col-lg-2 col-sm-6">
+          <button class="button button-primary w-100" type="button" (click)="onSave()">
+              Enregistrer
+          </button>
+      </div>
+      <div class="col-lg-2 col-sm-6">
+          <button class="button button-outline-primary w-100" type="reset" (click)="onReset()">
+              Annuler
+          </button>
+      </div>
+  </div>
+    
+  </div>
+</div>
+
+<!-- Modal -->
+<ng-template #FORM_CREATION_SOUSACTION let-modal>
+  <div class="modal-header modal-header-with-sub">
+    <h1 class="modal-title fs-5" id="FORM_CREATION_SOUSACTIONLabel">
+      Création sous action
+    </h1>
+    <nav aria-label="breadcrumb" class="breadcrumb-sub">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="javascript:(0)">{{actionPTA?.libelleAction}}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          {{resultFromSub?.libelleResultat }}
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="subActionForm">
+      <div class="row g-4">
+        <div class="col-sm-4">
+          <label class="form-label">Libellé sous action</label>
+          <input type="text" class="form-control" placeholder="Saisir (Ex: Sous action 1.1.1)"
+            formControlName="libelleSubAction" />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Libellé Indicateur</label>
+          <select class="form-select" formControlName="indicateur" #indicateur
+            (change)="getIndicateur($any($event.target).value)">
+            <option value="">Sélectionner</option>
+            <option *ngFor="let ind of indicateurs" [value]=ind.id>{{ind?.libelle}}</option>
+          </select>
+        </div>
+
+        <ng-container *ngIf="indicateur.value">
+          <div class="col-sm-4">
+            <label class="form-label">Responsable Activité</label>
+            <input type="text" class="form-control" placeholder="Saisir" value="{{responssableAct}}" disabled />
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">Divisions/Bureaux/Services</label>
+            <input type="text" class="form-control" placeholder="Saisir" value="{{listDivisions}}" disabled />
+          </div>
+        </ng-container>
+        <div class="col-sm-4">
+          <label class="form-label">Cible</label>
+          <input type="text" class="form-control" placeholder="Saisir" value="{{resultFromSub?.cible}}" disabled />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Budget</label>
+          <input type="number" min="0" formControlName="budget" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Date début</label>
+          <input type="date" formControlName="dateDebut" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Date fin</label>
+          <input type="date" formControlName="dateFin" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Moyen Tech/RH</label>
+          <input type="text" formControlName="moyenRH" class="form-control" placeholder="Saisir" />
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Source de Financement</label>
+          <input type="text" formControlName="sourceFinancement" class="form-control" placeholder="Saisir" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="button button-primary" (click)="onCreateSousAction(); modal.close('Save click')">
+      Ajouter
+    </button>
+    <button type="button" class="button button-outline-primary" (click)="modal.close('Save click')">
+      Annuler
+    </button>
+  </div>
+</ng-template>

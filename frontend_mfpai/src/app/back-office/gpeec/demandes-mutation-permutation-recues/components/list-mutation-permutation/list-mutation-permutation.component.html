@@ -1,0 +1,420 @@
+
+
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <div class="flex-between-row">
+                <h3>{{ tabTitle }} </h3>
+            </div>
+
+
+
+            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+                <mat-tab label="Mutations">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                                <select class="form-select">
+                                    <option value="">Tous les status</option>
+                                    <option value="SOUMISE">Soumise</option>
+                                    <option value="AMODIFIER">A modifier</option>
+                                    <option value="VALIDEE">Validée</option>
+                                    <option value="REJETEE">Rejetée</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="button-filter" (click)="openModal(FILTREAVANCEMUTATION)">
+                                <i class="fa fa-filter"></i>
+                                Filtre avancé</button>
+                        </div>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col" *ngFor="let head of headersMutation">{{ head }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="mutationList.length > 0;else listEmpty;">
+
+
+                                        <tr *ngFor="let demande of mutationList">
+                                            <td>
+                                                {{ demande.num_demande }}
+                                            </td>
+                                            <td>
+                                                {{ demande.dateDemande }}
+                                            </td>
+                                            <td>
+                                                {{ demande.demandeur.matricule }}
+                                            </td>
+                                            <td>
+                                                {{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}
+                                            </td>
+                                            <td>
+                                                {{ demande.etablissementOrigine }}
+                                            </td>
+                                            <td>
+                                                {{ demande.etablissementSouhaitee }}
+                                            </td>
+                                            <td>
+                                                <div [appStatus]="demande.statut" class="status-badge"></div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="onViewDetailMutation(demande)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="demande.statut==='AMODIFIER' || demande.statut==='SOUMISE'">
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditMutation(demande)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Traiter</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="openModal(GENERER_OS)">
+                                                                <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                                <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
+                                                                <span>Générer OS</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="headersMutation.length">
+                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter"
+                                    [(ngModel)]="pageSize" (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="pageSize"
+                                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Permutations">
+                    <div class="py-3">
+                        <div class="panel-list-search">
+                            <div class="search">
+                                <div class="search-box">
+                                    <input class="search-input" type="text" placeholder="Rechercher">
+                                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                                </div>
+                                <select class="form-select">
+                                    <option value="">Tous les status</option>
+                                    <option value="SOUMISE">Soumise</option>
+                                    <option value="AMODIFIER">A modifier</option>
+                                    <option value="ACCEPTER">Acceptée</option>
+                                    <option value="VALIDEE">Validée</option>
+                                    <option value="REJETEE">Rejetée</option>
+                                </select>
+                            </div>
+                    
+                            <button type="button" class="button-filter" (click)="openModal(FILTREAVANCEPERMUTATION)">
+                                <i class="fa fa-filter"></i>
+                                Filtre avancé</button>
+                        </div>
+
+
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-custom table-form table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th scope="col" rowspan="2">N° Demande</th>
+                                        <th scope="col" rowspan="2">Date Demande</th>
+                                        <th scope="col" colspan="3">Formateur 1/Professeur 1</th>
+                                        <th scope="col" colspan="3">Formateur 2/Professeur 2</th>
+                                        <th scope="col" rowspan="2">Statut</th>
+                                        <th scope="col" rowspan="2">Action</th>
+                                    </tr>
+                                    <tr class="table-light">
+                                        <th scope="col">Matricule</th>
+                                        <th scope="col">Prénom</th>
+                                        <th scope="col">Nom</th>
+                                        <th scope="col">Matricule</th>
+                                        <th scope="col">Prénom</th>
+                                        <th scope="col">Nom</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="permutationList.length > 0;else listEmpty;">
+                                        <tr *ngFor="let demande of permutationList">
+                                            <td>
+                                                {{ demande.num_demande }}
+                                            </td>
+                                            <td>
+                                                {{ demande.dateDemande }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur1.matricule }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur1.prenom }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur1.nom }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur2.matricule }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur2.prenom }}
+                                            </td>
+                                            <td>
+                                                {{ demande.formateur2.nom }}
+                                            </td>
+                                            <td>
+                                                <div [appStatus]="demande.statut" class="status-badge"></div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)"
+                                                                (click)="onViewDetailPermutation(demande)">
+                                                                <i class="fa fa-eye me-2"></i>
+                                                                <span>Voir détails</span>
+                                                            </a>
+                                                        </li>
+                                                        <li *ngIf="demande.statut==='AMODIFIER'">
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="onEditPermutation(demande)">
+                                                                <i class="fa fa-edit me-2"></i>
+                                                                <span>Modifier</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:(0)" (click)="openModal(GENERER_OS)">
+                                                                <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                                <img class="me-2" src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS" width="18px">
+                                                                <span>Générer OS</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #listEmpty>
+                                        <tr>
+                                            <td [attr.colspan]="headersMutation.length">
+                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                        <!-- PAGINATION -->
+                        <div class="flex-row-between">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap">Affichage par</span>
+                                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                                    (ngModelChange)="refreshData()">
+                                    <option [ngValue]="10">10</option>
+                                    <option [ngValue]="20">20</option>
+                                    <option [ngValue]="30">30</option>
+                                </select>
+                                <span style="white-space: nowrap">entrées</span>
+                            </div>
+                            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="pageSize"
+                                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <ng-template #FILTREAVANCEMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Reference</label>
+                        <input type="text" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Région souhaitée</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IA souhaitée</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IEF souhaitée</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Etablissement souhaité</label>
+                        <select class="form-select">
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- Modal -->
+    <ng-template #FILTREAVANCEPERMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel2">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">N° Demande</label>
+                        <input type="text" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date début</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date fin</label>
+                        <input type="date" class="form-control" placeholder="Saisir" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- Modal -->
+    <ng-template #FORMDEMANDEPERMUTATION let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Demande de permutation</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                   
+                    <div class="col-sm-12">
+                        <label class="form-label">Matricule Formateur 1</label>
+                        <input type="text" class="form-control" value="mat001" disabled />
+                    </div>
+                    <div class="col-sm-12">
+                        <label class="form-label">Matricule Formateur 2</label>
+                        <input type="text" class="form-control" placeholder="Saisir" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onDemandePermutation()">Demander</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+
+    <!-- Modal Générer OS -->
+    <ng-template #GENERER_OS let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="rejetModalLabel">Générer OS</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form>
+                <div class="row g-3">
+                    <div class="col-lg-12">
+                        <label class="form-label">Pièces jointes <span class="text-danger fw-bold">*</span></label>
+                        <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                            <ngx-dropzone-label>
+                                <i class="material-icons">cloud_upload</i>
+                                <p class="fw-semibold">Sélectionner les fichiers</p>
+                                <small>ou glisser et déposer les fichiers</small>
+                            </ngx-dropzone-label>
+                            <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                (removed)="onRemoveFile(f, piecesJointesFiles)">
+                                <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                            </ngx-dropzone-preview>
+                        </ngx-dropzone>
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSaveDemandeOS()">Enregistrer</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>

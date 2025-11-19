@@ -1,0 +1,163 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text d-flex align-items-center justify-content-between">
+            <h3>Liste des dossiers agents</h3>
+            <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)">
+                <i class="fa fa-add"></i>
+                Créer un dossier
+            </button>
+        </div>
+        <div class="panel-list-search">
+            <div class="search ">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)] = "searchText">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container>
+                    <tr *ngFor="let dossier of dossierList|searchPipe:searchText">
+                        <td>
+                            {{ dossier.utilisateur?.matricule  }}
+                        </td>
+                        <td>
+                            {{ dossier.utilisateur?.prenom }}
+                        </td>
+                        <td>
+                            {{ dossier.utilisateur?.nom }}
+                        </td>
+                        <td>
+                            {{ dossier.utilisateur?.adresse }}
+                        </td>
+                        <td>
+                            {{ dossier.utilisateur?.fonction?.label }}
+                        </td>
+                        <td>
+                            {{ dossier.utilisateur?.corpsGrade?.label }} / {{ dossier.utilisateur?.grade?.label }}
+                        </td>
+
+                        <td>
+                            <div class="dropdown">
+                                <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier?.utilisateur?.id)">
+                                            <i class="fa fa-eye me-2"></i>
+                                            <span>Voir détails</span>
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-template #listEmpty>
+                    <tr>
+                        <td [attr.colspan]="headers">
+                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                        </td>
+                    </tr>
+                </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="listDossierAgent()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="listDossierAgent()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<ng-template #Add_dossier let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addDossier">Création dossier</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="rechercheForm">
+            <div class="row g-3">
+                <div class="col-lg-12">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="button button-secondary "
+                (click)="modal.close(rechercheForm.value?.matricule)" [disabled]="!rechercheForm.valid">Rechercher</button>
+        <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+
+<!-- Modal -->
+<ng-template #filterAvancer let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="filtreAvanceForm">
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label">Matricule</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName = "matricule"/>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom"/>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="nom" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label">Adresse</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="adresse" />
+                </div>
+               
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary w-100"
+                (click)="modal.close('Save click')">Rechercher</button>
+        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+            Annuler
+        </button>
+    </div>
+</ng-template>

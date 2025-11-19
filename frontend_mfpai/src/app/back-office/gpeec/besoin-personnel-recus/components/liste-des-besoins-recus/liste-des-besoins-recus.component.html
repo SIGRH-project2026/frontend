@@ -1,0 +1,152 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des expressions de besoins en recrutement reçus</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+
+
+            </div>
+            <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                <i class="fa fa-filter"></i>
+                Filtre avancé</button>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="listBEP.length > 0;else listEmpty;">
+                        <tr *ngFor="let demande of listBEP">
+                            <ng-container *ngIf="matchSearchQuery(demande)">
+                                <td>
+                                    {{ demande.id }}
+                                </td>
+                                <td>
+                                    {{ demande.utilisateur.prenom + ' '+ demande.utilisateur.nom }}
+                                </td>
+                                <td>
+                                    {{ demande.region.label }}
+                                </td>
+                                <td>
+                                    {{ demande.ia.label }}
+                                </td>
+                                <td>
+                                    {{ demande.ief.label }}
+                                </td>
+                                <td>
+                                    {{ demande.etablissement.label }}
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="onViewDemande(demande)">
+                                                    <i class="fa fa-eye me-2"></i>
+                                                    <span>Voir détails</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </ng-container>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="listBesoinEnPersonnel()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="listBesoinEnPersonnel()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="reachForm">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Références</label>
+                        <input type="text" formControlName="reference" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Etablissement ou Ecole de Formation</label>
+                        <input type="text" formControlName="etablissement" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Prenom et nom</label>
+                        <input type="text" formControlName="nomComplet" class="form-control" placeholder="Saisir" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Région</label>
+                        <select formControlName="region" class="form-select">
+                            <option value="" selected>selection</option>
+                            <option *ngFor="let region of listRegion" [value]="region.label">{{region.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IA</label>
+                        <select formControlName="ia" class="form-select">
+                            <option value="" selected>selection</option>
+                            <option *ngFor="let ia of listIa" [value]="ia.label">{{ia.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">IEF</label>
+                        <select formControlName="ief" class="form-select">
+                            <option value="" selected>selection</option>
+                            <option *ngFor="let ief of listIef" [value]="ief.label">{{ief.label}}</option>
+                        </select>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100"
+                (click)="onSearch();modal.close('Save click')">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>

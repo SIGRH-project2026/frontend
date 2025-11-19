@@ -1,0 +1,103 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <h3>Détails </h3>
+            <ul class="panel-infos">
+                <li>
+                    <span>Matricule : </span>
+                    <span>{{profHoraire.professeur.matricule}}</span>
+                </li>
+                <li>
+                    <span>Prénom : </span>
+                    <span>{{profHoraire.professeur.prenom}}</span>
+                </li>
+                <li>
+                    <span>Nom : </span>
+                    <span>{{profHoraire.professeur.nom}}</span>
+                </li>
+                <li>
+                    <span>Quantum annuel : </span>
+                    <span>{{profHoraire.professeur.quantumHoraire}}</span>
+                </li>
+               
+            </ul>
+           
+        </div>
+        
+        
+    </div>
+    <div class="panel-list-search">
+        <div class="search">
+            <div class="search-box">
+                <input class="search-input" type="text" placeholder="Rechercher">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+        </div>
+  
+    </div>
+  
+    <div class="panel-list-body">
+           <!-- Table -->
+           <table class="table table-custom table-form w-100">
+            <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngIf="profHoraire.classeDisciplinesForProfs.length > 0 ; else listEmpty;">
+                    <ng-container *ngFor="let classe of profHoraire.classeDisciplinesForProfs">
+                        <tr>
+                            <td [attr.rowspan]="classe.disciplineQuantum.length +1">
+                                {{ classe.nomClasse }}
+                            </td>
+                        </tr>
+                        <ng-container *ngFor="let discipline of classe.disciplineQuantum">
+                            <tr>
+                                <td>
+                                    {{ discipline.discipline.libelle }}
+                                </td>
+                                <td>
+                                    {{ discipline.quantum }}
+                                </td>
+                             
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+
+                </ng-container>
+                <ng-template #listEmpty>
+                    <tr>
+                        <td [attr.colspan]="headers.length">
+                            <p class="text-black-50 text-center m-0">Aucune donnée disponible
+                            </p>
+                        </td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </table>
+
+        <!-- PAGINATION -->
+        <!-- <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div> -->
+      
+        <button type="button"  class="button-return" (click)=" goBack()">
+            <i class="fa fa-arrow-left"></i>
+            Retour</button>
+    </div>
+</div>
+

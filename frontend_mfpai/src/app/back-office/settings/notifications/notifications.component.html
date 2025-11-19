@@ -1,0 +1,70 @@
+<div class="panel-list">
+  <div class="panel-list-header">
+    <div
+      class="panel-list-text d-flex align-items-center justify-content-between"
+    >
+      <ng-container>
+        <h3>Liste des notifications</h3>
+      </ng-container>
+    </div>
+  </div>
+  <div class="panel-list-body">
+    <div class="row no-gutters g-0">
+      <div class="col-4">
+        <div class="list-group notif-operators">
+          <ng-container *ngFor="let notification of notifications">
+            <a
+              href="javascript:(0)"
+              class="list-group-item list-group-item-action"
+              [ngClass]="{ 'active': notification === selectedNotification }"
+              (click)="selectNotification(notification)"
+            >
+              <div class="dflex-between">
+                <div class="d-flex align-items-center mb-2">
+                  <h5
+                    class="notif-operator-name p-0 m-0"
+                    [ngClass]="{ unread: !notification.read }"
+                  >
+                    {{ notification.objet }}
+                  </h5>
+                  <ng-container *ngIf="!notification.read">
+                    <div class="dots"></div>
+                  </ng-container>
+                </div>
+                <small class="notif-operator-date">{{
+                  notification.date  | date:'short'
+                }}</small>
+              </div>
+
+              <ng-container *ngIf="notification.message">
+                <p class="mb-1 notif-operator-message">
+                  {{ notification.message }}
+                </p>
+              </ng-container>
+            </a>
+          </ng-container>
+        </div>
+        <!-- <div>
+            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="size"
+            (pageChange)="getAllNotification()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+         </div> -->
+      </div>
+      <div class="col-8">
+        <div class="px-3" *ngIf="selectedNotification">
+          <h3>{{ selectedNotification?.objet }}</h3>
+          <p class="p-message">{{ selectedNotification?.message }}</p>
+        </div>
+
+        <div class="emtpy-list" *ngIf="!selectedNotification">
+          <img
+            src="assets/icons/empty-list.svg"
+            alt="Aucune donnée disponible"
+          />
+          <h6 class="fw-semibold m-0 p-0">Sélectionner un élément</h6>
+          <p class="p-0 m-0">Aucun élément sélectionné</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

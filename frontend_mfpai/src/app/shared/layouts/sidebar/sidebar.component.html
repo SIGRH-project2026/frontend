@@ -1,0 +1,213 @@
+<aside id="sidebar-wrapper">
+  <div class="sidebar-brand">
+    <span class="logo-name">SIGRH</span>
+  </div>
+  <ul class="sidebar-nav">
+    <!--  <li class="nav-item" *ngFor="let menu of menuItems;let index = index">
+      <ng-container *ngIf="menu.type === 'link'">
+        <a class="nav-link" [routerLink]="menu.path" routerLinkActive="active">
+          <img [src]="menu.icon" [alt]="menu.label" [title]="menu.label" />
+          <span>{{ menu.label }}</span>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="menu.type === 'sub'">
+        <a class="nav-link nav-link-sub" data-bs-toggle="collapse" [attr.href]="'#subMenu-'+index" role="button"
+          aria-expanded="false" [ngClass]="{ 'active': isSubMenuActive(menu) }"
+          [attr.aria-controls]="'#subMenu-'+index">
+          <div class="path" [innerHTML]="sanitizeIcon(menu.icon)"></div>
+            <img [src]="menu.icon" [alt]="menu.label" [title]="menu.label" />
+
+          <span>{{ menu.label }}</span>
+        </a>
+        <ul class="navs collapse sub-menu" [id]="'subMenu-'+index" [ngClass]="{ 'show': isSubMenuActive(menu) }">
+          <li class="nav-item" *ngFor="let subMenu of menu.childrens">
+            <a class="nav-link" [routerLink]="subMenu.path" routerLinkActive="active">
+              <span>{{ subMenu.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </ng-container>
+    </li> -->
+
+    <li class="nav-item" *ngFor="let menu of menuItems; let index = index">
+      <ng-container *ngIf="menu.menType === 'link'">
+        <a
+          class="nav-link"
+          [routerLink]="menu.menPath"
+          routerLinkActive="active"
+          (click)="getMenuCourrier(menu.menTitle)"
+        >
+          <ng-container
+            *ngIf="
+              menu.menPath === '/dashboard' ||
+              menu.menPath === '/statistiques' ||
+              menu.menPath === '/courriers'
+            "
+          >
+            <img
+              [src]="menu.menIconType"
+              [alt]="menu.menTitle"
+              [title]="menu.menTitle"
+            />
+          </ng-container>
+
+          <span>{{ menu.menTitle }}</span>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="menu.menType === 'sub'">
+        <a
+          class="nav-link nav-link-sub"
+          data-bs-toggle="collapse"
+          [attr.href]="'#subMenu-' + index"
+          role="button"
+          aria-expanded="false"
+          [ngClass]="{ active: isSubMenuActive(menu) }"
+          [attr.aria-controls]="'#subMenu-' + index"
+        >
+          <img
+            [src]="menu.menIconType"
+            [alt]="menu.menTitle"
+            [title]="menu.menTitle"
+          />
+          <span>{{ menu.menTitle }}</span>
+        </a>
+        <ul
+          class="navs collapse sub-menu"
+          [id]="'subMenu-' + index"
+          [ngClass]="{ show: isSubMenuActive(menu) }"
+        >
+          <li class="nav-item" *ngFor="let subMenu of menu.children">
+            <a
+              class="nav-link"
+              [routerLink]="subMenu.menPath"
+              routerLinkActive="active"
+              (click)="getMenTitle(subMenu.menTitle)"
+            >
+              <span>{{ subMenu.menTitle }}</span>
+            </a>
+          </li>
+        </ul>
+      </ng-container>
+    </li>
+  </ul>
+</aside>
+
+<div id="navbar-wrapper">
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <!-- Breadcrumb -->
+        <a
+          href="#"
+          class="navbar-brand d-block d-lg-none text-white"
+          id="sidebar-toggle"
+          ><i class="fa fa-bars"></i
+        ></a>
+        <app-breadcrumb></app-breadcrumb>
+
+        <div class="d-flex align-items-center">
+          <!-- start notification -->
+          <div class="dropdown notification">
+            <a
+              class="me-3 dropdown-toggle hidden-arrow"
+              href="#"
+              id="navbarDropdownMenuLink"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              (click)="getAllNotification()"
+            >
+              <i class="fas fa-bell"></i>
+              <span class="badge rounded-pill badge-notification">{{
+                notificationsLength
+              }}</span>
+            </a>
+            <ul
+              class="dropdown-container dropdown-menu dropdown-menu-center"
+              aria-labelledby="navbarDropdownMenuLink"
+            >
+              <li class="dropdown-header">
+                <h4>Notifications</h4>
+              </li>
+              <div *ngFor="let notif of notifications">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    [routerLink]="'/settings/notifications'"
+                  >
+                    <div class="flex-between">
+                      <div class="d-flex align-items-center mb-1">
+                        <h5 class="notif-name m-0 p-0" [ngClass]="{ 'unread': notif.read }">
+                          {{ notif?.objet }}
+                        </h5>
+                        <ng-container *ngIf="notif.read">
+                          <div class="dots"></div>
+                        </ng-container>
+                      </div>
+                      <small class="text-muted">{{
+                        notif.date  | date:'short'
+                      }}</small>
+                    </div>
+                    <p>{{ notif?.message }}</p>
+                  </a>
+                </li>
+                <!-- <hr> -->
+              </div>
+              <!-- <li>
+                  <a class="dropdown-item" href="javascript:(0)">
+                    <h5>Traitement demande</h5>
+                    <p>Une expression de besoins vous a été soumise.Merci de procéder au traitement</p>
+                  </a>
+              </li> -->
+              <!-- <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="size"
+                 (pageChange)="getAllNotification()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination> -->
+            </ul>
+          </div>
+          <!-- end notification -->
+          <div class="user-wrapper dropdown">
+            <div class="user-avatar">
+              {{ userInfos?.prenom.charAt(0) || ""
+              }}{{ userInfos?.nom.charAt(0) || "" }}
+            </div>
+            <span class="user-content">
+              <span>{{ userInfos?.prenom }} {{ userInfos?.nom }}</span>
+              <span>{{ userInfos?.profil[0]?.label }}</span>
+            </span>
+
+            <button
+              class="dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            ></button>
+            <ul class="dropdown-menu dropdown-menu-lg-end">
+              <li>
+                <a class="dropdown-item" routerLink="/settings/mon-compte">
+                  <i class="fa fa-user-circle me-2"></i>
+                  <span> Mon compte</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" routerLink="/">
+                  <i class="fa fa-info-circle me-2"></i>
+                  <span>Aller vers le portail</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="javascript:(0)"
+                  (click)="onLogout()"
+                >
+                  <i class="fa fa-sign-out-alt me-2"></i>
+                  <span> Déconnexion</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

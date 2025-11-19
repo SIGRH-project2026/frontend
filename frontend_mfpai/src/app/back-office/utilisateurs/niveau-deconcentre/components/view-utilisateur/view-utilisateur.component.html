@@ -1,0 +1,292 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Détail Utilisateur - {{ deconectedDTO?.prenom }} {{ deconectedDTO?.nom }}</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <h5 class="title-form">Emplacement</h5>
+            <div class="row details py-3 g-3">
+
+                <ng-container *ngIf="deconectedDTO?.structure?.code === 'IA' ;else structure">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Région</span>
+                            <span>{{ deconectedDTO?.region?.label}}</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>IA</span>
+                            <span>{{ deconectedDTO?.ia?.label}}</span>
+                        </div>
+                    </div>
+
+                    <ng-container *ngIf="deconectedDTO?.ief?.code">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>IEF</span>
+                                <span>{{ deconectedDTO?.ief?.label}}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Etablissements/CFP/EEF</span>
+                            <span>{{ deconectedDTO?.etablissement?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-template #structure>
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>EEF</span>
+                            <span>{{ deconectedDTO?.etablissement?.label}} ( {{deconectedDTO?.etablissement?.code}} )</span>
+                        </div>
+                    </div>
+                </ng-template>
+
+
+
+            </div>
+
+            <h5 class="title-form">Informations personnelles</h5>
+            <div class="row details py-3 g-3">
+
+                <ng-container *ngIf=" deconectedDTO?.matriculeFonctionnaire">
+                    <div class="row details py-3 g-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Matricule</span>
+                                <span>{{ deconectedDTO?.matricule}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf=" deconectedDTO?.matriculeContratuel">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{ deconectedDTO?.matricule}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container  *ngIf="deconectedDTO?.matriculeVacataire">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{ deconectedDTO?.matricule }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container  *ngIf="deconectedDTO?.matriculeDecisionnaire">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule </span>
+                            <span>{{ deconectedDTO?.matricule }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{ deconectedDTO?.prenom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{ deconectedDTO?.nom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Sexe</span>
+                        <span>{{ deconectedDTO?.sexe}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Téléphone</span>
+                        <span>{{ deconectedDTO?.telephone}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Email</span>
+                        <span>{{ deconectedDTO?.email}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date de naissance</span>
+                        <span>{{ deconectedDTO?.dateNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Lieu de naissance</span>
+                        <span>{{ deconectedDTO?.lieuDeNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>CNI</span>
+                        <span>{{ deconectedDTO?.cni}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Profil</span>
+                        <span>{{ profileLabel }}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Situation matrimoniale</span>
+                        <span>{{ deconectedDTO?.situationMatrimoniale}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nombre Enfants</span>
+                        <span>{{ deconectedDTO?.nombreEnfants}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nationalité</span>
+                        <span>{{ deconectedDTO?.nationalite}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Adresse</span>
+                        <span>{{ deconectedDTO?.adresse}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="title-form">Informations professionnelles</h5>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Corps</span>
+                        <span>{{ deconectedDTO?.corpsGrade?.label}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Grade</span>
+                        <span>{{ deconectedDTO?.grade?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date Corps</span>
+                        <span>{{ deconectedDTO?.dateCorp}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Profil</span>
+                        <span>{{ profileLabel }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6" *ngIf="profileCode === 'Professeur'">
+                    <div class="details-item">
+                        <span>Quantum Horaire</span>
+                        <span>{{ deconectedDTO?.quantumHoraire }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Fonction</span>
+                        <span>{{ deconectedDTO?.fonction?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Spécialité</span>
+                        <span>{{ deconectedDTO?.speciality?.label}}</span>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="deconectedDTO?.diplomeACA?.code">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme ACA</span>
+                            <span>{{ deconectedDTO?.diplomeACA?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="deconectedDTO?.diplomePROF?.code">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme PROF</span>
+                            <span>{{ deconectedDTO?.diplomePROF?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="deconectedDTO?.diplomePED?.code">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme PED</span>
+                            <span>{{ deconectedDTO?.diplomePED?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Type Poste</span>
+                        <span>{{ deconectedDTO?.typePoste?.label}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date Entrée Etablissement</span>
+                        <span>{{ deconectedDTO?.dateEntreEtablissement | date: 'd/MM/ y' }}</span>
+                    </div>
+                </div>
+
+                <ng-container *ngIf=" deconectedDTO?.dateDEntreeFonctionPub">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date Entrée Fonction Publique</span>
+                        <span>{{ deconectedDTO?.dateDEntreeFonctionPub | date: 'd/MM/ y' }}</span>
+                    </div>
+                </div>
+                </ng-container>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date de Recrutement</span>
+                        <span>{{ deconectedDTO?.dateEntreEnseignement | date: 'd/MM/ y'}}</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

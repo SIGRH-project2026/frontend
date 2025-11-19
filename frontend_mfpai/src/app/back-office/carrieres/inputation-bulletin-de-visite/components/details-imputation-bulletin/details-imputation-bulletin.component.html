@@ -1,0 +1,170 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text flex-column align-items-start w-100">
+            <div class="flex-row-between">
+                <h3>Détails {{imputation.typeDemande}} N° {{imputation.id}}</h3>
+                <button class="button button-secondary" type="button" (click)="generate(imputation.id)" *ngIf="!isDRH">
+                    <i class="fa fa-sync-alt me-2"></i>
+                    <span *ngIf="imputation.typeDemande == 'Imputation budgétaire'">Générer imputation</span>
+                    <span *ngIf="imputation.typeDemande == 'Bulletin de visite'">Générer bulletin de visite</span>
+                </button>
+            </div>
+            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+                <mat-tab label="Information demandeur">
+                    <div class="row details g-3 py-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Matricule</span>
+                                <span>{{imputation?.utilisateur?.matricule}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Prénoms</span>
+                                <span>{{imputation?.utilisateur?.prenom}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Nom</span>
+                                <span>{{imputation?.utilisateur?.nom}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Fonction</span>
+                                <span>{{imputation?.utilisateur?.fonction?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='CEN'">
+                            <div class="details-item">
+                                <span>Direction</span>
+                                <span>{{imputation?.utilisateur?.direction?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='CEN'">
+                            <div class="details-item">
+                                <span>Service</span>
+                                <span>{{imputation?.utilisateur?.service?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Région</span>
+                                <span>{{imputation?.utilisateur?.region?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.utilisateur.typeUser=='DEC'">
+                            <div class="details-item">
+                                <span>IA</span>
+                                <span>{{imputation?.utilisateur?.ia?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='DEC'">
+                            <div class="details-item">
+                                <span>IEF</span>
+                                <span>{{imputation?.utilisateur?.ief?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='DEC'">
+                            <div class="details-item">
+                                <span>CFP</span>
+                                <span>{{imputation?.utilisateur?.cfp?.label}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Adresse</span>
+                                <span>{{imputation?.utilisateur?.adresse}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Informations Béneficiaires">
+                    <div class="row details g-3 py-3">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Type de demande</span>
+                                <span>{{imputation?.typeDemande}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Numéro demande</span>
+                                <span>{{imputation.numeroDemande}} / {{fullYear}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Date demande</span>
+                                <span>{{imputation?.dateImputation | date : 'dd/MM/yyyy'}}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Statut bénéficiaire</span>
+                                <span>{{imputation?.statusBeneficiere}}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.prenomBeneficiere.length>0; else prenomTemplte">
+                            <div class="details-item">
+                                <span>Prénom Bénéficiaire </span>
+                                <span>{{imputation?.prenomBeneficiere}}</span>
+                            </div>
+                        </div>
+                        <ng-template #prenomTemplte>
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Prénom Bénéficiaire </span>
+                                    <span>{{imputation?.utilisateur?.prenom}}</span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.nomBeneficiere.length>0; else nomTemplte">
+                            <div class="details-item">
+                                <span>Nom bénéficiaire</span>
+                                <span>{{imputation?.nomBeneficiere}}</span>
+                            </div>
+                        </div>
+                        <ng-template #nomTemplte>
+                            <div class="col-lg-4 col-sm-6">
+                                <div class="details-item">
+                                    <span>Nom Bénéficiaire </span>
+                                    <span>{{imputation.utilisateur.nom}}</span>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <div class="row mt-4" *ngIf="justificatifs.length>0">
+                            <label class="form-label"> Justificatifs</label>
+                            <div class="row gx-3 gy-1 doc-files">
+                                <div class="col-sm-4" *ngFor="let file of justificatifs">
+                                    <div class="doc-file-item" >
+                                        <div class="text-icon">
+                                            <img src="assets/icons/pdf.png" width="32px" alt="PDF">
+                                            <div class="text">
+                                                <p>{{file.originalName}}</p>
+                                                <span>{{file.fileSize}} octets</span>
+                                            </div>
+                                        </div>
+                                        <button class="fab-button" type="button" (click)="Telecharger(file.generatedName)">
+                                            <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </mat-tab>
+
+            </mat-tab-group>
+            <button class="button-return" type="button" (click)="goBack()">
+                <i class="fa fa-arrow-left"></i>
+                Retour
+            </button>
+        </div>
+    </div>
+
+</div>

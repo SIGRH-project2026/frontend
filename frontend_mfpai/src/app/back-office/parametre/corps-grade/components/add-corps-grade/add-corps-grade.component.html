@@ -1,0 +1,55 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouveau Corps/Grade</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="form">
+            <div class="row g-3">
+                <!-- <div class="col-sm-4">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" placeholder="Saisir" disabled/>
+                </div> -->
+                <div class="col-sm-4">
+                    <label class="form-label">Libellé Corps</label>
+                    <input formControlName="corpsGrade" type="text" class="form-control" placeholder="Saisir" />
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Statut</label>
+                    <select  formControlName="typeMatricules"
+                             class="form-select" title="Sélectionner..."
+                    >
+                        <option value=""  >Sélectionner</option>
+                        <option [value]="type?.code" *ngFor="let type of typeMatricule">
+                            {{ type?.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-sm-12">
+                    <label class="form-label">Grade</label>
+                    <tag-input
+                            formControlName="grades"
+                            [ngModel]="selectedGrade" [placeholder]="'+ Nouveau grade'" [secondaryPlaceholder]="'+ Ajouter les grades'"
+                    >
+                        <tag-input-dropdown    [autocompleteItems]="autocompleteListGrade" [showDropdownIfEmpty]="true" [dynamicUpdate]="true">
+                        </tag-input-dropdown>
+                    </tag-input>
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" (click)="onSaveGrade()" [disabled]="form.invalid">Ajouter</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+.dashlet {
+    border-radius: 8px;
+    background: #FFF;
+    cursor: pointer;
+}
+
+.dashlet h1 {
+    color: #2E343B;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    font-family: "Roboto", sans-serif;
+
+}
+
+.dashlet p {
+    font-family: "Roboto", sans-serif;
+    color: rgba(0, 0, 0, 0.50);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0;
+}
+
+
+.titreIcon h3 {
+    font-family: "Roboto", sans-serif;
+
+    color: #374656;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.titreIcon .icon {
+    background: rgba(29, 74, 123, 0.10);
+    border-radius: 4px;
+}

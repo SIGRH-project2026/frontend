@@ -1,0 +1,4 @@
+export class ValidesActesDate{
+    dateDebut : Date
+    dateFin : Date
+}

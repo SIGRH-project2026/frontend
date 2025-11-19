@@ -1,0 +1,268 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Détail Utilisateur - PRENOM & NOM</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <h5 class="title-form">Division et Bureaux</h5>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Région</span>
+                        <span>{{personnel.region.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6" *ngIf="personnel?.direction">
+                    <div class="details-item">
+                        <span>Direction</span>
+                        <span>{{personnel?.direction?.label}}</span>
+                    </div>
+                </div>
+
+                <!-- <ng-container *ngIf="centralLevel?.direction?.code === 'DRH'"> -->
+                    <!-- *ngIf="centralLevel?.division?.code" -->
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.division">
+                        <div class="details-item">
+                            <span>Division</span>
+                            <span>{{personnel?.division?.label}}</span>
+                        </div>
+                    </div>
+                    <!-- *ngIf="centralLevel?.bureau?.code" -->
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.bureau" >
+                        <div class="details-item">
+                            <span>Bureau</span>
+                            <span>{{personnel?.bureau?.label}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+                <!-- <ng-container *ngIf="centralLevel?.direction?.code === 'AUD'"> -->
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.service">
+                        <div class="details-item">
+                            <span>Services</span>
+                            <span>{{personnel?.service?.label}}</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.ia">
+                        <div class="details-item">
+                            <span>IA</span>
+                            <span>{{personnel?.ia?.label}}</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.ief">
+                        <div class="details-item">
+                            <span>IEF</span>
+                            <span>{{personnel?.ief?.label}}</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6" *ngIf="personnel?.etablissement">
+                        <div class="details-item">
+                            <span>Etablissement</span>
+                            <span>{{personnel?.etablissement?.label}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+            </div>
+
+            <h5 class="title-form">Informations personnelles</h5>
+            <div class="row details py-3 g-3">
+
+                <!-- <ng-container *ngIf="centralLevel?.matriculeFonctionnaire"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{personnel?.matricule}}</span>
+                        </div>
+                    </div>
+
+                <!-- </ng-container> -->
+
+           
+                <!-- </ng-container> -->
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{personnel?.prenom}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{personnel?.nom}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Sexe</span>
+                        <span>{{personnel?.sexe}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Téléphone</span>
+                        <span>{{personnel?.telephone}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Email</span>
+                        <span>{{personnel?.email}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date de naissance</span>
+                        <span>{{personnel?.dateNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Lieu de naissance</span>
+                        <span>{{personnel?.lieuDeNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>CNI</span>
+                        <span>{{personnel?.cni}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Profil</span>
+                        <span>{{profileLabel}}</span>
+
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Situation matrimoniale</span>
+                        <span>{{personnel?.situationMatrimoniale}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nationalité</span>
+                        <span>{{personnel?.nationalite}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Adresse</span>
+                        <span>{{personnel?.adresse}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="title-form">Informations professionnelles</h5>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Corps</span>
+                        <span>{{personnel?.corpsGrade?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Grade</span>
+                        <span>{{personnel?.grade?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date Corps</span>
+                        <span>{{personnel?.dateCorp}}</span>
+                    </div>
+                </div>
+                <!-- <ng-container *ngIf="centralLevel?.diplomeACA?.code"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme ACA</span>
+                        <span>{{personnel?.diplomeACA?.label}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+
+                <!-- <ng-container *ngIf="centralLevel?.diplomePROF?.code"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme PROF</span>
+                            <span>{{personnel?.diplomePROF?.label}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+
+                <!-- <ng-container *ngIf="centralLevel?.diplomePED?.code"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme PED</span>
+                            <span>{{personnel?.diplomePED?.label}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+            
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Fonction</span>
+                        <span>{{personnel?.fonction?.label}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Spécialité</span>
+                        <span>{{personnel?.speciality?.label}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Type Poste</span>
+                        <span>{{personnel?.typePoste?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nombre Enfants</span>
+                        <span>{{personnel?.nombreEnfants}}</span>
+                    </div>
+                </div>
+
+                <!-- <ng-container *ngIf=" centralLevel?.dateDEntreeFonctionPub"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Date Entrée Fonction Publique</span>
+                            <span>{{personnel?.dateDEntreeFonctionPub}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+
+                <!-- <ng-container *ngIf=" centralLevel?.dateDEntreeFonctionPub"> -->
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Date Entrée Enseignement</span>
+                            <span>{{personnel?.dateEntreEnseignement}}</span>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+            </div>
+        </form>
+    </div>
+
+    <button type="button" (click)="goBack()" class="button-return">
+        <i class="fa fa-arrow-left"></i>
+        Retour</button>
+</div>

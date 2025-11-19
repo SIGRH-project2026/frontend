@@ -1,0 +1,439 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Nouvel Utilisateur</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form [formGroup]="centralRegionForm">
+            <h5 class="title-form">Division et Bureaux</h5>
+
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <label class="form-label">Région <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="region">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f1['region'].touched && f1['region'].hasError('required')">Région
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Service <span style="color: red">*</span></label>
+                    <select class="form-select" #directionValue formControlName="direction"
+                        (change)="getProfileDirection($any($event.target).value);">
+                        <option value="" selected>Sélectionner</option>
+                        <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f1['direction'].touched && f1['direction'].hasError('required')">
+                        Direction <strong>obligatoire!</strong></div>
+
+                </div>
+
+                <ng-container *ngIf="directionValue.value === 'DRH'">
+
+
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Division </label>
+                        <select class="form-select" formControlName="division" (change)="getListBureau($any($event.target).value);
+                                getProfileDivision($any($event.target).value);" #CheckDivision>
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let div of division" [value]="div.code">{{div?.label}}</option>
+                        </select>
+                    </div>
+
+                    <ng-container *ngIf="CheckDivision.value === 'ADIV'">
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau </label>
+                            <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                                     getProfileDivision( CheckDivision.value);
+                              ">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                            </select>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="
+                     CheckDivision.value === 'DGCAA' ||
+                     CheckDivision.value === 'DFC' ||
+                     CheckDivision.value === 'DAS' ||
+                     CheckDivision.value === 'DGPEEC'
+                   ">
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau </label>
+                            <select class="form-select" formControlName="bureau" (change)="getProfileBureauWithOutCD(CheckDivision.value);
+                              ">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                            </select>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="CheckDivision.value !== 'ADIV' &&
+                      CheckDivision.value !== 'DGCAA' &&
+                     CheckDivision.value !== 'DFC' &&
+                     CheckDivision.value !== 'DAS' &&
+                     CheckDivision.value !== 'DGPEEC'
+">
+                        <div class="col-sm-4">
+                            <label class="form-label">Bureau </label>
+                            <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                                     getProfileDivision( CheckDivision.value);
+                              ">
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                            </select>
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+
+            </div>
+        </form>
+     <form [formGroup]="centralForm">
+            <h5 class="title-form mt-4">Informations personnelles</h5>
+
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <label class="form-label">Statut<span style="color: red">*</span></label>
+                    <select class="form-select" #TypePosteValue formControlName="typeMatricule"
+
+                            (change)="getCorpsByMatricule($any($event.target).value);">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let typMat of typeMatricule" [value]="typMat?.code">{{typMat?.label}}</option>
+                        <div style="color: red" *ngIf="f['typeMatricule'].touched && f['typeMatricule'].hasError('required')">Type matricule
+                            <strong>obligatoire!</strong>
+                        </div>
+                    </select>
+
+                </div>
+
+                <ng-container *ngIf="TypePosteValue.value === 'MATFONC'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Matricule <span style="color: red">*</span></label>
+
+                        <div class="input-group ">
+                            <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeFonctionnaire" (ngModelChange)="onMatriculeChange($event)" />
+                            <span class="input-group-text fw-bold" id="basic-addon1" >{{ validationResult }}</span>
+                        </div>
+                        <div style="color: red" *ngIf="f['matriculeFonctionnaire'].touched && f['matriculeFonctionnaire'].hasError('invalidMatriculeFonctionnaire')">
+                            Format non valide, le matricule fonctionnaire doit contenir 6 chiffres. Exemple : 123456/J
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="TypePosteValue.value === 'MATCON'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Matricule <span style="color: red">*</span></label>
+                        <div class="input-group ">
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeContratuel" (ngModelChange)="onMatriculeChange($event)"/>
+                            <span class="input-group-text fw-bold" id="basic-addon1" >{{ validationResult }}</span>
+                        </div>
+                        <div style="color: red" *ngIf="f['matriculeContratuel'].touched && f['matriculeContratuel'].hasError('invalidMatriculeContractuel')">
+                            Format non valide, le matricule contractuel doit contenir 9 chiffres. Exemple : 123456789/J
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="TypePosteValue.value === 'MATDEE'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Matricule <span style="color: red">*</span></label>
+                        <div class="input-group ">
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeDecisionnaire" (ngModelChange)="onMatriculeChange($event)"/>
+                            <span class="input-group-text fw-bold" id="basic-addon1" >{{ validationResult }}</span>
+                        </div>
+                        <div style="color: red" *ngIf="f['matriculeDecisionnaire'].touched && f['matriculeDecisionnaire'].hasError('invalidMatriculeFonctionnaire')">
+                            Format non valide, le matricule décisinnaire doit contenir 6 chiffres. Exemple : 123456/J
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="TypePosteValue.value === 'MATVAC'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Matricule <span style="color: red">*</span></label>
+                        <div class="input-group ">
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeVacataire" (ngModelChange)="onMatriculeChange($event)"/>
+                            <span class="input-group-text fw-bold" id="basic-addon1" >{{ validationResult }}</span>
+                        </div>
+                        <div style="color: red" *ngIf="f['matriculeVacataire'].touched && f['matriculeVacataire'].hasError('invalidMatriculeContractuel')">
+                            Format non valide, le matricule  vacataire doit contenir 9 chiffres. Exemple : 123456789/J
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Prénom <span style="color: red">*</span></label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom" />
+                    <div style="color: red" *ngIf="f['prenom'].touched && f['prenom'].hasError('required')">Prénom
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Nom <span style="color: red">*</span></label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="nom" />
+                    <div style="color: red" *ngIf="f['nom'].touched && f['nom'].hasError('required')">Nom
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Sexe</label>
+                    <select class="form-select" formControlName="sexe">
+                        <option value="">Sélectionner</option>
+                        <option value="Masculin">Masculin</option>
+                        <option value="Féminin">Féminin</option>
+                    </select>
+                </div>
+
+
+                <div class="col-sm-4">
+
+                    <label class="form-label">Téléphone <span style="color: red">*</span></label>
+
+                    <div class="input-group ">
+                        <span class="input-group-text" id="basic-addon1">+221</span>
+                        <input class="form-control" placeholder="Saisir" [mask]="'00 000 00 00'"
+                            formControlName="telephone" />
+                    </div>
+
+                    <div style="color: red" *ngIf="f['telephone'].touched && f['telephone'].hasError('required')">
+                        Télephone est
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Email <span style="color: red">*</span></label>
+                    <input type="email" pattern=".+@.+\..+" class="form-control" placeholder="Saisir"
+                        formControlName="email" />
+                    <div style="color: red" *ngIf="f['email'].touched && f['email'].hasError('required')">Email
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+
+                <div class="col-sm-4">
+
+                    <label class="form-label">Date de naissance <span style="color: red">*</span></label>
+                    <input type="date" class="form-control" placeholder="Saisir"    formControlName="dateNaissance"  />
+                    <div style="color: red" *ngIf="f['dateNaissance'].touched && f['dateNaissance'].hasError('required')">Date naissance
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Lieu de naissance  <span style="color: red">*</span></label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="lieuDeNaissance" />
+                    <div style="color: red" *ngIf="f['lieuDeNaissance'].touched && f['lieuDeNaissance'].hasError('required')">Lieu de naissance
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">CNI   <span style="color: red">*</span></label>
+                    <input type="text"  class="form-control" placeholder="Saisir" formControlName="cni" />
+                    <div style="color: red" *ngIf="f['cni'].touched && f['cni'].hasError('required')">CNI
+                        <strong>obligatoire!</strong>
+                    </div>
+                    <div style="color: red" *ngIf="f['cni'].touched && f['cni'].hasError('invalidLength')">
+                        La valeur doit être soit 13 ou 14   caractères alphanumériques.
+                    </div>
+
+                </div>
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Situation matrimoniale</label>
+                    <select class="form-select" formControlName="situationMatrimoniale">
+                        <option value="">Sélectionner</option>
+                        <option value="Marié (e)">Marié (e)</option>
+                        <option value="Célibataire">Célibataire</option>
+                        <option value="Veuf (ve)">Veuf (ve)</option>
+                        <option value="Divorcé (e)">Divorcé (e)</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Nombre Enfants</label>
+                    <input type="number" min="0" class="form-control" placeholder="Saisir" formControlName="nombreEnfants" />
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Nationalité <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="nationalite">
+                        <option value="">Sélectionner</option>
+                        <option value="Sénégalaise">Sénégalaise</option>
+                        <option value="Autre">Autre</option>
+
+                        <div style="color: red" *ngIf="f['nationalite'].touched && f['nationalite'].hasError('required')">Nationalité
+                            <strong>obligatoire!</strong>
+                        </div>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Adresse</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="adresse" />
+                </div>
+            </div>
+
+            <h5 class="title-form mt-4">Informations professionnelles</h5>
+
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <label class="form-label">Corps <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="corpsGrade"
+                        (change)="getGradeFromCorps($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let corp of corpsGrade" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f['corpsGrade'].touched && f['corpsGrade'].hasError('required')">
+                        Corps est
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Grade <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="grade">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let corp of grade" [value]="corp.code">{{corp?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f['grade'].touched && f['grade'].hasError('required')">Grade
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Date Corps  <span style="color: red">*</span></label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateCorp" />
+                    <div style="color: red" *ngIf="f['dateCorp'].touched && f['dateCorp'].hasError('required')">Date Corp
+                        <strong>obligatoire!</strong>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Diplôme ACA </label>
+                    <select class="form-select" formControlName="diplomeACA">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let dipACA of diplomeACA" [value]="dipACA?.code">{{dipACA?.label}}</option>
+
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Diplôme PROF  </label>
+                    <select class="form-select" formControlName="diplomePROF">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let dipPROF of diplomePROF" [value]="dipPROF?.code">{{dipPROF?.label}}</option>
+
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Diplôme PED </label>
+                    <select class="form-select" formControlName="diplomePED">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let dipPED of diplomePED" [value]="dipPED?.code">{{dipPED?.label}}</option>
+
+                    </select>
+                </div>
+
+
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Profil <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="profils">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let p of profils" [value]="p.code">{{p?.label}}</option>
+
+                    </select>
+                    <div style="color: red" *ngIf="f['profils'].touched && f['profils'].hasError('required')">Profile
+                        est
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Spécialité <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="speciality">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let sp of speciality" [value]="sp.code">{{sp?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f['speciality'].touched && f['speciality'].hasError('required')">
+                        Spécialité
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Fonction <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="fonction">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let fonc of fonction" [value]="fonc.code">{{fonc?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f['fonction'].touched && f['fonction'].hasError('required')">Fonction
+                        est
+                        <strong>obligatoire!</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Type Poste  <span style="color: red">*</span></label>
+                    <select class="form-select"    formControlName="typePoste">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let typPoste of typePoste" [value]="typPoste?.code">{{typPoste?.label}}</option>
+                        <div style="color: red" *ngIf="f['typePoste'].touched && f['typePoste'].hasError('required')">Type poste
+                            <strong>obligatoire!</strong>
+                        </div>
+                    </select>
+                </div>
+
+
+
+                <div class="col-sm-4">
+                    <label class="form-label">Date  recrutement <span style="color: red">*</span></label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateEntreEnseignement"
+                          />
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="form-label">Date Entrée Service <span style="color: red">*</span> </label>
+                    <input type="date" class="form-control" placeholder="Saisir" formControlName="dateEntreService" />
+                </div>
+
+
+
+
+                <ng-container *ngIf="TypePosteValue.value === 'MATFONC'">
+                    <div class="col-sm-4">
+                        <label class="form-label">Date Entrée Fonction Publique </label>
+                        <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDEntreeFonctionPub" />
+                    </div>
+                </ng-container>
+
+            </div>
+            <!-- ACTIONS -->
+            <div class="row g-3 mt-2">
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-primary w-100" type="button" [disabled]="centralForm.invalid || centralRegionForm.invalid"
+                        (click)="onSaveUser()">Ajouter</button>
+                </div>
+                <div class="col-lg-2 col-sm-6">
+                    <button class="button button-outline-primary w-100" type="reset"
+                        (click)="onReset()">Annuler</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

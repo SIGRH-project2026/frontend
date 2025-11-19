@@ -1,0 +1,203 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des IEF</h3>
+            <ng-container *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'">
+                <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier, null)">
+                    <i class="fa fa-add"></i>
+                    Nouveau IEF
+                </button>
+            </ng-container>
+
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <select class="form-select" (change)="onStatusChange($event)">
+                    <option value="">Tous les status</option>
+                    <option value="true">Actif</option>
+                    <option value="false">Inactif</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="iEFliteList.length > 0;else listEmpty;">
+                        <tr *ngFor="let ief of iEFliteList">
+                            <td>
+                                {{ ief?.ia?.region?.label }}
+                            </td>
+                            <td>
+                                {{ ief?.ia?.label }}
+                            </td>
+                            <td>
+                                {{ ief?.label }}
+                            </td>
+                            <td>
+                                <div [appStatus]="ief.statut" class="status-badge"
+                                    (click)="changeStatus(ief)"></div>
+                            </td>
+                            <ng-container  *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'; else noAction">
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li *ngIf="ief?.statut">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                   (click)="changeStatus(ief)">
+                                                    <i class="fa fa-lock me-2" title="Activer" id="status"
+                                                       type="button"></i>
+                                                    <span>Désactiver</span>
+                                                </a>
+                                            </li>
+                                            <li *ngIf="!ief.statut">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                   (click)="changeStatus(ief)">
+                                                    <i class="fa fa-lock-open me-2" title="Activer" id="status"
+                                                       type="button"></i>
+                                                    <span>Activer</span>
+                                                </a>
+                                            </li>
+                                            <li >
+                                                <a class="dropdown-item" (click)="openModalAddAgent(edit_ief, ief)">
+                                                    <i class="fa fa-edit me-2" title="modifier" type="button"></i>
+                                                    <span>Modifier</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                        </ng-container>
+
+                            <ng-template #noAction>
+                               <td></td>
+                            </ng-template>
+
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers.length">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshData()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+</div>
+
+<ng-template #Add_dossier let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addDossier">Création IEF</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="iEFForm">
+            <div class="row g-3">
+                <div class="col-lg-12">
+                    <label class="form-label">Région</label>
+                    <select class="form-select" formControlName="region"
+                            (change)="getListIA($any($event.target).value); ">
+                        <option value='val1'>selectionner</option>
+                        <option value=""   *ngFor="let reg of region" [value]="reg?.code" > {{ reg?.label }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">IA</label>
+                    <select class="form-select" formControlName="ia">
+                        <option value='val1'>selectionner</option>
+                        <option value=""   *ngFor="let iA of ia" [value]="iA?.code" > {{ iA?.label }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">Libellé IEF</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="label" />
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">Sigle IEF</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="code" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="button button-primary "  (click)="onAddIEF()" [disabled]="iEFForm?.invalid">Enregistrer</button>
+        <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
+            Annuler
+        </button>
+    </div>
+</ng-template>
+<ng-template #edit_ief let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addDossier">Modifier IEF</h1>
+    </div>
+    <div class="modal-body py-md-3">
+        <form [formGroup]="iEFForm">
+            <div class="row g-3">
+                <div class="col-lg-12">
+                    <label class="form-label">Région</label>
+                    <select class="form-select" formControlName="region"
+                            (change)="getListIA($any($event.target).value); ">
+                        <option value='val1'>selectionner</option>
+                        <option value=""   *ngFor="let reg of region" [value]="reg?.code" > {{ reg?.label }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">IA</label>
+                    <select class="form-select" formControlName="ia">
+                        <option value=''>selectionner</option>
+                        <option    *ngFor="let iA of ia" [value]="iA?.code" > {{ iA?.label }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">Libellé IEF</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="label" />
+                </div>
+                <div class="col-lg-12">
+                    <label class="form-label">Code IEF</label>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="code" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="button button-primary " (click)="onUpdateIEF()" [disabled]="iEFForm?.invalid">Enregistrer</button>
+        <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
+            Annuler
+        </button>
+    </div>
+</ng-template>

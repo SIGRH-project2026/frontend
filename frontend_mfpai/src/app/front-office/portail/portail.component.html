@@ -1,0 +1,170 @@
+<div class="row carousel-banner mb-0">
+    <div class="col-lg-12">
+        <owl-carousel-o [options]="customOptionsBanner">
+            <ng-template carouselSlide>
+                <div class="picsum-img-wrapper">
+                    <img [src]="'assets/images/image1.png'" alt="SIGRH" />
+                </div>
+                <div class="carousel-caption">
+                    <h1>Bienvenue sur le portail d'information du Système Intégré de Gestion des Ressources Humaines(SIGRH).</h1>
+                    <p class="text-description">Découvrez le portail SIGRH</p>
+                </div>
+            </ng-template>
+            <ng-template carouselSlide>
+                <div class="picsum-img-wrapper">
+                    <img [src]="'assets/images/image2.jpg'" alt="SIGRH" />
+                </div>
+                <div class="carousel-caption">
+                    <h1>Bienvenue sur le portail d'information du Système Intégré de Gestion des Ressources Humaines(SIGRH).</h1>
+                    <p class="text-description">Votre portail d'information</p>
+                </div>
+            </ng-template>
+            <ng-template carouselSlide>
+                <div class="picsum-img-wrapper">
+                    <img [src]="'assets/images/image3.jpg'" alt="SIGRH" />
+                </div>
+                <div class="carousel-caption">
+                    <h1>Bienvenue sur le portail d'information du Système Intégré de Gestion des Ressources Humaines(SIGRH).</h1>
+                    <p class="text-description">Accédez à vos informations RH en ligne</p>
+                </div>
+            </ng-template>
+        </owl-carousel-o>
+    </div>
+</div>
+
+<section class="py-5 bg-blue-light mt-0">
+    <div class="container">
+        <h2 class="section-title">Actualités/ Recrutements</h2>
+
+        <div class="section-content">
+            <div class="row g-3 carousel-o">
+                <owl-carousel-o [options]="customOptionsActualites">
+                    <ng-container *ngFor="let item of actualites">
+                        <ng-template carouselSlide [id]="item.id.toString()">
+                            <div class="card card-horiz h-100" (click)="onViewActu(item.id,item.typeArticle.code)">
+                                <div class="row g-0">
+                                    <div class="col-md-6">
+                                        <img
+                                        [src]="'data:' + item.image.fileType + ';base64,' + item.image.base64"
+                                        alt="{{item.image.fileType}}"
+                                        height="80px" width="220px" class="img-fluid"
+                                     /> 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <span class="tag">{{ item?.typeArticle?.libelle }}</span>
+                                            <h5 class="card-title">{{ item?.titre }}</h5>
+                                            <p class="card-desc text-muted">{{ item?.resume }}</p>
+                                            <p class="card-text"><small class="text-muted"><i
+                                                        class="fa fa-calendar-alt"></i> {{ item?.datePublication  | date: 'dd/MM/yyyy' }}
+                                            </small></p>
+                                            <button class="button button-primary" type="button"
+                                                (click)="onViewActu(item.id, item.typeArticle.code)">Lire l'article</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </owl-carousel-o>
+            </div>
+        </div>
+    </div>
+</section> 
+
+
+<section class="py-5 bg-white">
+    <div class="container">
+        <h2 class="section-title text-blue">Formations à venir</h2>
+        <div class="section-content">
+            <div class="row g-3 carousel-o" style="background: white !important;">
+                <owl-carousel-o [options]="customOptionsFormations">
+                    <ng-container *ngFor="let item of formationsAVenir">
+                        <ng-template carouselSlide [id]="item.id.toString()">
+                            <div class="card card-formation h-100 my-4" (click)="onViewFormation(item.id, item.typeFormation.code)">
+                                <img src="assets/images/formation01.png" alt="Photo" height="200" class="card-img-top">
+                                <div class="card-body">
+                                    <span class="tag"> Formation {{ item.typeFormation.libelle }}</span>
+                                    <h5 class="card-title">{{ item.title }}</h5>
+                                    <p class="card-desc text-muted">{{ item.description }}</p>
+
+                                    <small><i>Date de début {{ item.dateDebut | date : 'dd/MM/yyyy' }}</i></small>
+
+                                    <div class="card-formation-details mt-2">
+                                        <small><i class="fa fa-images me-2 text-blue"></i>{{item.duree}}</small>
+                                        <span class="text-black-50">|</span>
+                                        <span class="card-text"><small><i
+                                                    class="fa fa-money-bill me-2 text-blue"></i>{{item.cout}}</small></span>
+                                        <span class="text-black-50">|</span>
+                                        <span class="card-text"><small><i
+                                                    class="fa fa-users me-2 text-blue"></i>{{item.participant}}</small></span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="button button-outline-primary rounded-pill">Voir plus détails</button>
+                                    <button class="button button-primary rounded-pill" (click)="onParticipate()">Participer</button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </owl-carousel-o>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-counter py-5">
+    <div class="container">
+        <div class="section-content">
+            <div class="row g-3">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="counter-item">
+                        <h2>+{{ etablissements }}</h2>
+                        <p>Établissements</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="counter-item">
+                        <h2>+{{ formationsCount }}</h2>
+                        <p>Formations</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="counter-item">
+                        <h2>+{{ utilisateursCount }}</h2>
+                        <p>Utilisateurs</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="counter-item">
+                        <h2>+{{ filieres}}</h2>
+                        <p>Filières</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light my-0">
+    <div class="container">
+        <h2 class="section-title">Partenaires</h2>
+        <div class="section-content">
+            <div class="row g-3">
+                <div class="col-lg-10 mx-auto">
+                    <owl-carousel-o [options]="customOptionsPartenaires">
+                        <ng-container *ngFor="let item of partenaires">
+                            <ng-template carouselSlide [id]="item.id.toString()">
+                                <div class="card card-partenaire h-100">
+                                    <a href="javascript:(0)" target="_blank" class="nav-link">
+                                        <img [src]="item.image" [alt]="item.title">
+                                    </a>
+                                </div>
+                            </ng-template>
+                        </ng-container>
+                    </owl-carousel-o>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

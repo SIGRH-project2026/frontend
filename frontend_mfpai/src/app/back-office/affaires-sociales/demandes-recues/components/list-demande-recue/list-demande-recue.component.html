@@ -1,0 +1,188 @@
+<div class="panel-list">
+    <div class="panel-list-header">
+        <div class="panel-list-text">
+            <h3>Liste des demandes reçues</h3>
+        </div>
+        <div class="panel-list-search">
+            <div class="search">
+                <div class="search-box">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <select class="form-select" [(ngModel)]="statut" (ngModelChange)="onSelectedType($event)">
+                    <option value="">Tous les status</option>
+                    <option value="SOUMISE">SOUMISE</option>
+                    <option value="AMODIFIER">A MODIFIER</option>
+                    <option value="VALIDEE">VALIDEE</option>
+                    <option value="REJETEE">REJETEE</option>
+                </select>
+            </div>
+            <div class="d-flex">
+                <button *ngIf="isSearchResult" (click)="onResetfiltre()" type="button" class="button button-light-red me-3">
+                    <i class="fa fa-close me-1"></i>
+                    Annuler le filtre</button>
+                <button type="button" class="button-filter" (click)="openModalSearch(filterAvancer)">
+                    <i class="fa fa-filter"></i>
+                    Filtre avancé</button>
+            </div>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                <tr class="table-light">
+                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngIf="demandePecList.length > 0;else listEmpty;">
+                    <tr *ngFor="let demande of demandePecList">
+                        <ng-container *ngIf="matchSearchQuery(demande)">
+                            <td>
+                                {{ demande?.numeroDemande }}
+                            </td>
+                            <td>
+                                {{ demande?.utilisateur?.matricule }}
+                            </td>
+                            <td>
+                                {{ demande?.utilisateur?.prenom| titlecase }} {{ demande?.utilisateur?.nom| titlecase }}
+                            </td>
+                            <td>
+                                {{ demande?.typeDemandePeec?.libelle }}
+                            </td>
+                            <td  *ngIf="demande?.utilisateur?.typeUser==='CEN'">
+                                {{ demande?.utilisateur?.direction?.label }}
+                            </td>
+                            <td  *ngIf="demande?.utilisateur?.typeUser==='DEC'">
+                                {{ demande?.utilisateur?.ia?.label }}
+                            </td>
+                            <td>
+                                {{ demande?.utilisateur?.region?.label }}
+                            </td>
+                            <td>
+                                {{ demande?.dateDemande }}
+                            </td>
+                            <td>
+                                <div [appStatus]="demande.statutPriseEnCharge.libelle" class="status-badge"></div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                               (click)="onViewDemande(demande)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                        <li >
+                                            <a *ngIf="profil.code==='Chef-division-das'
+                                             && demande.statutPriseEnCharge.code!=='VALIDEE' 
+                                             && demande.statutPriseEnCharge.code!=='REJETEE' "
+                                               class="dropdown-item" href="javascript:(0)"
+                                               (click)="onEditDemande(demande)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Traiter</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </ng-container>
+                <ng-template #listEmpty>
+                    <tr>
+                        <td [attr.colspan]="headers.length">
+                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                        </td>
+                    </tr>
+                </ng-template>
+                </tbody>
+            </table> 
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex-row-between">
+            <div class="d-flex align-items-center">
+                <span style="white-space: nowrap">Affichage par</span>
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
+                        (ngModelChange)="listPEC()">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="20">20</option>
+                    <option [ngValue]="30">30</option>
+                </select>
+                <span style="white-space: nowrap">entrées</span>
+            </div>
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                            (pageChange)="listPEC()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            </ngb-pagination>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <ng-template #filterAvancer let-modal>
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
+        </div>
+        <div class="modal-body py-md-3">
+            <form [formGroup]="filtreAvanceForm">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Matricule</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule"/>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Prénom</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom"/>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="nom"/>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" placeholder="Saisir" formControlName="dateDemande" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Région</label>
+                        <select class="form-select" (change)="getListIA($any($event.target).value)" formControlName="region">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of region" [value]="reg?.code" name="region"  ngModel>{{reg?.label }}</option>
+                        </select>
+                    </div>
+                    <!--
+                       <div class="col-sm-6">
+                           <label class="form-label">IA</label>
+                           <select class="form-select"  (change)="getListEF($any($event.target).value)" formControlName="ia" >
+                               <option value="">Sélectionner</option>
+                               <option *ngFor="let i of ia" [value]="i?.code" name="ia"  ngModel>{{ i?.label }}</option>
+                           </select>
+                       </div> -->
+                    <div class="col-sm-6">
+                        <label class="form-label">Statut</label>
+                        <select class="form-select" formControlName="statut">
+                            <option value="">Sélectionner</option>
+                            <option value="SOUMISE">SOUMISE</option>
+                            <option value="AMODIFIER">A MODIFIER</option>
+                            <option value="VALIDEE">VALIDEE</option>
+                            <option value="REJETEE">REJETEE</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="button button-secondary w-100" (click)="onSearch()">Rechercher</button>
+            <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
+                Annuler
+            </button>
+        </div>
+    </ng-template>
+</div>

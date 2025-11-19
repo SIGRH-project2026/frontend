@@ -1,0 +1,299 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Changer statut utilisateurs</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+
+        <ng-container *ngIf="user?.typeUser === 'DEC'">
+            <form [formGroup]="centralForm">
+                <!-- <h5 class="title-form">Division et Bureaux</h5> -->
+
+                <div class="row g-4">
+
+                    <div class="col-sm-4" >
+                        <label class="form-label">Région <span style="color: red">*</span></label>
+                        <select class="form-select" formControlName="region"
+                                (change)="getListIA($any($event.target).value); ">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                        </select>
+
+
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Service <span style="color: red">*</span></label>
+                        <select class="form-select" #directionValue formControlName="direction"
+                                (change)="getProfileDirection($any($event.target).value);">
+                            <option value="" selected>Sélectionner</option>
+                            <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
+                        </select>
+
+
+                    </div>
+
+                    <ng-container *ngIf="directionValue.value === 'DRH'">
+
+
+
+                        <div class="col-sm-4">
+                            <label class="form-label">Division </label>
+                            <select class="form-select" formControlName="division" (change)="getListBureau($any($event.target).value);
+                                getProfileDivision($any($event.target).value);" #CheckDivision>
+                                <option value="">Sélectionner</option>
+                                <option *ngFor="let div of division" [value]="div.code">{{div?.label}}</option>
+                            </select>
+                        </div>
+
+                        <ng-container *ngIf="CheckDivision.value === 'ADIV'">
+                            <div class="col-sm-4">
+                                <label class="form-label">Bureau </label>
+                                <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                                     getProfileDivision( CheckDivision.value);
+                              ">
+                                    <option value="">Sélectionner</option>
+                                    <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                                </select>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="
+                     CheckDivision.value === 'DGCAA' ||
+                     CheckDivision.value === 'DFC' ||
+                     CheckDivision.value === 'DAS' ||
+                     CheckDivision.value === 'DGPEEC'
+                   ">
+                            <div class="col-sm-4">
+                                <label class="form-label">Bureau </label>
+                                <select class="form-select" formControlName="bureau" (change)="getProfileBureauWithOutCD(CheckDivision.value);
+                              ">
+                                    <option value="">Sélectionner</option>
+                                    <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                                </select>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="CheckDivision.value !== 'ADIV' &&
+                      CheckDivision.value !== 'DGCAA' &&
+                     CheckDivision.value !== 'DFC' &&
+                     CheckDivision.value !== 'DAS' &&
+                     CheckDivision.value !== 'DGPEEC'
+">
+                            <div class="col-sm-4">
+                                <label class="form-label">Bureau </label>
+                                <select class="form-select" formControlName="bureau" (change)="getProfileBureau($any($event.target).value);
+                                     getProfileDivision( CheckDivision.value);
+                              ">
+                                    <option value="">Sélectionner</option>
+                                    <option *ngFor="let bur of bureau" [value]="bur.code">{{bur?.label}}</option>
+                                </select>
+                            </div>
+                        </ng-container>
+
+
+
+                    </ng-container>
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Prénom</label>
+                        <div class="input-group ">
+                            <input type="text" class="form-control"  [value]="user?.prenom" />
+                        </div>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Nom</label>
+                        <div class="input-group ">
+                            <input type="text" class="form-control" [value]="user?.nom" />
+                        </div>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">CNI</label>
+                        <div class="input-group ">
+                            <input type="text" class="form-control" [value]="user?.cni" />
+                        </div>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Téléphone</label>
+                        <div class="input-group ">
+                            <input type="phone" class="form-control" [value]="user?.telephone" />
+                        </div>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Email</label>
+                        <div class="input-group ">
+                            <input type="email" class="form-control"  [value]="user?.email" />
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Profil <span style="color: red">*</span></label>
+                        <select class="form-select" formControlName="profils" >
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let p of profils" [value]="p.code">{{p?.label}}</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="row  g-3 mt-2">
+                        <div class="d-flex align-items-end justify-content-end">
+                            <div class="col-lg-2 col-sm-6 me-2">
+                                <button class="button button-primary w-100" type="button"
+                                        (click)="saveChangeUser()"
+                                >Enregistrer</button>
+                            </div>
+                            <div class="col-lg-2 col-sm-6">
+                                <button class="button button-outline-primary w-100" type="reset"
+                                >Annuler</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </form>
+        </ng-container>
+
+         <ng-container *ngIf="user?.typeUser === 'CEN'">
+             <form [formGroup]="deconectedForm">
+                 <!-- <h5 class="title-form">Division et Bureaux</h5> -->
+
+                 <div class="row g-4">
+                     <div class="col-sm-4">
+                         <label class="form-label">Structure <span style="color: red">*</span></label>
+                         <select class="form-select" #typeStructureValue
+                                 formControlName="structure"
+                                 (change)="getStruct($any($event.target).value)">
+                             <option value="">Sélectionner</option>
+                             <option *ngFor="let struc of structure" [value]="struc?.code">{{struc?.label}}</option>
+
+                         </select>
+
+                     </div>
+
+
+                     <ng-container *ngIf="typeStructureValue.value === 'IA'">
+                         <div class="col-sm-4" >
+                             <label class="form-label">Région <span style="color: red">*</span></label>
+                             <select class="form-select" formControlName="region"
+                                     (change)="getListIA($any($event.target).value); ">
+                                 <option value="">Sélectionner</option>
+                                 <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                             </select>
+
+
+                         </div>
+                         <div class="col-sm-4">
+                             <label class="form-label">IA <span style="color: red">*</span></label>
+                             <select class="form-select" formControlName="ia" (change)="getListEF($any($event.target).value);
+                    getListEtabByIA($any($event.target).value)">
+                                 <option value="">Sélectionner</option>
+                                 <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
+                             </select>
+
+                         </div>
+                         <div class="col-sm-4">
+                             <label class="form-label">IEF</label>
+                             <select class="form-select" formControlName="ief" (change)="
+                            getListEtablissement($any($event.target).value);">
+                                 <option value="">Sélectionner</option>
+                                 <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                             </select>
+                         </div>
+                         <div class="col-sm-4">
+                             <label class="form-label">Etablissements/EFF/CFP <span style="color: red">*</span></label>
+                             <select class="form-select" formControlName="etablissement">
+                                 <option value="">Sélectionner</option>
+                                 <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+                             </select>
+
+                         </div>
+
+                     </ng-container>
+
+                     <ng-container *ngIf="typeStructureValue.value === 'MIN'">
+
+                         <div class="col-sm-4">
+                             <label class="form-label">EFF <span style="color: red">*</span></label>
+                             <select class="form-select" formControlName="etablissement">
+                                 <option value="">Sélectionner</option>
+                                 <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}}</option>
+
+                             </select>
+
+                         </div>
+                     </ng-container>
+
+                     <div class="col-sm-4">
+                         <label class="form-label">Prénom</label>
+                         <div class="input-group ">
+                             <input type="text" class="form-control"  [value]="user?.prenom" />
+                         </div>
+
+                     </div>
+                     <div class="col-sm-4">
+                         <label class="form-label">Nom</label>
+                         <div class="input-group ">
+                             <input type="text" class="form-control" [value]="user?.nom" />
+                         </div>
+
+                     </div>
+                     <div class="col-sm-4">
+                         <label class="form-label">CNI</label>
+                         <div class="input-group ">
+                             <input type="text" class="form-control" [value]="user?.cni"/>
+                         </div>
+
+                     </div>
+                     <div class="col-sm-4">
+                         <label class="form-label">Téléphone</label>
+                         <div class="input-group ">
+                             <input type="phone" class="form-control" [value]="user?.telephone" />
+                         </div>
+
+                     </div>
+                     <div class="col-sm-4">
+                         <label class="form-label">Email</label>
+                         <div class="input-group ">
+                             <input type="email" class="form-control"  [value]="user?.email" />
+                         </div>
+
+                     </div>
+                     <div class="col-sm-4">
+                         <label class="form-label">Profil <span style="color: red">*</span></label>
+                         <select class="form-select" formControlName="profilDecs" #profile>
+                             <option value="">Sélectionner</option>
+                             <option *ngFor="let p of profilDecs" [value]="p.code">{{p?.label}}</option>
+                         </select>
+
+                     </div>
+
+
+
+                     <div class="row  g-3 mt-2">
+                         <div class="d-flex align-items-end justify-content-end">
+                             <div class="col-lg-2 col-sm-6 me-2">
+                                 <button class="button button-primary w-100" type="button"
+                                         (click)="saveChangeUser()"
+                                 >Enregistrer</button>
+                             </div>
+                             <div class="col-lg-2 col-sm-6">
+                                 <button class="button button-outline-primary w-100" type="reset"
+                                 >Annuler</button>
+                             </div>
+                         </div>
+                     </div>
+
+                 </div>
+             </form>
+         </ng-container>
+
+
+    </div>
+</div>

@@ -1,0 +1,278 @@
+<div class="panel-form">
+    <div class="panel-form-header">
+        <div class="panel-form-text">
+            <h3>Détail Utilisateur - {{ centralLevel?.prenom }} {{ centralLevel?.nom }}</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <form>
+            <h5 class="title-form">Division et Bureaux</h5>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Région</span>
+                        <span>{{ centralLevel?.region?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Service</span>
+                        <span>{{ centralLevel?.direction?.label }}</span>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="centralLevel?.direction?.code === 'DRH'">
+                    <div class="col-lg-4 col-sm-6" *ngIf="centralLevel?.division?.code">
+                        <div class="details-item">
+                            <span>Division</span>
+                            <span>{{ centralLevel?.division?.label}}</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6" *ngIf="centralLevel?.bureau?.code">
+                        <div class="details-item">
+                            <span>Bureau</span>
+                            <span>{{ centralLevel?.bureau?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="centralLevel?.direction?.code === 'AUD'">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Services</span>
+                            <span>{{ centralLevel?.service?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <h5 class="title-form">Informations personnelles</h5>
+            <div class="row details py-3 g-3">
+
+                <ng-container  *ngIf="centralLevel?.matriculeFonctionnaire">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{ centralLevel?.matricule }}</span>
+                        </div>
+                    </div>
+
+                </ng-container>
+
+                <ng-container  *ngIf="centralLevel?.matriculeContratuel">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Matricule</span>
+                        <span>{{ centralLevel?.matricule }}</span>
+                    </div>
+                </div>
+                </ng-container>
+
+                <ng-container  *ngIf="centralLevel?.matriculeVacataire">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{ centralLevel?.matricule }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container  *ngIf="centralLevel?.matriculeDecisionnaire">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Matricule</span>
+                            <span>{{ centralLevel?.matricule }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Prénom</span>
+                        <span>{{ centralLevel?.prenom }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nom</span>
+                        <span>{{ centralLevel?.nom }}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Sexe</span>
+                        <span>{{ centralLevel?.sexe}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Téléphone</span>
+                        <span>{{ centralLevel?.telephone}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Email</span>
+                        <span>{{ centralLevel?.email}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date de naissance</span>
+                        <span>{{centralLevel?.dateNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Lieu de naissance</span>
+                        <span>{{centralLevel?.lieuDeNaissance}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>CNI</span>
+                        <span>{{centralLevel?.cni}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Profil</span>
+                        <span>{{profileLabel}}</span>
+
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Situation matrimoniale</span>
+                        <span>{{ centralLevel?.situationMatrimoniale}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nombre Enfants</span>
+                        <span>{{ centralLevel?.nombreEnfants }}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Nationalité</span>
+                        <span>{{centralLevel?.nationalite}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Adresse</span>
+                        <span>{{ centralLevel?.adresse}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="title-form">Informations professionnelles</h5>
+            <div class="row details py-3 g-3">
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Corps</span>
+                        <span>{{ centralLevel?.corpsGrade?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Grade</span>
+                        <span>{{ centralLevel?.grade?.label}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Date Corps</span>
+                        <span>{{centralLevel?.dateCorp}}</span>
+                    </div>
+                </div>
+                <ng-container *ngIf="centralLevel?.diplomeACA?.code">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme ACA</span>
+                            <span>{{centralLevel?.diplomeACA?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="centralLevel?.diplomePROF?.code">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Diplôme PROF</span>
+                            <span>{{centralLevel?.diplomePROF?.label}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+               <ng-container *ngIf="centralLevel?.diplomePED?.code">
+                   <div class="col-lg-4 col-sm-6">
+                       <div class="details-item">
+                           <span>Diplôme PED</span>
+                           <span>{{centralLevel?.diplomePED?.label}}</span>
+                       </div>
+                   </div>
+               </ng-container>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Profil</span>
+                        <span>{{profileLabel}}</span>
+
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Fonction</span>
+                        <span>{{ centralLevel?.fonction?.label}}</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Spécialité</span>
+                        <span>{{ centralLevel?.speciality?.label}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Type Poste</span>
+                        <span>{{centralLevel?.typePoste?.label}}</span>
+                    </div>
+                </div>
+
+
+                <ng-container *ngIf=" centralLevel?.dateDEntreeFonctionPub">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Date Entrée Fonction Publique</span>
+                            <span>{{ centralLevel?.dateDEntreeFonctionPub | date: 'd/MM/ y' }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf=" centralLevel?.dateEntreEnseignement">
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Date  recrutement</span>
+                            <span>{{ centralLevel?.dateEntreEnseignement | date: 'd/MM/ y' }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+
+            </div>
+        </form>
+    </div>
+</div>
