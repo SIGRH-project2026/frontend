@@ -117,6 +117,7 @@ export class CreateUtilisateurComponent implements OnInit{
     });
 
 
+  
 
     this.referenceService.listRegion().subscribe(response => {
       if(response.success)
@@ -157,6 +158,20 @@ export class CreateUtilisateurComponent implements OnInit{
       if(response.success)
         this.direction = response.data;
     });
+
+
+       this.referenceService.listButreaus().subscribe(response => {
+      if(response.success) {
+         this.bureau = response.data;
+          
+
+          this.bureau = this.bureau.filter((b: { division: string; }) => b.division == null)
+      }
+       
+
+        
+    });
+
 
 
     /**
@@ -235,6 +250,10 @@ export class CreateUtilisateurComponent implements OnInit{
   }
 
   getProfileBureauWithOutCD(code: any): void {
+
+   
+    
+       
     if(code){
       switch (code) {
         case "DFC":
@@ -249,7 +268,6 @@ export class CreateUtilisateurComponent implements OnInit{
               });
       }
     }
-
   }
 
 
@@ -281,6 +299,38 @@ export class CreateUtilisateurComponent implements OnInit{
 
 
   getProfileBureau(code: any): void {
+
+        this.referenceService.listProfils()
+              .subscribe(response => {
+                if (response.success) {
+                  this.profils = response.data;
+
+                 // console.log("test")
+
+                 
+
+                  console.log('bureau', this.profils.filter((b: { typeProfileBureau: string; }) => b.typeProfileBureau == "BSDV"));
+                   this.profils = this.profils.filter((b: { typeProfileBureau: string; }) => b.typeProfileBureau == "BSDV");
+
+                     console.log('bureau', this.profils.filter((b: { typeProfileBureau: string; }) => b.typeProfileBureau == "BSDV"));
+
+                }
+              });
+
+  /* if(code){
+    switch (code) {
+      case "BSEE":
+     
+    
+        this.referenceService.listProfileBureau(code)
+            .subscribe(response => {
+              if (response.success) {
+                this.profils = response.data;
+              }
+            });
+    }
+  }*/
+
 
   if(code){
     switch (code) {

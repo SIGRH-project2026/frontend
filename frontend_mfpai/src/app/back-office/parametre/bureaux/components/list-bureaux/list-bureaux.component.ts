@@ -111,7 +111,7 @@ export class ListBureauxComponent  implements OnInit {
 
 
     this.bureauForm = this.formBuilder.group({
-      division: [[], Validators.required],
+      division: [[]],
       code: ['', Validators.required],
       label: ['', Validators.required],
 
@@ -189,6 +189,8 @@ export class ListBureauxComponent  implements OnInit {
 
     this.parametreService.addBureau(formData).subscribe({
       next: response => {
+
+
         Swal.fire({
           icon: 'success',
           html: `La <strong>Bureau </strong> a été crée avec succès.`,

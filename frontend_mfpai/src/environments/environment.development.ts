@@ -8,5 +8,5 @@ export const environment = {
 
     // Production ==>. server SIGRH
     //apiUrl: 'https://sirh-formation.sec.gouv.sn/projet-api-v2/'
-    //apiUrl: 'http://sirh-formation.sec.gouv.sn/projet-api-v2/'
+    
 };

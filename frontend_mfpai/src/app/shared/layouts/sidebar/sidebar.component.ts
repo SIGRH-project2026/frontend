@@ -8,6 +8,7 @@ import { ResponseApi2 } from '../../models/ResponseApi';
 import { NotificationService } from '../../services/notification/notification.service';
 import { WebSocketService } from '../../services/notification/web-socket.service';
 import { AlertService } from '../../commons/alert.service';
+import { log } from 'node:console';
 
 
 interface Menu {
@@ -103,8 +104,10 @@ export class SidebarComponent implements OnInit {
 
   getMenus(){
    // this.menuItems = MENUITEMS
+
     this.referenceService.getMenus(this.profileId)
          .subscribe((data : any) =>{
+          console.log("data", data)
           this.menuItems = this.sortMenus(data)
          })
   }
