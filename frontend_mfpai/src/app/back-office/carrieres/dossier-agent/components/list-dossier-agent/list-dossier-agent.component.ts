@@ -126,10 +126,16 @@ private getDismissReason(reason: any): string {
 		);
 	}
 
-  redirectDetail(id : number){
-      console.log(id)
-    this.router.navigate([`carrieres/mon-dossier/${id}`])
-  }
+  // redirectDetail(id : number){
+  //     console.log(id)
+  //   this.router.navigate([`carrieres/mon-dossier/${id}`])
+  // }
+
+ redirectDetail(dossierId: number){
+    console.log("Redirection vers dossier ID:", dossierId);
+    // Utiliser la route avec paramètre
+    this.router.navigate(['/carrieres/mon-dossier', dossierId]);
+}
 
   listDossierAgent() {
     //console.log("helloooooooo");

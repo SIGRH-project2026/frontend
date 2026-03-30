@@ -2,15 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DossierAgentService } from '../services/dossier-agent/dossier-agent.service';
 import { DossierAgent } from '../models/dossier-agent/dossier-agent';
 import { Diplome } from '../models/dossier-agent/diplome';
-import { Avancement } from '../models/dossier-agent/avancement';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { SearchPipe } from '../Pipes/Search.pipe';
 import { EtatCivil } from '../models/dossier-agent/etatCivil';
-import {NgxSpinnerService} from "ngx-spinner";
-import { ActivatedRoute } from '@angular/router';
-import {CredentialsService} from "../../../services/credentials.service";
-
+import { NgxSpinnerService } from "ngx-spinner";
+import { ActivatedRoute, Router } from '@angular/router';
+import { CredentialsService } from "../../../services/credentials.service";
 
 @Component({
   selector: 'app-mon-dossier',
@@ -27,189 +24,289 @@ export class MonDossierComponent implements OnInit {
   collectionSize1 = 0;
   collectionSize2 = 0;
   collectionSize3 = 0;
-  situationList: any;
-  diplomeList!: Diplome[];
+  situationList: any[] = [];
+  diplomeList: Diplome[] = [];
   collapsed: boolean = false;
   utilisateur: any;
   matricule!: string;
-  dossier !: DossierAgent;
+  dossier: any = null;
   apiUrl: string = environment.apiUrl;
   searchTextDiplome: any;
   searchTextAvancement: any;
   EtatCivilList: EtatCivil[] = [];
-  idDossier : any
-  idDossierUser : any
+  idDossier: any;
+  idDossierUser: any = null;
   userInfos: any;
 
-  dossierAgent!: DossierAgent;
+  hasDossier = false;
+  canCreateDossier = false;
+  message = '';
+  error = false;
+  isLoading = true;
+
+   // Nouvelle propriété pour savoir si c'est le dossier personnel ou un autre
+  isPersonalDossier = true;  // true = "Mon dossier", false = "Dossier d'un autre agent"
+  viewedAgentName = '';
 
   constructor(
-      private dossierAgentService: DossierAgentService,
-      private _httpClient: HttpClient,
-      private credentialsService: CredentialsService,
-      private route : ActivatedRoute,
-      private spinner: NgxSpinnerService,
-  ) {
-    this.idDossierUser = this.route.snapshot.params['idDossier'];
-  }
+    private dossierAgentService: DossierAgentService,
+    private _httpClient: HttpClient,
+    private credentialsService: CredentialsService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private spinner: NgxSpinnerService,
+  ) {}
 
   ngOnInit(): void {
-    // Initialize data and headers
-    this.headersSituation = ["Numéro Acte","Date acte", "Type acte", "acte","Pièce jointes"];
+    this.headersSituation = ["Numéro Acte", "Date acte", "Type acte", "acte", "Pièce jointes"];
     this.headersDiplome = ["Date d'obtention", "Nom diplôme", "Pièces jointes"];
     this.refreshData();
-    this.getIdDossier()
+    
+  //   // Récupérer l'ID depuis queryParams
+  //   this.route.queryParams.subscribe(params => {
+  //     const dossierId = params['id'];
+  //     console.log("ID récupéré depuis queryParams:", dossierId);
+  //     if (dossierId) {
+  //       this.idDossierUser = dossierId;
+  //     }
+  //     this.loadDossier();
+  //   });
+  // }
 
-    //this.getDiplomes();
+  // Vérifier si un paramètre idDossier est présent dans l'URL
+    this.route.params.subscribe(params => {
+      const dossierId = params['idDossier'];
+      console.log("Paramètre idDossier:", dossierId);
+      
+      if (dossierId) {
+        // C'est la consultation du dossier d'un autre agent
+        this.isPersonalDossier = false;
+        this.loadOtherUserDossier(dossierId);
+      } else {
+        // C'est le dossier personnel de l'utilisateur connecté
+        this.isPersonalDossier = true;
+        this.loadPersonalDossier();
+      }
+    });
   }
 
-  getIdDossier(){
-    this.userInfos = this.credentialsService.getUserInfos();
-    // console.log("idDossier",this.userInfos);
+  // loadDossier() {
+  //   this.spinner.show();
+  //   this.isLoading = true;
+    
+  //   // Si un ID de dossier est passé en paramètre
+  //   if (this.idDossierUser) {
+  //     console.log("📁 Chargement du dossier spécifique avec ID:", this.idDossierUser);
+      
+  //     this.dossierAgentService.get(this.idDossierUser).subscribe({
+  //       next: (response: any) => {
+  //         console.log("✅ Réponse du serveur (dossier spécifique):", response);
+          
+  //         if (response && response.payload) {
+  //           this.hasDossier = true;
+  //           this.canCreateDossier = false;
+  //           this.dossier = response.payload;
+  //           this.utilisateur = response.payload.utilisateur;
+  //           this.situationList = response.payload.situationAdministrative || [];
+  //           this.matricule = response.payload.utilisateur?.matricule;
+  //           this.EtatCivilList = response.payload.etatCivil || [];
+  //           this.diplomeList = response.payload.diplomes || [];
+            
+  //           this.collectionSize2 = this.diplomeList.length;
+  //           this.collectionSize1 = this.situationList.length;
+  //           this.collectionSize3 = this.EtatCivilList.length;
+            
+  //           this.message = 'Dossier chargé avec succès';
+  //         } else {
+  //           this.hasDossier = false;
+  //           this.message = 'Dossier non trouvé';
+  //         }
+          
+  //         this.isLoading = false;
+  //         this.spinner.hide();
+  //       },
+  //       error: (err) => {
+  //         console.error("❌ Erreur:", err);
+  //         this.isLoading = false;
+  //         this.spinner.hide();
+  //         this.error = true;
+  //         this.hasDossier = false;
+  //         this.message = err?.error?.message || 'Erreur lors du chargement du dossier';
+  //         this.dossierAgentService.showSwal('error', this.message);
+  //       }
+  //     });
+  //   } else {
+  //     // Sinon charger le dossier de l'utilisateur connecté
+  //     console.log("👤 Chargement du dossier de l'utilisateur connecté");
+      
+  //     this.dossierAgentService.getDossierCurrentUser().subscribe({
+  //       next: (response: any) => {
+  //         console.log("✅ Réponse (dossier courant):", response);
+  //         const data = response.data;
+          
+  //         this.hasDossier = data?.hasDossier || false;
+  //         this.canCreateDossier = data?.canCreateDossier || false;
+  //         this.message = response.message || '';
+          
+  //         if (this.hasDossier && data) {
+  //           this.dossier = data;
+  //           this.utilisateur = data.utilisateur;
+  //           this.situationList = data.situationAdministrative || [];
+  //           this.matricule = data.utilisateur?.matricule;
+  //           this.EtatCivilList = data.etatCivil || [];
+  //           this.diplomeList = data.diplomes || [];
+            
+  //           this.collectionSize2 = this.diplomeList.length;
+  //           this.collectionSize1 = this.situationList.length;
+  //           this.collectionSize3 = this.EtatCivilList.length;
+  //         }
+          
+  //         this.isLoading = false;
+  //         this.spinner.hide();
+  //       },
+  //       error: (err) => {
+  //         console.error("❌ Erreur:", err);
+  //         this.isLoading = false;
+  //         this.spinner.hide();
+  //         this.error = true;
+  //         this.message = err?.error?.message || 'Erreur lors du chargement de votre dossier';
+  //         this.dossierAgentService.showSwal('error', this.message);
+  //       }
+  //     });
+  //   }
+  // }
 
-    // this.idDossier = this.userInfos?.id;
-
-
-    if(this.idDossierUser) {
-
-      this.dossierAgentService.get(this.idDossierUser).subscribe({
-        next: (res) => {
-
-          localStorage.setItem("idDossier", JSON.stringify(res));
-
-          this.idDossier =  res?.payload
-          this.spinner.hide();
-
-          this.getDossierCurrentUser();
-
-        },
-        error: (err) => {
-
-          this.spinner.hide();
-
-          this.dossierAgentService.showSwal('error', err?.error?.message);
-        }
-      });
-    }else {
-      this.dossierAgentService.getDossierUserId(this.userInfos?.id).subscribe({
-        next: (res) => {
-
-          localStorage.setItem("idDossier", JSON.stringify(res));
-
-          this.idDossier =  res?.payload
-          this.spinner.hide();
-
-          this.getDossierCurrentUser();
-
-        },
-        error: (err) => {
-
-          this.spinner.hide();
-
-          this.dossierAgentService.showSwal('error', err?.error?.message);
-        }
-      });
-    }
-
-
-  }
-
-  getDossierCurrentUser(){
+  // Charger le dossier personnel de l'utilisateur connecté
+  loadPersonalDossier() {
     this.spinner.show();
-
-    if(this.idDossier == 0){
-
-      this.dossierAgentService.getDossierCurrentUser().subscribe((res)=>{
-
-          this.dossier = res.payload;
-          this.utilisateur = res.payload.utilisateur;
-          this.situationList = res.payload.situationAdministrative;
-          this.matricule = res.payload.utilisateur.matricule;
-          this.EtatCivilList = res.payload.etatCivil
-          //this.avancementList = res.payload.avancements;
-          //this.diplomeList = res.payload.diplomes;
+    this.isLoading = true;
+    
+    console.log("👤 Chargement du dossier personnel");
+    
+    this.dossierAgentService.getDossierCurrentUser().subscribe({
+      next: (response: any) => {
+        console.log("✅ Réponse dossier personnel:", response);
+        const data = response.data;
         
-          //this.collectionSize2 = this.diplomeList.length;
-          this.diplomeList = this.dossier.diplomes;
+        this.hasDossier = data?.hasDossier || false;
+        this.canCreateDossier = data?.canCreateDossier || false;
+        this.message = response.message || '';
+        
+        if (this.hasDossier && data) {
+          this.dossier = data;
+          this.utilisateur = data.utilisateur;
+          this.situationList = data.situationAdministrative || [];
+          this.matricule = data.utilisateur?.matricule;
+          this.EtatCivilList = data.etatCivil || [];
+          this.diplomeList = data.diplomes || [];
+          
+          this.collectionSize2 = this.diplomeList.length;
+          this.collectionSize1 = this.situationList.length;
+          this.collectionSize3 = this.EtatCivilList.length;
+        }
+        
+        this.isLoading = false;
         this.spinner.hide();
-      })
-    }else{
-      this.dossierAgentService.get(this.idDossier?.id).subscribe({
-        next : ((data) => {
-
-          this.dossier = data.payload
-          this.utilisateur = data.payload.utilisateur;
-          this.situationList = data.payload.situationAdministrative;
-          this.matricule = data.payload.utilisateur.matricule;
-          this.EtatCivilList = data.payload.etatCivil
-          this.diplomeList = this.dossier.diplomes;
-
-
-         // console.log("ddf",  this.diplomeList)
-
-          this.spinner.hide();
-
-        })
-      })
-    }
-   
+      },
+      error: (err) => {
+        console.error("❌ Erreur:", err);
+        this.isLoading = false;
+        this.spinner.hide();
+        this.error = true;
+        this.message = err?.error?.message || 'Erreur lors du chargement de votre dossier';
+        this.dossierAgentService.showSwal('error', this.message);
+      }
+    });
   }
 
-  getDiplomes = () => {
-    console.log("dans getDiplomes");
-    if(this.matricule){
-      console.log("dans getDiplomes 222");
-      this.dossierAgentService.getDiplomes(this.matricule,this.page,this.pageSize).subscribe({
-        next : (res : any) =>{
-          console.log("les données diplomes ++++ ", res)
+  // Charger le dossier d'un autre agent par son ID
+  loadOtherUserDossier(dossierId: number) {
+    this.spinner.show();
+    this.isLoading = true;
+    
+    console.log("📁 Chargement du dossier spécifique ID:", dossierId);
+    
+    this.dossierAgentService.get(dossierId).subscribe({
+      next: (response: any) => {
+        console.log("✅ Réponse dossier spécifique:", response);
+        
+        if (response && response.payload) {
+          this.hasDossier = true;
+          this.canCreateDossier = false; // Ne pas permettre la modification du dossier d'un autre
+          this.dossier = response.payload;
+          this.utilisateur = response.payload.utilisateur;
+          this.situationList = response.payload.situationAdministrative || [];
+          this.matricule = response.payload.utilisateur?.matricule;
+          this.EtatCivilList = response.payload.etatCivil || [];
+          this.diplomeList = response.payload.diplomes || [];
+          
+          // Nom de l'agent pour l'affichage
+          this.viewedAgentName = `${this.utilisateur?.prenom} ${this.utilisateur?.nom}`;
+          
+          this.collectionSize2 = this.diplomeList.length;
+          this.collectionSize1 = this.situationList.length;
+          this.collectionSize3 = this.EtatCivilList.length;
+          
+          this.message = 'Dossier chargé avec succès';
+        } else {
+          this.hasDossier = false;
+          this.message = 'Dossier non trouvé';
+        }
+        
+        this.isLoading = false;
+        this.spinner.hide();
+      },
+      error: (err) => {
+        console.error("❌ Erreur:", err);
+        this.isLoading = false;
+        this.spinner.hide();
+        this.error = true;
+        this.hasDossier = false;
+        this.message = err?.error?.message || 'Erreur lors du chargement du dossier';
+        this.dossierAgentService.showSwal('error', this.message);
+      }
+    });
+  }
+
+  getDiplomes() {
+    if (this.matricule) {
+      this.dossierAgentService.getDiplomes(this.matricule, this.page, this.pageSize).subscribe({
+        next: (res: any) => {
           this.diplomeList = res.data[0];
           this.collectionSize2 = res.data[0].length;
-          }
-      })
-    }          
+        }
+      });
+    }
   }
 
-  Telecharger(filename:string){
+  Telecharger(filename: string) {
+    if (!filename) return;
     
     this._httpClient.get(`${this.apiUrl}file/download/${filename}`, {
       headers: {
         'accept': '*/*',
         'Authorization': `Bearer ${localStorage.getItem("Token")}`
       },
-      responseType: 'blob' // traiter la réponse comme un blob
+      responseType: 'blob'
     }).subscribe(
       (response: Blob) => {
-        // Créer une URL pour le contenu blob afin de pouvoir l'ouvrir dans une nouvelle fenêtre ou le télécharger
         const blobUrl = URL.createObjectURL(response);
- 
-        // Créer un élément d'ancrage invisible dans le document
         const anchor = document.createElement('a');
         anchor.style.display = 'none';
         document.body.appendChild(anchor);
- 
-        // Définir l'URL de l'ancrage sur l'URL blob et déclencher un clic
         anchor.href = blobUrl;
-        anchor.download = filename; // Nom de fichier par défaut lors du téléchargement
+        anchor.download = filename;
         anchor.click();
- 
-        // Supprimer l'ancrage du document
         document.body.removeChild(anchor);
- 
-        // Libérer l'URL blob pour libérer la mémoire
         URL.revokeObjectURL(blobUrl);
       },
-      (error) => console.log(error)
+      (error) => console.error(error)
     );
   }
 
-
   refreshData() {
-    this.situationList = []
-    this.diplomeList = []
-    this.EtatCivilList =   []
+    this.situationList = [];
+    this.diplomeList = [];
+    this.EtatCivilList = [];
   }
-
 }
-
-
-
