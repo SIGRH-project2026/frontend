@@ -4,9 +4,9 @@ export const environment = {
       //apiUrl: 'https://mfpai.gainde2000.sn/projet-api-v2/'
     //apiUrl: 'http://localhost:9080/api/v1/mfpai/',
    // apiUrl: 'https://192.168.2.221:8080/api/v1/mfpai/'
-    apiUrl: 'http://localhost:9080/api/v1/mfpai/',
+    apiUrl: 'http://localhost:9080/api/v1/mfpai/', 
 
     // Production ==>. server SIGRH
-    //apiUrl: 'https://sirh-formation.sec.gouv.sn/projet-api-v2/'
+   // apiUrl: 'https://sirh-formation.sec.gouv.sn/projet-api-v2/'
     
 };
