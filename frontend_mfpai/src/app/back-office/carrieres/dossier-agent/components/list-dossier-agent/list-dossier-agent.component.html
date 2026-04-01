@@ -10,7 +10,7 @@
         <div class="panel-list-search">
             <div class="search ">
                 <div class="search-box">
-                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)] = "searchText">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchText">
                     <button class="search-btn"><i class="fas fa-search"></i></button>
                 </div>
             </div>
@@ -24,58 +24,63 @@
         <div class="table-responsive">
             <table class="table table-custom">
                 <thead>
-                <tr class="table-light">
-                    <th scope="col" *ngFor="let head of headers">{{ head }}</th>
-                </tr>
+                    <tr class="table-light">
+                        <th scope="col" *ngFor="let head of headers">{{ head }}</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <ng-container>
-                    <tr *ngFor="let dossier of dossierList|searchPipe:searchText">
-                        <td>
-                            {{ dossier.utilisateur?.matricule  }}
-                        </td>
-                        <td>
-                            {{ dossier.utilisateur?.prenom }}
-                        </td>
-                        <td>
-                            {{ dossier.utilisateur?.nom }}
-                        </td>
-                        <td>
-                            {{ dossier.utilisateur?.adresse }}
-                        </td>
-                        <td>
-                            {{ dossier.utilisateur?.fonction?.label }}
-                        </td>
-                        <td>
-                            {{ dossier.utilisateur?.corpsGrade?.label }} / {{ dossier.utilisateur?.grade?.label }}
-                        </td>
+                    <ng-container>
+                        <tr *ngFor="let dossier of dossierList|searchPipe:searchText">
+                            <td>
+                                {{ dossier.utilisateur?.matricule }}
+                            </td>
+                            <td>
+                                {{ dossier.utilisateur?.prenom }}
+                            </td>
+                            <td>
+                                {{ dossier.utilisateur?.nom }}
+                            </td>
+                            <td>
+                                {{ dossier.utilisateur?.adresse }}
+                            </td>
+                            <td>
+                                {{ dossier.utilisateur?.fonction?.label }}
+                            </td>
+                            <td>
+                                {{ dossier.utilisateur?.corpsGrade?.label }} / {{ dossier.utilisateur?.grade?.label }}
+                            </td>
 
-                        <td>
-                            <div class="dropdown">
-                                <button class="fab-button" type="button" data-bs-toggle="dropdown"
+                            <td>
+                                <div class="dropdown">
+                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
                                         aria-expanded="false">
-                                    <i class="fa fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier?.utilisateur?.id)">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <!-- <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier?.utilisateur?.id)"> -->
+                                            <!-- <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier?.id)">   
                                             <i class="fa fa-eye me-2"></i>
                                             <span>Voir détails</span>
-                                        </a>
-                                    </li>
-                                    
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-container>
-                <ng-template #listEmpty>
-                    <tr>
-                        <td [attr.colspan]="headers">
-                            <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
-                        </td>
-                    </tr>
-                </ng-template>
+                                        </a> -->
+                                            <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier.id)">
+                                                <i class="fa fa-eye me-2"></i>
+                                                <span>Voir détails</span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #listEmpty>
+                        <tr>
+                            <td [attr.colspan]="headers">
+                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
+                            </td>
+                        </tr>
+                    </ng-template>
                 </tbody>
             </table>
         </div>
@@ -116,8 +121,8 @@
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="button button-secondary "
-                (click)="modal.close(rechercheForm.value?.matricule)" [disabled]="!rechercheForm.valid">Rechercher</button>
+        <button type="submit" class="button button-secondary " (click)="modal.close(rechercheForm.value?.matricule)"
+            [disabled]="!rechercheForm.valid">Rechercher</button>
         <button type="button" class="button button-outline-primary W-100" (click)="modal.close()">
             Annuler
         </button>
@@ -134,11 +139,11 @@
             <div class="row g-3">
                 <div class="col-sm-6">
                     <label class="form-label">Matricule</label>
-                    <input type="text" class="form-control" placeholder="Saisir" formControlName = "matricule"/>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="matricule" />
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Prénom</label>
-                    <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom"/>
+                    <input type="text" class="form-control" placeholder="Saisir" formControlName="prenom" />
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Nom</label>
@@ -148,14 +153,14 @@
                     <label class="form-label">Adresse</label>
                     <input type="text" class="form-control" placeholder="Saisir" formControlName="adresse" />
                 </div>
-               
+
             </div>
         </form>
     </div>
 
     <div class="modal-footer">
         <button type="button" class="button button-secondary w-100"
-                (click)="modal.close('Save click')">Rechercher</button>
+            (click)="modal.close('Save click')">Rechercher</button>
         <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
             Annuler
         </button>

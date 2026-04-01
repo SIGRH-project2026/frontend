@@ -1,7 +1,43 @@
-    <div class="panel-form">
+<!-- Loader -->
+<div *ngIf="isLoading" class="text-center p-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement de votre dossier...</p>
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="!isLoading && error" class="alert alert-danger m-3">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ message }}
+</div>
+
+<!-- Message si pas de dossier -->
+<div *ngIf="!isLoading && !hasDossier && !error" class="alert alert-warning text-center p-4 m-3">
+    <i class="fas fa-folder-open fa-3x mb-2"></i>
+    <h5>Vous n'avez pas encore de dossier</h5>
+    <p>Vos pièces jointes ne sont pas encore chargées.</p>
+    <hr>
+    <small class="text-muted">
+        <i class="fas fa-info-circle"></i>
+        Pour toute question relative à votre dossier, veuillez contacter la Division des Carrières :
+        <br>
+        <i class="fas fa-phone"></i> 33 123 45 67 | 
+        <i class="fas fa-envelope"></i> carriere@gainde2000.sn
+    </small>
+</div>
+
+<!-- Afficher le dossier seulement s'il existe -->
+<div *ngIf="!isLoading && hasDossier" class="panel-form">
     <div class="panel-form-header">
         <div class="panel-form-text flex-column align-items-start w-100">
-            <h3>Dossier N° {{dossier?.id}}</h3>
+            <!-- <h3>Dossier N° {{dossier?.id}}</h3> -->
+             <!-- Titre différent selon que c'est le dossier personnel ou non -->
+        <h3 *ngIf="isPersonalDossier">Mon Dossier N° {{dossier?.id}}</h3>
+        <h3 *ngIf="!isPersonalDossier">
+            Dossier de {{ viewedAgentName || (utilisateur?.prenom + ' ' + utilisateur?.nom) }}
+            <small class="text-muted d-block">Matricule: {{ utilisateur?.matricule }}</small>
+        </h3>
             <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
                 <mat-tab label="Etat Civil">
                     <div class="row details g-3 py-3">
@@ -55,11 +91,9 @@
                         </div>
                         <div class="col-lg-12">
                             <h3 class="title-section-infos mt-3">Fichiers</h3>
-                        
                         </div>
                         <!-- Table -->
                         <div class="table-responsive">
-                        
                             <table class="table table-custom table-striped">
                                 <thead>
                                     <tr class="table-light">
@@ -67,36 +101,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ng-container *ngIf="EtatCivilList.length > 0;else listEmpty;">
-
-
-
+                                    <ng-container *ngIf="EtatCivilList.length > 0;else listEmptyEtatCivil;">
                                         <tr *ngFor="let data of EtatCivilList">
-
-                                            <td>
-                                                {{ data?.nomFichier }}
-                                            </td>
-
-
+                                            <td>{{ data?.nomFichier }}</td>
                                             <td>
                                                 <div class="doc-file-item">
                                                     <div class="text-icon">
                                                         <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-
                                                     </div>
                                                     <button class="fab-button" type="button" (click)="Telecharger(data.piecejointes.generatedName)">
                                                         <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
                                                     </button>
                                                 </div>
                                             </td>
-                        
                                         </tr>
                                     </ng-container>
-                                    <ng-template #listEmpty>
-
-
+                                    <ng-template #listEmptyEtatCivil>
                                         <tr>
-                                            <td [attr.colspan]="headersSituation.length">
+                                            <td [attr.colspan]="headersEtatCivile.length">
                                                 <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
                                             </td>
                                         </tr>
@@ -106,6 +128,7 @@
                         </div>
                     </div>
                 </mat-tab>
+                
                 <mat-tab label="Situations administratives">
                     <div class="py-3">
                         <div class="panel-list-search">
@@ -117,7 +140,6 @@
                             </div>
                         </div>
 
-                        <!-- Table -->
                         <div class="table-responsive">
                             <table class="table table-custom table-striped">
                                 <thead>
@@ -126,26 +148,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ng-container *ngIf="situationList.length > 0 ; else listEmpty;">
+                                    <ng-container *ngIf="situationList.length > 0 ; else listEmptySituation;">
                                         <tr *ngFor="let sit of situationList">
-                                            <td>
-                                                {{ sit?.numeroActe }}
-                                            </td>
-                                            <td>
-                                                {{ sit?.dateActe }}
-                                            </td>
-                                            <td>
-                                                {{ sit.typeActe?.libelleActe}}
-                                            </td>
-                                            <td>
-                                                {{ sit.acteAA?.libelle }}{{ sit.acteAG?.libelle }}
-                                            </td>
+                                            <td>{{ sit?.numeroActe }}</td>
+                                            <td>{{ sit?.dateActe }}</td>
+                                            <td>{{ sit.typeActe?.libelleActe}}</td>
+                                            <td>{{ sit.acteAA?.libelle }}{{ sit.acteAG?.libelle }}</td>
                                             <td>
                                                 <div class="doc-file-item">
                                                     <div class="text-icon">
                                                         <img src="assets/icons/pdf.png" width="25px" alt="PDF">
                                                         <div class="text">
-
                                                             <button class="fab-button" type="button" (click)="Telecharger(sit.pieceJointes.generatedName)">
                                                                 <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
                                                             </button>
@@ -155,7 +168,7 @@
                                             </td>
                                         </tr>
                                     </ng-container>
-                                    <ng-template #listEmpty>
+                                    <ng-template #listEmptySituation>
                                         <tr>
                                             <td [attr.colspan]="headersSituation.length">
                                                 <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
@@ -165,37 +178,20 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <!-- PAGINATION -->
-                        <!-- <div class="flex-row-between">
-                            <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap">Affichage par</span>
-                                <select class="form-select form-select-sm mx-2 form-select-filter"
-                                    [(ngModel)]="pageSize" (ngModelChange)="refreshData()">
-                                    <option [ngValue]="10">10</option>
-                                    <option [ngValue]="20">20</option>
-                                    <option [ngValue]="30">30</option>
-                                </select>
-                                <span style="white-space: nowrap">entrées</span>
-                            </div>
-                            <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page" [pageSize]="pageSize"
-                                (pageChange)="refreshData()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
-                            </ngb-pagination>
-                        </div> -->
                     </div>
                 </mat-tab>
+                
                 <mat-tab label="Diplômes">
                     <div class="py-3">
                         <div class="panel-list-search">
                             <div class="search">
                                 <div class="search-box">
-                                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)] = "searchTextDiplome">
+                                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchTextDiplome">
                                     <button class="search-btn"><i class="fas fa-search"></i></button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Table -->
                         <div class="table-responsive">
                             <table class="table table-custom table-striped">
                                 <thead>
@@ -204,19 +200,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ng-container *ngIf="diplomeList && diplomeList.length > 0;else listEmpty;">
-                                        <tr *ngFor="let data of diplomeList | search2Pipe :searchTextDiplome ">
+                                    <ng-container *ngIf="diplomeList && diplomeList.length > 0;else listEmptyDiplome;">
+                                        <tr *ngFor="let data of diplomeList | search2Pipe :searchTextDiplome">
+                                            <td>{{ data?.dipDateObtention }}</td>
+                                            <td>{{ data?.dipNom }}</td>
                                             <td>
-                                                {{ data?.dipDateObtention }}
-                                            </td>
-                                            <td>
-                                                {{ data?.dipNom }}
-                                            </td>
-                                            <td>
-                                                <!-- <a href="javacript:(0)"
-                                                    style="text-decoration: underline;color: #1D4A7B;">
-                                                    {{ data.piecesJointes }}
-                                                </a> -->
                                                 <div class="doc-file-item">
                                                     <div class="text-icon">
                                                         <img src="assets/icons/pdf.png" width="25px" alt="PDF">
@@ -231,7 +219,7 @@
                                             </td>
                                         </tr>
                                     </ng-container>
-                                    <ng-template #listEmpty>
+                                    <ng-template #listEmptyDiplome>
                                         <tr>
                                             <td [attr.colspan]="headersDiplome.length">
                                                 <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
@@ -241,25 +229,9 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <!-- PAGINATION -->
-                       <!--  <div class="flex-row-between">
-                            <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap">Affichage par</span>
-                                <select class="form-select form-select-sm mx-2 form-select-filter"
-                                    [(ngModel)]="pageSize" (ngModelChange)="getDiplomes()">
-                                    <option [ngValue]="10">10</option>
-                                    <option [ngValue]="20">20</option>
-                                    <option [ngValue]="30">30</option>
-                                </select>
-                                <span style="white-space: nowrap">entrées</span>
-                            </div>
-                            <ngb-pagination [collectionSize]="collectionSize2" [(page)]="page" [pageSize]="pageSize"
-                                (pageChange)="getDiplomes()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
-                            </ngb-pagination>
-                        </div> -->
                     </div>
                 </mat-tab>
             </mat-tab-group>
         </div>
     </div>
+</div>

@@ -11,6 +11,15 @@ export class DossierAgent{
     avancements : Avancement[]=[]
     utilisateur: UserDTOs= new UserDTOs();
     //situationMatrimoniale : string=""
+    etatCivil : EtatCivil[] = []  // ← AJOUTER CETTE LIGNE (propriété manquante)
+
+    // AJOUTER CES DEUX PROPRIÉTÉS
+    hasDossier: boolean = false;
+    canCreateDossier: boolean = false;
+    
+    // Autres propriétés optionnelles
+    isDeleted?: boolean;
+    actes?: any[];
 }
 
 export class DossierAgentDto{
