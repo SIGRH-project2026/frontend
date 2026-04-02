@@ -118,4 +118,36 @@ export class ReferencesService {
     let params = new HttpParams().set('profileCode',codeProfile);
     return this._http.get(`${this.apiUrl}static/indicateurs`, {params})
  }
+
+/**
+ * Récupère toutes les directions (niveau central)
+ */
+getDirections(): Observable<any> {
+  return this._http.get(`${this.apiUrl}utilisateur/references/directions`);
+}
+
+/**
+ * Récupère les services d'une direction
+ * @param directionCode Code de la direction
+ */
+getServicesByDirection(directionCode: string): Observable<any> {
+  return this._http.get(`${this.apiUrl}utilisateur/references/services/${directionCode}`);
+}
+
+/**
+ * Récupère les divisions d'une direction
+ * @param directionCode Code de la direction
+ */
+getDivisionsByDirection(directionCode: string): Observable<any> {
+  return this._http.get(`${this.apiUrl}utilisateur/references/divisions/${directionCode}`);
+}
+
+/**
+ * Récupère les bureaux d'une division
+ * @param divisionCode Code de la division
+ */
+getBureausByDivision(divisionCode: string): Observable<any> {
+  return this._http.get(`${this.apiUrl}utilisateur/references/bureaus/${divisionCode}`);
+}
+
 }

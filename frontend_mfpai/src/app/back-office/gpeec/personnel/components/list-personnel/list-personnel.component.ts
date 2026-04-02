@@ -44,6 +44,23 @@ export class ListPersonnelComponent implements OnInit {
   name = 'listePersonnels.xlsx';
   searchQuery = ""
 
+   // Données pour les selects du niveau central
+  directionsCentrales: any[] = [];
+  servicesCentral: any[] = [];
+  divisionsCentral: any[] = [];
+  bureausCentral: any[] = [];
+
+  // Codes sélectionnés pour le niveau central
+  directionCentraleCode = "";
+  serviceCode = "";
+  divisionCode = "";
+  bureauCode = "";
+
+  // Flag pour savoir si on est en mode recherche niveau central
+  isNiveauCentral = false;
+
+
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -63,6 +80,18 @@ export class ListPersonnelComponent implements OnInit {
     this.getUserDetail()
     this.listPersonnel()
     this.lookingSearchForm();
+
+     // Ajoutez "Niveau central" à la liste des structures si nécessaire
+    this.referenceService.lisStructure().subscribe(response => {
+      if(response.success) {
+        this.structure = response.data;
+        // Vérifiez si "Niveau central" existe déjà, sinon ajoutez-le
+        const hasNiveauCentral = this.structure.some((s: any) => s.code === 'NIVEAU_CENTRAL');
+        if (!hasNiveauCentral) {
+          this.structure.push({ code: 'NIVEAU_CENTRAL', label: 'Niveau central' });
+        }
+      }
+    });
     
     this.referenceService.listRegion().subscribe(response => {
       if(response.success)
@@ -85,7 +114,11 @@ export class ListPersonnelComponent implements OnInit {
         specialite:  [''],
         matricule:  [''],
         structure:  [''],
-      
+      // ⬇️⬇️⬇️ NOUVEAUX CHAMPS ⬇️⬇️⬇️
+        direction: [''],
+        service: [''],
+        division: [''],
+        bureau: ['']
 
     });
 }
@@ -140,21 +173,6 @@ getUserDetail(){
     this.selectedOption = event.target.value;
   }
 
-  onSearchUser() {
-    this.regionCode = this.advancedSearchForm.value['region']
-    this.iaCode = this.advancedSearchForm.value['ia']
-    this.iefCode = this.advancedSearchForm.value['ief']
-    this.structureCode = this.advancedSearchForm.value['structure']
-    this.etabCode = this.advancedSearchForm.value['etablissement']
-    this.page = 0
-    this.pageSize = 10
-    this.listPersonnel()
-    this.isSearchUser = !this.isSearchUser;
-  }
-
-  onCancel() {
-    this.isSearchUser = !this.isSearchUser;
-  }
   listPersonnel(){
     this.userService.getAllPersonnel(this.page-1, this.pageSize, this.regionCode, this.structureCode, this.iaCode, this.iefCode, this.etabCode)
     .subscribe(data => {
@@ -171,20 +189,52 @@ getUserDetail(){
       });
 
     }
-    getStruct(code: any) {
-      if(code) {
-          this.spinner.show()
-          this.referenceService.listEtablissementByEFFCode(code)
-              .subscribe(response => {
+  //   getStruct(code: any) {
+  //     if(code) {
+  //         this.spinner.show()
+  //         this.referenceService.listEtablissementByEFFCode(code)
+  //             .subscribe(response => {
 
-                  if (response.success) {
-                      this.etablissement = response.data;
-                      this.spinner.hide()
-                  }
-              });
+  //                 if (response.success) {
+  //                     this.etablissement = response.data;
+  //                     this.spinner.hide()
+  //                 }
+  //             });
 
-          this.spinner.hide()
+  //         this.spinner.hide()
+  //     }
+  // }
+
+  /**
+   * Méthode appelée quand on change la structure (IA/Ministere/Niveau central)
+   */
+  getStruct(code: any) {
+    if(code) {
+      if (code === 'NIVEAU_CENTRAL') {
+        // Activer le mode niveau central
+        this.isNiveauCentral = true;
+        // Charger les directions
+        this.loadDirections();
+        // Réinitialiser les filtres déconcentrés
+        this.advancedSearchForm.patchValue({
+          region: '',
+          ia: '',
+          ief: '',
+          etablissement: ''
+        });
+        // Réinitialiser les variables
+        this.directionCentraleCode = '';
+        this.serviceCode = '';
+        this.divisionCode = '';
+        this.bureauCode = '';
+      } else {
+        // Mode déconcentré
+        this.isNiveauCentral = false;
+        if(code === 'MIN') {
+          this.loadEtablissementsByEFF(code);
+        }
       }
+    }
   }
   getListEtablissement(code: any): void {
 
@@ -232,6 +282,234 @@ getListEtabByIA(code: any): void {
           }
       });
 }
+
+ /**
+   * Charge la liste des directions centrales
+   */
+  loadDirections() {
+    this.referenceService.getDirections().subscribe({
+      next: (response) => {
+        if(response.status === 'OK') {
+          this.directionsCentrales = response.payload;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur chargement directions:', error);
+      }
+    });
+  }
+
+loadEtablissementsByEFF(code: any): void {
+  this.referenceService.listEtablissementByEFFCode(code)
+      .subscribe(response => {
+
+          if (response.success) {
+              this.etablissement = response.data;
+          }
+      });
+}
+
+
+/**
+   * Quand on sélectionne une direction
+   */
+  onDirectionChange(code: string) {
+    this.directionCentraleCode = code;
+    this.serviceCode = '';
+    this.divisionCode = '';
+    this.bureauCode = '';
+    
+    // Réinitialiser les listes dépendantes
+    this.servicesCentral = [];
+    this.divisionsCentral = [];
+    this.bureausCentral = [];
+    
+    if(code) {
+      // Charger les services de cette direction
+      this.loadServicesByDirection(code);
+      // Charger les divisions de cette direction
+      this.loadDivisionsByDirection(code);
+      // Rechercher le personnel
+      this.searchCentralLevelPersonnel();
+    }
+  }
+
+  /**
+   * Charge les services d'une direction
+   */
+  loadServicesByDirection(directionCode: string) {
+    this.referenceService.getServicesByDirection(directionCode).subscribe({
+      next: (response) => {
+        if(response.status === 'OK') {
+          this.servicesCentral = response.payload;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur chargement services:', error);
+      }
+    });
+  }
+
+  /**
+   * Charge les divisions d'une direction
+   */
+  loadDivisionsByDirection(directionCode: string) {
+    this.referenceService.getDivisionsByDirection(directionCode).subscribe({
+      next: (response) => {
+        if(response.status === 'OK') {
+          this.divisionsCentral = response.payload;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur chargement divisions:', error);
+      }
+    });
+  }
+
+  /**
+   * Quand on sélectionne un service
+   */
+  onServiceChange(code: string) {
+    this.serviceCode = code;
+    this.searchCentralLevelPersonnel();
+  }
+
+  /**
+   * Quand on sélectionne une division
+   */
+  onDivisionChange(code: string) {
+    this.divisionCode = code;
+    this.bureauCode = '';
+    this.bureausCentral = [];
+    
+    if(code) {
+      this.loadBureausByDivision(code);
+      this.searchCentralLevelPersonnel();
+    }
+  }
+
+  /**
+   * Charge les bureaux d'une division
+   */
+  loadBureausByDivision(divisionCode: string) {
+    this.referenceService.getBureausByDivision(divisionCode).subscribe({
+      next: (response) => {
+        if(response.status === 'OK') {
+          this.bureausCentral = response.payload;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur chargement bureaux:', error);
+      }
+    });
+  }
+
+  /**
+   * Quand on sélectionne un bureau
+   */
+  onBureauChange(code: string) {
+    this.bureauCode = code;
+    this.searchCentralLevelPersonnel();
+  }
+
+  /**
+   * Recherche le personnel du niveau central
+   */
+  searchCentralLevelPersonnel() {
+    this.spinner.show();
+    this.page = 1;
+    
+    const params = {
+      page: this.page - 1,
+      size: this.pageSize,
+      direction: this.directionCentraleCode,
+      service: this.serviceCode,
+      division: this.divisionCode,
+      bureau: this.bureauCode
+    };
+    
+    this.userService.getPersonnelNiveauCentral(params).subscribe({
+      next: (response) => {
+        if(response?.status === 'OK') {
+          this.userList = response?.payload || [];
+          this.collectionSize = response?.metadata?.totalElements || 0;
+        } else {
+          this.userList = [];
+          this.collectionSize = 0;
+        }
+        this.spinner.hide();
+      },
+      error: (error) => {
+        console.error('Erreur recherche niveau central:', error);
+        this.userList = [];
+        this.collectionSize = 0;
+        this.spinner.hide();
+      }
+    });
+  }
+
+  /**
+   * Surcharge de onSearchUser
+   */
+  onSearchUser() {
+    if (this.isNiveauCentral) {
+      // Récupérer les valeurs du formulaire pour niveau central
+      this.directionCentraleCode = this.advancedSearchForm.value['direction'];
+      this.serviceCode = this.advancedSearchForm.value['service'];
+      this.divisionCode = this.advancedSearchForm.value['division'];
+      this.bureauCode = this.advancedSearchForm.value['bureau'];
+    } else {
+      // Logique existante pour niveau déconcentré
+      this.regionCode = this.advancedSearchForm.value['region'];
+      this.iaCode = this.advancedSearchForm.value['ia'];
+      this.iefCode = this.advancedSearchForm.value['ief'];
+      this.structureCode = this.advancedSearchForm.value['structure'];
+      this.etabCode = this.advancedSearchForm.value['etablissement'];
+    }
+    
+    this.page = 1;
+    this.listPersonnel();
+    this.isSearchUser = !this.isSearchUser;
+  }
+
+  /**
+   * Surcharge de onCancel
+   */
+  onCancel() {
+    if (this.isNiveauCentral) {
+      // Réinitialiser les filtres niveau central
+      this.directionCentraleCode = '';
+      this.serviceCode = '';
+      this.divisionCode = '';
+      this.bureauCode = '';
+      this.servicesCentral = [];
+      this.divisionsCentral = [];
+      this.bureausCentral = [];
+      
+      this.advancedSearchForm.patchValue({
+        direction: '',
+        service: '',
+        division: '',
+        bureau: ''
+      });
+    } else {
+      // Réinitialiser les filtres niveau déconcentré
+      this.regionCode = '';
+      this.iaCode = '';
+      this.iefCode = '';
+      this.structureCode = '';
+      this.etabCode = '';
+      
+      this.advancedSearchForm.patchValue({
+        region: '',
+        ia: '',
+        ief: '',
+        struktur: '',
+        etablissement: ''
+      });
+    }
+    this.isSearchUser = !this.isSearchUser;
+  }
 
 // exportToExcel(): void {
 //    let element = document.getElementById('dataTables');
