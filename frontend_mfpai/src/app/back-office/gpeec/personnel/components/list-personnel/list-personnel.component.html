@@ -10,86 +10,148 @@
     </div>
     <div class="panel-list-body">
       <form [formGroup]="advancedSearchForm" *ngIf="profile !== 'Chef-etablissement'  && profile !== 'Chef-cfp' && profile !== 'Chef-EFF'">
-        <!-- IA/Ministere -->
+        
+        <!-- Section pour DGPEEC (qui voit tout) -->
         <div class="row g-3" *ngIf="isDGPEEC">
-            <div class="col-sm-6" >
-                <label class="form-label form-label-sm">IA/Ministere</label>
+            <div class="col-sm-6">
+                <label class="form-label form-label-sm">Type de structure</label>
                 <select class="form-select" #typeStructureValue formControlName="structure" (change)="getStruct($any($event.target).value)">
                     <option value="">Sélectionner</option>
                     <option *ngFor="let struc of structure" [value]="struc?.code">{{struc?.label}}</option>
-
+                    <!-- AJOUT MANUEL DE L'OPTION NIVEAU CENTRAL -->
+                    <option value="NIVEAU_CENTRAL">Niveau central</option>
                 </select>
             </div>
-            <!-- Ministere -->
-            <ng-container *ngIf="selectedOption === 'Ministere'">
+            
+            <!-- ==================== MINISTERE ==================== -->
+            <ng-container *ngIf="typeStructureValue.value === 'Ministere'">
                 <div class="col-sm-6">
                     <label class="form-label form-label-sm">EFF</label>
                     <select class="form-select" formControlName="etablissement">
                         <option value="">Sélectionner</option>
+                        <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
                     </select>
                 </div>
             </ng-container>
 
-            <!-- IA -->
-           <ng-container *ngIf="typeStructureValue.value === 'IA'">
-            <label class="form-label form-label-sm">Région</label>
-            <select class="form-select" formControlName="region"
-                    (change)="getListIA($any($event.target).value)">
-                <option value="">Sélectionner</option>
-                <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
-            </select>
-                <div class="col-sm-6">
-                    <label class="form-label form-label-sm">IA</label>
-                    <select class="form-select" formControlName="ia" (change)="getListEF($any($event.target).value);
-                        getListEtabByIA($any($event.target).value)">
+            <!-- ==================== IA ==================== -->
+            <ng-container *ngIf="typeStructureValue.value === 'IA'">
+                <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+                    <div class="col-sm-6">
+                        <label class="form-label form-label-sm">Région</label>
+                        <select class="form-select" formControlName="region" (change)="getListIA($any($event.target).value)">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label form-label-sm">IA</label>
+                        <select class="form-select" formControlName="ia" (change)="getListEF($any($event.target).value); getListEtabByIA($any($event.target).value)">
                             <option value="">Sélectionner</option>
                             <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
-                    </select>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label form-label-sm">IEF</label>
+                        <select class="form-select" formControlName="ief" (change)="getListEtablissement($any($event.target).value)">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label form-label-sm">Etablissement</label>
+                        <select class="form-select" formControlName="etablissement">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <label class="form-label form-label-sm">IEF</label>
-                    <select class="form-select" formControlName="ief" (change)="
-                            getListEtablissement($any($event.target).value);">
-                           <option value="">Sélectionner</option>
-                           <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
-                       </select>
+            </ng-container>
+            
+            <!-- ==================== MIN ==================== -->
+            <ng-container *ngIf="typeStructureValue.value === 'MIN'">
+                <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+                    <div class="col-sm-6">
+                        <label class="form-label form-label-sm">EFF</label>
+                        <select class="form-select" formControlName="etablissement">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}} - {{eta?.label}}</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <label class="form-label form-label-sm">Etablissement</label>
-                    <select class="form-select" formControlName="etablissement">
-                        <option value="">Sélectionner</option>
-                        <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
-                    </select>
-                </div>
-           </ng-container>
-           <ng-container *ngIf="typeStructureValue.value === 'MIN'">
-            <div class="col-sm-4">
-                <label class="form-label">EFF </label>
-                <select class="form-select" formControlName="etablissement">
-                    <option value="">Sélectionner</option>
-                    <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}}</option>
-                </select>
+            </ng-container>
 
-            </div>
-        </ng-container>
-
+            <!-- ==================== NIVEAU CENTRAL (NOUVEAU) ==================== -->
+            <ng-container *ngIf="typeStructureValue.value === 'NIVEAU_CENTRAL'">
+                <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+                    <!-- Direction -->
+                    <div class="col-sm-4">
+                        <label class="form-label form-label-sm">Direction</label>
+                        <select class="form-select" formControlName="direction" 
+                                (change)="onDirectionChange($any($event.target).value)">
+                            <option value="">Toutes les directions</option>
+                            <option *ngFor="let dir of directionsCentrales" [value]="dir.code">
+                                {{dir?.label}}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Service -->
+                    <div class="col-sm-4" *ngIf="servicesCentral && servicesCentral.length > 0">
+                        <label class="form-label form-label-sm">Service</label>
+                        <select class="form-select" formControlName="service" 
+                                (change)="onServiceChange($any($event.target).value)">
+                            <option value="">Tous les services</option>
+                            <option *ngFor="let serv of servicesCentral" [value]="serv.code">
+                                {{serv?.label}}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Division -->
+                    <div class="col-sm-4" *ngIf="divisionsCentral && divisionsCentral.length > 0">
+                        <label class="form-label form-label-sm">Division</label>
+                        <select class="form-select" formControlName="division" 
+                                (change)="onDivisionChange($any($event.target).value)">
+                            <option value="">Toutes les divisions</option>
+                            <option *ngFor="let div of divisionsCentral" [value]="div.code">
+                                {{div?.label}}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Bureau -->
+                    <div class="col-sm-4" *ngIf="bureausCentral && bureausCentral.length > 0">
+                        <label class="form-label form-label-sm">Bureau</label>
+                        <select class="form-select" formControlName="bureau" 
+                                (change)="onBureauChange($any($event.target).value)">
+                            <option value="">Tous les bureaux</option>
+                            <option *ngFor="let bur of bureausCentral" [value]="bur.code">
+                                {{bur?.label}}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Message d'information si aucune donnée -->
+                    <div class="col-12" *ngIf="!directionsCentrales || directionsCentrales.length === 0">
+                        <div class="alert alert-info mt-2">
+                            <i class="fa fa-info-circle"></i> Chargement des directions du niveau central...
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
         </div>
+
+        <!-- Section pour les profils non DGPEEC (Chef etablissement, etc.) -->
         <div class="row g-3" *ngIf="!isDGPEEC">
-
-
-            <!-- IA -->
-           <ng-container>
-
-
+            <ng-container>
                 <div class="col-sm-6" *ngIf="profile === 'Representant-IA'">
                     <label class="form-label form-label-sm">IEF</label>
-                    <select class="form-select" formControlName="ief" (change)="
-                            getListEtablissement($any($event.target).value);">
-                           <option value="">Sélectionner</option>
-                           <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                    <select class="form-select" formControlName="ief" (change)="getListEtablissement($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
                     </select>
                 </div>
-
                 <div class="col-sm-6">
                     <label class="form-label form-label-sm">Etablissement</label>
                     <select class="form-select" formControlName="etablissement">
@@ -97,42 +159,46 @@
                         <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
                     </select>
                 </div>
-           </ng-container>
-
-
+            </ng-container>
         </div>
 
         <!-- ACTIONS -->
-        <div class="row g-3 mt-2">
+        <div class="row g-3 mt-3">
             <div class="col-lg-2 col-sm-6">
-                <button class="button button-secondary w-100" type="button" (click)="onSearchUser()">Rechercher</button>
+                <button class="button button-secondary w-100" type="button" (click)="onSearchUser()">
+                    <i class="fa fa-search me-1"></i>
+                    Rechercher
+                </button>
             </div>
             <div class="col-lg-2 col-sm-6">
-                <button class="button button-outline-primary w-100" (click)="onCancel()" type="reset">Annuler</button>
+                <button class="button button-outline-primary w-100" (click)="onCancel()" type="reset">
+                    <i class="fa fa-times me-1"></i>
+                    Annuler
+                </button>
             </div>
         </div>
       </form>
     </div>
 </div>
 
-
+<!-- Section des résultats -->
 <ng-container>
 <div class="panel-list">
     <div class="panel-list-header">
         <div class="panel-list-search">
             <div class="search">
                 <div class="search-box">
-                    <input class="search-input" type="text" placeholder="Rechercher"  [(ngModel)]="searchQuery">
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchQuery">
                     <button class="search-btn"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
         <div class="panel-list-text">
-        <h3>Résultat de recherche</h3>
-        <button  (click)="exportToExcel()" type="button" class="button button-outline-green ms-3">
-                            <img src="assets/icons/file-type-excel.svg" alt="Exporter le résultat" title="Exporter le résultat"
-                                width="24px" >
-                            Exporter le résultat</button>
+            <h3>Résultat de recherche</h3>
+            <button (click)="exportToExcel()" type="button" class="button button-outline-green ms-3">
+                <img src="assets/icons/file-type-excel.svg" alt="Exporter le résultat" title="Exporter le résultat" width="24px">
+                Exporter le résultat
+            </button>
         </div>
     </div>
     <div class="panel-list-body">
@@ -145,45 +211,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <ng-container *ngIf="userList.length > 0;else listEmpty;">
+                    <ng-container *ngIf="userList.length > 0; else listEmpty;">
                         <tr *ngFor="let user of userList">
                             <ng-container *ngIf="matchSearchQuery(user)">
-                            <td>
-                                {{ user?.matricule }}
-                            </td>
-                            <td>
-                                {{ user?.prenom }}
-                            </td>
-                            <td>
-                                {{ user?.nom }}
-                            </td>
-                            <td>
-                                {{ user?.corpsGrade?.label }}
-                            </td>
-                            <td>
-                                {{ user?.grade?.label }}
-                            </td>
-                            <td>
-                                {{ user?.speciality?.label }}
-                            </td>
-                            
-                            <td>
-                                <div class="dropdown">
-                                    <button class="fab-button" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <i class="fa fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:(0)" (click)="onViewUser(user)">
-                                                <i class="fa fa-eye me-2"></i>
-                                                <span>Voir détails</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </ng-container>
+                                <td>{{ user?.matricule }}</td>
+                                <td>{{ user?.prenom }}</td>
+                                <td>{{ user?.nom }}</td>
+                                <td>{{ user?.corpsGrade?.label }}</td>
+                                <td>{{ user?.grade?.label }}</td>
+                                <td>{{ user?.speciality?.label }}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="fab-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:(0)" (click)="onViewUser(user)">
+                                                    <i class="fa fa-eye me-2"></i>
+                                                    <span>Voir détails</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </ng-container>
                         </tr>
                     </ng-container>
                     <ng-template #listEmpty>
@@ -201,8 +253,7 @@
         <div class="flex-row-between">
             <div class="d-flex align-items-center">
                 <span style="white-space: nowrap">Affichage par</span>
-                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
-                    (ngModelChange)="listPersonnel()">
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize" (ngModelChange)="listPersonnel()">
                     <option [ngValue]="10">10</option>
                     <option [ngValue]="20">20</option>
                     <option [ngValue]="30">30</option>

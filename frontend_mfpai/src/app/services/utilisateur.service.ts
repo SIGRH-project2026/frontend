@@ -215,4 +215,28 @@ export class UtilisateurService {
     return this._http.get<ResponseApi>(`${environment.apiUrl}utilisateur/filter-user?filter=${filter}`);
   }
 
+  /**
+   * Récupère le personnel du niveau central avec pagination et filtres
+   */
+  getPersonnelNiveauCentral(params: {
+  page: number;
+  size: number;
+  direction?: string;
+  service?: string;
+  division?: string;
+  bureau?: string;
+}): Observable<any> {
+  let queryParams = `?page=${params.page}&size=${params.size}`;
+  
+  if (params.direction) queryParams += `&direction=${params.direction}`;
+  if (params.service) queryParams += `&service=${params.service}`;
+  if (params.division) queryParams += `&division=${params.division}`;
+  if (params.bureau) queryParams += `&bureau=${params.bureau}`;
+  
+  // Vérifiez que l'URL est correcte
+  console.log('Appel API:', `${environment.apiUrl}utilisateur/personnel/niveau-central${queryParams}`);
+  
+  return this._http.get(`${environment.apiUrl}utilisateur/personnel/niveau-central${queryParams}`);
 }
+}
+
