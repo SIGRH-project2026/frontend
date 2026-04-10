@@ -470,6 +470,8 @@ loadEtablissementsByEFF(code: any): void {
     this.page = 1;
     this.listPersonnel();
     this.isSearchUser = !this.isSearchUser;
+
+    this.checkAvailableData(); // Temporaire
   }
 
   /**
@@ -511,39 +513,159 @@ loadEtablissementsByEFF(code: any): void {
     this.isSearchUser = !this.isSearchUser;
   }
 
-// exportToExcel(): void {
-//    let element = document.getElementById('dataTables');
-
-//    const worksheet: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
-
-//    const book: XLSX.WorkBook = XLSX.utils.book_new();
-//    XLSX.utils.book_append_sheet(book, worksheet, 'Sheet1');
-
-//    XLSX.writeFile(book, this.name);
-//  }
-
-
- exportToExcel(): void {
-      console.log("ici")
-  // Cloner le tableau original
-  let element = document.getElementById('dataTables');
-     console.log("element", element);
-  if(element)
-   { element = element.cloneNode(true) as HTMLElement;
-    // Sélectionner toutes les colonnes de "Action" : la derniére colonne
-    let actionColumns = element.querySelectorAll('td:last-child, th:last-child');
+//  exportToExcel(): void {
+//       console.log("ici")
+//   // Cloner le tableau original
+//   let element = document.getElementById('dataTables');
+//      console.log("element", element);
+//   if(element)
+//    { element = element.cloneNode(true) as HTMLElement;
+//     // Sélectionner toutes les colonnes de "Action" : la derniére colonne
+//     let actionColumns = element.querySelectorAll('td:last-child, th:last-child');
     
-    // Supprimer toutes les colonnes de "Action"
-    actionColumns.forEach(col => col.remove());
+//     // Supprimer toutes les colonnes de "Action"
+//     actionColumns.forEach(col => col.remove());
 
-    // Convertir le tableau filtré en feuille Excel
-    const worksheet: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
+//     // Convertir le tableau filtré en feuille Excel
+//     const worksheet: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
 
-    const book: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(book, worksheet, 'Sheet1');
+//     const book: XLSX.WorkBook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(book, worksheet, 'Sheet1');
 
-    XLSX.writeFile(book, this.name);
+//     XLSX.writeFile(book, this.name);
+//   }
+// }
+
+
+/**
+ * Retourne la liste des en-têtes pour l'export Excel
+ */
+getExportHeaders(): string[] {
+  return [
+    'MATRICULE',
+    'PRÉNOM', 
+    'NOM',
+    'SEXE',
+    'TÉLÉPHONE',
+    'EMAIL',
+    'DATE NAISSANCE',
+    'LIEU NAISSANCE',
+    'CNI',
+    'SITUATION MATRIMONIALE',
+    'NATIONALITÉ',
+    'ADRESSE',
+    'CORPS',
+    'GRADE',
+    'DATE CORPS',
+    'DIPLÔME ACA',
+    'DIPLÔME PROFESSIONNEL',
+    'DIPLÔME PÉDAGOGIQUE',
+    'FONCTION',
+    'SPÉCIALITÉ',
+    'TYPE POSTE',
+    'NOMBRE ENFANTS',
+    'DATE ENTREE FONCTION PUBLIQUE',
+    'DATE ENTREE ENSEIGNEMENT',
+    'RÉGION',
+    'DIRECTION',
+    'DIVISION',
+    'BUREAU',
+    'SERVICE',
+    'IA',
+    'IEF',
+    'ÉTABLISSEMENT'
+  ];
+}
+
+/**
+ * Construit une ligne de données pour un utilisateur
+ */
+buildExportRow(user: any): any[] {
+  return [
+    user?.matricule || '',
+    user?.prenom || '',
+    user?.nom || '',
+    user?.sexe || '',
+    user?.telephone || '',
+    user?.email || '',
+    user?.dateNaissance || '',
+    user?.lieuDeNaissance || '',
+    user?.cni || '',
+    user?.situationMatrimoniale || '',
+    user?.nationalite || '',
+    user?.adresse || '',
+    user?.corpsGrade?.label || '',
+    user?.grade?.label || '',
+    user?.dateCorp || '',
+    user?.diplomeACA?.label || '',
+    user?.diplomePROF?.label || '',
+    user?.diplomePED?.label || '',
+    user?.fonction?.label || '',
+    user?.speciality?.label || '',
+    user?.typePoste?.label || '',
+    user?.nombreEnfants || '',
+    user?.dateDEntreeFonctionPub || '',
+    user?.dateEntreEnseignement || '',
+    user?.region?.label || '',
+    user?.direction?.label || '',
+    user?.division?.label || '',
+    user?.bureau?.label || '',
+    user?.service?.label || '',
+    user?.ia?.label || '',
+    user?.ief?.label || '',
+    user?.etablissement?.label || ''
+  ];
+}
+
+/**
+ * Retourne la date actuelle au format YYYY-MM-DD
+ */
+getCurrentDate(): string {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+exportToExcel(): void {
+  // 1. Filtrer les utilisateurs selon la recherche
+  const filteredUsers = this.userList.filter(user => this.matchSearchQuery(user));
+  
+  // 2. Vérifier qu'il y a des données
+  if (filteredUsers.length === 0) {
+    alert('Aucune donnée à exporter');
+    return;
   }
+
+  // 3. Construire les données ligne par ligne
+  const exportRows = [];
+  
+  // 4. Ajouter l'en-tête (1ère ligne)
+  const headers = this.getExportHeaders();
+  exportRows.push(headers);
+  
+  // 5. Ajouter les données (chaque utilisateur = 1 ligne)
+  for (const user of filteredUsers) {
+    const row = this.buildExportRow(user);
+    exportRows.push(row);
+  }
+  
+  // 6. Créer la feuille Excel
+  const worksheet = XLSX.utils.aoa_to_sheet(exportRows);
+  
+  // 7. Ajuster la largeur des colonnes
+  worksheet['!cols'] = headers.map(() => ({ wch: 22 }));
+  
+  // 8. Créer et sauvegarder le fichier
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste_Personnel');
+  
+  const fileName = `Liste_Personnel_${this.getCurrentDate()}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+  
+  // 9. Confirmation
+  console.log(`✅ Export réussi : ${filteredUsers.length} agents exportés`);
 }
 
 matchSearchQuery(personnel: DeconectedDTO): boolean {
@@ -552,6 +674,31 @@ matchSearchQuery(personnel: DeconectedDTO): boolean {
       value != null && value.toString().toLowerCase().includes(searchValue)
   ) )
 }
+// Méthode de diagnostic - À supprimer après vérification
+checkAvailableData() {
+  if (this.userList.length > 0) {
+    const sampleUser = this.userList[0];
+    console.log('📊 Données disponibles pour l\'export :');
+    console.log('- Matricule:', sampleUser.matricule);
+    console.log('- Prénom/Nom:', sampleUser.prenom, sampleUser.nom);
+    console.log('- Corps/Grade:', sampleUser.corpsGrade?.label, sampleUser.grade?.label);
+    console.log('- Spécialité:', sampleUser.speciality?.label);
+    console.log('- Téléphone:', sampleUser.telephone);
+    console.log('- Email:', sampleUser.email);
+    console.log('- Région:', sampleUser.region?.label);
+    console.log('- IA:', sampleUser.ia?.label);
+    console.log('- IEF:', sampleUser.ief?.label);
+    console.log('- Établissement:', sampleUser.etablissement?.label);
+    // console.log('- Direction:', sampleUser.direction?.label);
+    console.log('- Objet complet:', sampleUser);
+  } else {
+    console.log('Aucune donnée à exporter');
+  }
+}
+
+
+
+
 
 }
 
