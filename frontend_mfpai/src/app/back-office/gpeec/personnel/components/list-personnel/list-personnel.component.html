@@ -17,14 +17,21 @@
                 <label class="form-label form-label-sm">Type de structure</label>
                 <select class="form-select" #typeStructureValue formControlName="structure" (change)="getStruct($any($event.target).value)">
                     <option value="">Sélectionner</option>
-                    <option *ngFor="let struc of structure" [value]="struc?.code">{{struc?.label}}</option>
-                    <!-- AJOUT MANUEL DE L'OPTION NIVEAU CENTRAL -->
-                    <option value="NIVEAU_CENTRAL">Niveau central</option>
+                    <!-- Ordre personnalisé avec renommage pour DGPEEC -->
+                    <option value="NIVEAU_CENTRAL">MEFPT - Niveau Central</option>
+                    <option value="IA">MEFPT - Niveau déconcentré</option>
+                    <option value="MIN">Autres Sectorielles</option>
+                    <!-- Autres options (MIN et autres) -->
+                    <!-- <ng-container *ngFor="let struc of structure">
+                        <option *ngIf="struc?.code !== 'IA' && struc?.code !== 'Ministere' && struc?.code !== 'NIVEAU_CENTRAL'" [value]="struc?.code">
+                            {{struc?.label}}
+                        </option>
+                    </ng-container> -->
                 </select>
             </div>
             
             <!-- ==================== MINISTERE ==================== -->
-            <ng-container *ngIf="typeStructureValue.value === 'Ministere'">
+            <!-- <ng-container *ngIf="typeStructureValue.value === 'Ministere'">
                 <div class="col-sm-6">
                     <label class="form-label form-label-sm">EFF</label>
                     <select class="form-select" formControlName="etablissement">
@@ -32,7 +39,7 @@
                         <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
                     </select>
                 </div>
-            </ng-container>
+            </ng-container> -->
 
             <!-- ==================== IA ==================== -->
             <ng-container *ngIf="typeStructureValue.value === 'IA'">
@@ -75,13 +82,13 @@
                         <label class="form-label form-label-sm">EFF</label>
                         <select class="form-select" formControlName="etablissement">
                             <option value="">Sélectionner</option>
-                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}} - {{eta?.label}}</option>
+                            <option *ngFor="let eta of etablissement" [value]="eta.code"> {{eta?.label}}</option>
                         </select>
                     </div>
                 </div>
             </ng-container>
 
-            <!-- ==================== NIVEAU CENTRAL (NOUVEAU) ==================== -->
+            <!-- ==================== NIVEAU CENTRAL ==================== -->
             <ng-container *ngIf="typeStructureValue.value === 'NIVEAU_CENTRAL'">
                 <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
                     <!-- Direction -->
