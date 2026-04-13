@@ -17,25 +17,23 @@
                 <label class="form-label form-label-sm">Type de structure</label>
                 <select class="form-select" #typeStructureValue formControlName="structure" (change)="getStruct($any($event.target).value)">
                     <option value="">Sélectionner</option>
-                    <option *ngFor="let struc of structure" [value]="struc?.code">{{struc?.label}}</option>
-                    <!-- AJOUT MANUEL DE L'OPTION NIVEAU CENTRAL -->
-                    <option value="NIVEAU_CENTRAL">Niveau central</option>
+                    <!-- Ordre personnalisé avec renommage pour DGPEEC -->
+                    <option value="NIVEAU_CENTRAL">MEFPT - Niveau Central</option>
+                    <option value="IA">MEFPT - Niveau déconcentré</option>
+                    <option value="MIN">Autres Sectorielles</option>
+                    <!-- Autres options (MIN et autres) -->
+                    <!-- <ng-container *ngFor="let struc of structure">
+                        <option *ngIf="struc?.code !== 'IA' && struc?.code !== 'Ministere' && struc?.code !== 'NIVEAU_CENTRAL'" [value]="struc?.code">
+                            {{struc?.label}}
+                        </option>
+                    </ng-container> -->
                 </select>
             </div>
             
-            <!-- ==================== MINISTERE ==================== -->
-            <ng-container *ngIf="typeStructureValue.value === 'Ministere'">
-                <div class="col-sm-6">
-                    <label class="form-label form-label-sm">EFF</label>
-                    <select class="form-select" formControlName="etablissement">
-                        <option value="">Sélectionner</option>
-                        <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
-                    </select>
-                </div>
-            </ng-container>
+    
 
             <!-- ==================== IA ==================== -->
-            <ng-container *ngIf="typeStructureValue.value === 'IA'">
+            <!-- <ng-container *ngIf="typeStructureValue.value === 'IA'">
                 <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
                     <div class="col-sm-6">
                         <label class="form-label form-label-sm">Région</label>
@@ -66,26 +64,26 @@
                         </select>
                     </div>
                 </div>
-            </ng-container>
+            </ng-container> -->
             
             <!-- ==================== MIN ==================== -->
-            <ng-container *ngIf="typeStructureValue.value === 'MIN'">
+            <!-- <ng-container *ngIf="typeStructureValue.value === 'MIN'">
                 <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
                     <div class="col-sm-6">
                         <label class="form-label form-label-sm">EFF</label>
                         <select class="form-select" formControlName="etablissement">
                             <option value="">Sélectionner</option>
-                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}} - {{eta?.label}}</option>
+                            <option *ngFor="let eta of etablissement" [value]="eta.code"> {{eta?.label}}</option>
                         </select>
                     </div>
                 </div>
-            </ng-container>
+            </ng-container> -->
 
-            <!-- ==================== NIVEAU CENTRAL (NOUVEAU) ==================== -->
-            <ng-container *ngIf="typeStructureValue.value === 'NIVEAU_CENTRAL'">
-                <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+            <!-- ==================== NIVEAU CENTRAL ==================== -->
+            <!-- <ng-container *ngIf="typeStructureValue.value === 'NIVEAU_CENTRAL'">
+                <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;"> -->
                     <!-- Direction -->
-                    <div class="col-sm-4">
+                    <!-- <div class="col-sm-4">
                         <label class="form-label form-label-sm">Direction</label>
                         <select class="form-select" formControlName="direction" 
                                 (change)="onDirectionChange($any($event.target).value)">
@@ -95,9 +93,9 @@
                             </option>
                         </select>
                     </div>
-                    
+                     -->
                     <!-- Service -->
-                    <div class="col-sm-4" *ngIf="servicesCentral && servicesCentral.length > 0">
+                    <!-- <div class="col-sm-4" *ngIf="servicesCentral && servicesCentral.length > 0">
                         <label class="form-label form-label-sm">Service</label>
                         <select class="form-select" formControlName="service" 
                                 (change)="onServiceChange($any($event.target).value)">
@@ -106,10 +104,10 @@
                                 {{serv?.label}}
                             </option>
                         </select>
-                    </div>
+                    </div> -->
                     
                     <!-- Division -->
-                    <div class="col-sm-4" *ngIf="divisionsCentral && divisionsCentral.length > 0">
+                    <!-- <div class="col-sm-4" *ngIf="divisionsCentral && divisionsCentral.length > 0">
                         <label class="form-label form-label-sm">Division</label>
                         <select class="form-select" formControlName="division" 
                                 (change)="onDivisionChange($any($event.target).value)">
@@ -118,10 +116,10 @@
                                 {{div?.label}}
                             </option>
                         </select>
-                    </div>
+                    </div> -->
                     
                     <!-- Bureau -->
-                    <div class="col-sm-4" *ngIf="bureausCentral && bureausCentral.length > 0">
+                    <!-- <div class="col-sm-4" *ngIf="bureausCentral && bureausCentral.length > 0">
                         <label class="form-label form-label-sm">Bureau</label>
                         <select class="form-select" formControlName="bureau" 
                                 (change)="onBureauChange($any($event.target).value)">
@@ -130,16 +128,108 @@
                                 {{bur?.label}}
                             </option>
                         </select>
-                    </div>
+                    </div> -->
                     
                     <!-- Message d'information si aucune donnée -->
-                    <div class="col-12" *ngIf="!directionsCentrales || directionsCentrales.length === 0">
+                    <!-- <div class="col-12" *ngIf="!directionsCentrales || directionsCentrales.length === 0">
                         <div class="alert alert-info mt-2">
                             <i class="fa fa-info-circle"></i> Chargement des directions du niveau central...
                         </div>
                     </div>
                 </div>
-            </ng-container>
+            </ng-container> -->
+
+            <!-- ==================== IA ==================== -->
+<ng-container *ngIf="typeStructureValue.value === 'IA'">
+    <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+        <div class="col-sm-6">
+            <label class="form-label form-label-sm">Région</label>
+            <select class="form-select" formControlName="region" (change)="onRegionChange($any($event.target).value)">
+                <option value="">Sélectionner</option>
+                <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label form-label-sm">IA</label>
+            <select class="form-select" formControlName="ia" (change)="onIAChange($any($event.target).value)">
+                <option value="">Sélectionner</option>
+                <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label form-label-sm">IEF</label>
+            <select class="form-select" formControlName="ief" (change)="onIEFChange($any($event.target).value)">
+                <option value="">Sélectionner</option>
+                <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label form-label-sm">Etablissement</label>
+            <select class="form-select" formControlName="etablissement" (change)="onEtablissementChange($any($event.target).value)">
+                <option value="">Sélectionner</option>
+                <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+            </select>
+        </div>
+    </div>
+</ng-container>
+
+<!-- ==================== MIN ==================== -->
+<ng-container *ngIf="typeStructureValue.value === 'MIN'">
+    <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+        <div class="col-sm-6">
+            <label class="form-label form-label-sm">EFF</label>
+            <select class="form-select" formControlName="etablissement" (change)="onEtablissementChange($any($event.target).value)">
+                <option value="">Sélectionner</option>
+                <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+            </select>
+        </div>
+    </div>
+</ng-container>
+
+<!-- ==================== NIVEAU CENTRAL ==================== -->
+<ng-container *ngIf="typeStructureValue.value === 'NIVEAU_CENTRAL'">
+    <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
+        <div class="col-sm-4">
+            <label class="form-label form-label-sm">Direction</label>
+            <select class="form-select" formControlName="direction" (change)="onDirectionChange($any($event.target).value)">
+                <option value="">Toutes les directions</option>
+                <option *ngFor="let dir of directionsCentrales" [value]="dir.code">
+                    {{dir?.label}}
+                </option>
+            </select>
+        </div>
+        
+        <div class="col-sm-4" *ngIf="servicesCentral && servicesCentral.length > 0">
+            <label class="form-label form-label-sm">Service</label>
+            <select class="form-select" formControlName="service" (change)="onServiceChange($any($event.target).value)">
+                <option value="">Tous les services</option>
+                <option *ngFor="let serv of servicesCentral" [value]="serv.code">
+                    {{serv?.label}}
+                </option>
+            </select>
+        </div>
+        
+        <div class="col-sm-4" *ngIf="divisionsCentral && divisionsCentral.length > 0">
+            <label class="form-label form-label-sm">Division</label>
+            <select class="form-select" formControlName="division" (change)="onDivisionChange($any($event.target).value)">
+                <option value="">Toutes les divisions</option>
+                <option *ngFor="let div of divisionsCentral" [value]="div.code">
+                    {{div?.label}}
+                </option>
+            </select>
+        </div>
+        
+        <div class="col-sm-4" *ngIf="bureausCentral && bureausCentral.length > 0">
+            <label class="form-label form-label-sm">Bureau</label>
+            <select class="form-select" formControlName="bureau" (change)="onBureauChange($any($event.target).value)">
+                <option value="">Tous les bureaux</option>
+                <option *ngFor="let bur of bureausCentral" [value]="bur.code">
+                    {{bur?.label}}
+                </option>
+            </select>
+        </div>
+    </div>
+</ng-container>
         </div>
 
         <!-- Section pour les profils non DGPEEC (Chef etablissement, etc.) -->
@@ -253,7 +343,7 @@
         <div class="flex-row-between">
             <div class="d-flex align-items-center">
                 <span style="white-space: nowrap">Affichage par</span>
-                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize" (ngModelChange)="listPersonnel()">
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize" (ngModelChange)="onPageChange(1)">
                     <option [ngValue]="10">10</option>
                     <option [ngValue]="20">20</option>
                     <option [ngValue]="30">30</option>
@@ -261,7 +351,7 @@
                 <span style="white-space: nowrap">entrées</span>
             </div>
             <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-                (pageChange)="listPersonnel()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                (pageChange)="onPageChange($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
             </ngb-pagination>
         </div>
     </div>
