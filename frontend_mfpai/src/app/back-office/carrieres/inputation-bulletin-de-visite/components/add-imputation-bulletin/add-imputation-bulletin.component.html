@@ -74,15 +74,7 @@
                                 <option value="Bulletin de visite" >Bulletin de visite</option>
                             </select>
                         </div>
-                        <!-- <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Numéro demande</label>
-                            <input type="number" class="form-control" placeholder="Saisir" formControlName="numeroDemande" required/>
-                        </div> -->
 
-                        <!-- <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Date demande</label>
-                            <input type="date" class="form-control" placeholder="Saisir" formControlName="dateImputation" required/>
-                        </div> -->
                         <div class="col-lg-4 col-sm-6">
                             <label class="form-label">Statut bénéficiaire</label>
                             <select class="form-select"  (change)="onSelectionChange($any($event.target).value)" formControlName="statusBeneficiere" required>
@@ -92,29 +84,53 @@
                                 <option value="Épouse">Épouse</option>
                                 <option value="Enfant">Enfant</option>
                             </select>
-                        </div>
+                        </div>  
 
-
-                        <ng-container  *ngIf="selectedValue ==='Soi'">
-                            <div class="col-lg-4 col-sm-6" >
+                        <ng-container *ngIf="selectedValue ==='Soi'">
+                            <div class="col-lg-4 col-sm-6">
                                 <label class="form-label">Prénom bénéficiaire</label>
                                 <input type="text" class="form-control" value={{utilisateur?.prenom}} disabled/>
                             </div>
-                            <div class="col-lg-4 col-sm-6" >
+                            <div class="col-lg-4 col-sm-6">
                                 <label class="form-label">Nom bénéficiaire</label>
                                 <input type="text" class="form-control" value={{utilisateur?.nom}} disabled />
                             </div>
                         </ng-container>
-                        <ng-container  *ngIf="selectedValue != 'Soi'">
-                            <div class="col-lg-4 col-sm-6" >
-                                <label class="form-label">Prénom bénéficiaire</label>
+
+                        <!-- Modification ici : libellés dynamiques selon le statut -->
+                        <ng-container *ngIf="selectedValue === 'Époux'">
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Prénom de l'époux</label>
                                 <input type="text" class="form-control" placeholder="Saisir" formControlName="prenomBeneficiere" required/>
                             </div>
-                            <div class="col-lg-4 col-sm-6" >
-                                <label class="form-label">Nom bénéficiaire</label>
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Nom de l'époux</label>
                                 <input type="text" class="form-control" placeholder="Saisir" formControlName="nomBeneficiere" required/>
                             </div>
                         </ng-container>
+
+                        <ng-container *ngIf="selectedValue === 'Épouse'">
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Prénom de l'épouse</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="prenomBeneficiere" required/>
+                            </div>
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Nom de l'épouse</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="nomBeneficiere" required/>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="selectedValue === 'Enfant'">
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Prénom de l'enfant</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="prenomBeneficiere" required/>
+                            </div>
+                            <div class="col-lg-4 col-sm-6">
+                                <label class="form-label">Nom de l'enfant</label>
+                                <input type="text" class="form-control" placeholder="Saisir" formControlName="nomBeneficiere" required/>
+                            </div>
+                        </ng-container>
+
                         <div class="col-sm-12">
                             <label class="form-label">Justificatifs</label>
                             <ngx-dropzone (change)="onSelect($event)" formControlName='file' class="">
@@ -127,18 +143,15 @@
                     </div>
 
                     <div class="action-steps">
-                        <button   type="button"
-                                  class="button button-light-red mx-2" (click)="onCancel()">
+                        <button type="button" class="button button-light-red mx-2" (click)="onCancel()">
                             Annuler
                         </button>
-                        <button  matStepperPrevious type="button"
-                                 class="button button-secondary mx-2">Précédent</button>
-                        <button  type="button" class="button button-primary text-white " (click)="onSaveImputationBulletin()" [disabled]="!((imputationForm.valid || isSoi) && (selectedFile))">Enregister</button>
+                        <button matStepperPrevious type="button" class="button button-secondary mx-2">Précédent</button>
+                        <button type="button" class="button button-primary text-white" (click)="onSaveImputationBulletin()" [disabled]="!((imputationForm.valid || isSoi))">Enregistrer</button>
                     </div>
                 </form>
             </mat-step>
 
-
         </mat-stepper>
     </div>
-</div>
+</div>  
