@@ -1,112 +1,114 @@
-import { Component, OnInit, TemplateRef, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
-import { DeconectedDTO, Profil } from "../../../../../models/utilisateur";
-import { UtilisateurService } from "../../../../../services/utilisateur.service";
-import { filter } from "rxjs/operators";
-import { ReferencesService } from "../../../../../services/references.service";
+import { Component, OnInit, TemplateRef, inject } from "@angular/core";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { NgxSpinnerService } from "ngx-spinner";
-import { FormBuilder, FormGroup, NgForm, Validators } from "@angular/forms";
+import Swal from "sweetalert2";
+import { DeconectedDTO, Profil } from "../../../../../models/utilisateur";
 import { CredentialsService } from "../../../../../services/credentials.service";
-
+import { ReferencesService } from "../../../../../services/references.service";
+import { UtilisateurService } from "../../../../../services/utilisateur.service";
 
 interface SearchData {
-    filter?: string,
-    matricule: string,
-    prenom: string,
-    nom: string,
-    profile?: string,
-    region: string,
-    ia: string,
-    ief: string,
-    etablissement: string,
+  filter?: string;
+  matricule: string;
+  prenom: string;
+  nom: string;
+  profile?: string;
+  region: string;
+  ia: string;
+  ief: string;
+  etablissement: string;
+  typeSystemeEnseignement?: string;
 }
 
-
 @Component({
-    selector: 'app-list-utilisateur',
-    templateUrl: './list-utilisateur.component.html',
-    styleUrls: ['./list-utilisateur.component.css']
+  selector: "app-list-utilisateur",
+  templateUrl: "./list-utilisateur.component.html",
+  styleUrls: ["./list-utilisateur.component.css"],
 })
 export class ListUtilisateurComponent implements OnInit {
+  headers!: string[];
+  page = 0;
+  pageSize = 10;
 
-    headers!: string[];
-    page = 0;
-    pageSize = 10;
+  totalPages = 0;
+  size = 10;
+  userList: DeconectedDTO[] = [];
+  collectionSize = this.userList.length;
+  collapsed: boolean = false;
+  text = "";
+  closeResult = "";
+  alertService: any;
+  pageOptions: any = { totalPages: 0, size: 10 };
+  filterValue = "";
+  profils: Profil[] = [];
+  structure: any;
+  codeIA: any;
+  searchData!: SearchData;
+  region: any;
+  ief: any;
+  ia: any;
+  cfp: any;
+  etablissement: any;
+  searchForm!: FormGroup;
 
-    totalPages = 0;
-    size = 10;
-    userList: DeconectedDTO[] = [];
-    collectionSize = this.userList.length;
-    collapsed: boolean = false;
-    text = '';
-    closeResult = '';
-    alertService: any;
-    pageOptions: any = { totalPages: 0, size: 10 };
-    filterValue = '';
-    profils: Profil[] = [];
-    structure: any;
-    codeIA: any;
-    searchData!: SearchData
-    region: any;
-    ief: any;
-    ia: any;
-    cfp: any;
-    etablissement: any;
-    searchForm!: FormGroup;
+  profile: any;
+  isSearchResult = false;
+  isSearchUser = false;
+  grade: any;
+  corpsGrade: any;
 
-    profile: any;
-    isSearchResult = false;
-    isSearchUser = false;
-    grade: any;
-    corpsGrade: any;
+  advancedSearchForm!: FormGroup;
+  speciality: any;
+  userInfos: any;
 
-    advancedSearchForm!: FormGroup;
-    speciality: any;
-    userInfos: any;
+  regionCode: string = "";
+  iaCode: string = "";
+  iefCode: string = "";
+  etablissementCode: string = "";
+  specialiteCode: string = "";
+  corpsCode: string = "";
+  gradeCode: string = "";
+  matriculeCode: string = "";
+  prenomCode: string = "";
+  nomCode: string = "";
+  dateNaissanceCode: string = "";
+  cniCode: string = "";
+  telephoneCode: string = "";
+  emailCode: string = "";
 
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    public modalService: NgbModal = inject(NgbModal),
+    private userService: UtilisateurService,
+    private spinner: NgxSpinnerService,
+    private referenceService: ReferencesService,
+    private formBuilder: FormBuilder,
+    private credentialsService: CredentialsService,
+  ) {}
 
-    regionCode: string = "";
-    iaCode: string = "";
-    iefCode: string = "";
-    etablissementCode: string = "";
-    specialiteCode: string = "";
-    corpsCode: string = "" ;
-    gradeCode: string = "";
-    matriculeCode: string = "";
-    prenomCode: string = "";
-    nomCode: string = "";
-    dateNaissanceCode: string = "";
-    cniCode: string = "";
-    telephoneCode: string = "";
-    emailCode: string = "";
+  ngOnInit(): void {
+    // Initialize data and headers
+    this.headers = [
+      "Matricule",
+      "Prénom",
+      "Nom",
+      "Profil",
+      "Etablissement",
+      "Statut",
+      "Action",
+    ];
+    this.userInfos = this.credentialsService.getUserInfos();
 
+    //  this.listUtilisateurDecoPage(this.page, this.pageSize, "", "", "", "", "", "", "", "", "", "", "", "", "", "");
 
-    constructor(
-        private router: Router,
-        private route: ActivatedRoute,
-        public modalService: NgbModal = inject(NgbModal),
-        private userService: UtilisateurService,
-        private spinner: NgxSpinnerService,
-        private referenceService: ReferencesService,
-        private formBuilder: FormBuilder,
-        private credentialsService: CredentialsService
-    ) { }
-
-    ngOnInit(): void {
-        // Initialize data and headers
-        this.headers = ['Matricule', 'Prénom', 'Nom', 'Profil', 'Etablissement', 'Statut', 'Action'];
-        this.userInfos = this.credentialsService.getUserInfos();
-
-
-      //  this.listUtilisateurDecoPage(this.page, this.pageSize, "", "", "", "", "", "", "", "", "", "", "", "", "", "");
-
-        this.lookingSearchForm();
-        //  this.refreshData();
-        // this.listUtilisateur(this.pageOptions, this.filterValue);
-        // this.listUtilisateurAdvanced(this.searchData);
-        /* this.listUtilisateursAdvanced(
+    this.lookingSearchForm();
+    //  this.refreshData();
+    // this.listUtilisateur(this.pageOptions, this.filterValue);
+    // this.listUtilisateurAdvanced(this.searchData);
+    /* this.listUtilisateursAdvanced(
              this.totalPages,
              this.size,
              '',
@@ -132,171 +134,143 @@ export class ListUtilisateurComponent implements OnInit {
      
          */
 
-        this.referenceService.listProfilesDEC().subscribe(response => {
+    this.referenceService.listProfilesDEC().subscribe((response) => {
+      if (response.success) this.profils = response.data;
+    });
 
-            if (response.success)
-                this.profils = response.data;
-        });
+    this.referenceService.listRegion().subscribe((response) => {
+      if (response.success) this.region = response.data;
+    });
 
+    this.referenceService.listcorpsGrade().subscribe((response) => {
+      if (response.success) this.corpsGrade = response.data;
+    });
 
-        this.referenceService.listRegion().subscribe(response => {
-            if (response.success)
-                this.region = response.data;
-        });
+    this.referenceService.listSpeciality().subscribe((response) => {
+      if (response.success) this.speciality = response.data;
+    });
 
+    this.referenceService.lisStructure().subscribe((response) => {
+      if (response.success) this.structure = response.data;
+    });
+  }
 
-        this.referenceService.listcorpsGrade().subscribe(response => {
-            if (response.success)
-                this.corpsGrade = response.data;
-        });
+  getListIA(code: any): void {
+    this.referenceService.listIAByCode(code).subscribe((response) => {
+      if (response.success) {
+        this.ia = response.data;
+      }
+    });
+  }
 
+  getListEF(code: any): void {
+    this.codeIA = code;
+    this.referenceService.listIEFByCode(code).subscribe((response) => {
+      if (response.success) {
+        this.ief = response.data;
+      }
+    });
+  }
 
-
-        this.referenceService.listSpeciality().subscribe(response => {
-            if (response.success)
-                this.speciality = response.data;
-        });
-
-        this.referenceService.lisStructure().subscribe(response => {
-            if (response.success)
-                this.structure = response.data;
-
-        });
-
-    }
-
-    getListIA(code: any): void {
-
-        this.referenceService.listIAByCode(code)
-            .subscribe(response => {
-
-                if (response.success) {
-                    this.ia = response.data;
-                }
-            });
-    }
-
-    getListEF(code: any): void {
-
-        this.codeIA = code;
-        this.referenceService.listIEFByCode(code)
-            .subscribe(response => {
-
-                if (response.success) {
-
-                    this.ief = response.data;
-                }
-            });
-    }
-
-
-    getListEtabByIA(code: any): void {
-
-        this.referenceService.listEtablissementByIACode(code)
-            .subscribe(response => {
-
-                if (response.success) {
-
-                    this.etablissement = response.data;
-                }
-            });
-    }
-
-
-
-
-
-
-    getListCFP(code: any): void {
-
-        this.referenceService.listCFPByCode(code)
-            .subscribe(response => {
-
-                if (response.success) {
-                    this.cfp = response.data;
-                }
-            });
-    }
-
-
-    getGradeFromCorps(code: any) {
-        this.referenceService.listGradeByCode(code)
-            .subscribe(response => {
-                if (response.success) {
-                    this.grade = response.data;
-                    console.log(this.grade)
-                }
-            });
-    }
-
-
-
-    getListEtablissement(code: any): void {
-
-        this.referenceService.listEtablissementByCode(code)
-            .subscribe(response => {
-
-                if (response.success) {
-                    this.etablissement = response.data;
-                }
-            });
-    }
-
-    openModalSearch(content: TemplateRef<any>) {
-        this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', size: 'lg', centered: true }).result.then(
-            (result) => {
-                this.closeResult = `Closed with: ${result}`;
-            },
-            (reason) => {
-                this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-            },
-        );
-    }
-
-    private getDismissReason(reason: any): string {
-        switch (reason) {
-            case ModalDismissReasons.ESC:
-                return 'by pressing ESC';
-            case ModalDismissReasons.BACKDROP_CLICK:
-                return 'by clicking on a backdrop';
-            default:
-                return `with: ${reason}`;
+  getListEtabByIA(code: any): void {
+    this.referenceService
+      .listEtablissementByIACode(code)
+      .subscribe((response) => {
+        if (response.success) {
+          this.etablissement = response.data;
         }
-    }
+      });
+  }
 
-    getStruct(code: any) {
-        if (code) {
-            this.spinner.show()
-            this.referenceService.listEtablissementByEFFCode(code)
-                .subscribe(response => {
+  getListCFP(code: any): void {
+    this.referenceService.listCFPByCode(code).subscribe((response) => {
+      if (response.success) {
+        this.cfp = response.data;
+      }
+    });
+  }
 
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        this.spinner.hide()
-                    }
-                });
+  getGradeFromCorps(code: any) {
+    this.referenceService.listGradeByCode(code).subscribe((response) => {
+      if (response.success) {
+        this.grade = response.data;
+        console.log(this.grade);
+      }
+    });
+  }
 
-            this.spinner.hide()
+  getListEtablissement(code: any): void {
+    this.referenceService
+      .listEtablissementByCode(code)
+      .subscribe((response) => {
+        if (response.success) {
+          this.etablissement = response.data;
         }
+      });
+  }
+
+  openModalSearch(content: TemplateRef<any>) {
+    this.modalService
+      .open(content, {
+        ariaLabelledBy: "modal-basic-title",
+        size: "lg",
+        centered: true,
+      })
+      .result.then(
+        (result) => {
+          this.closeResult = `Closed with: ${result}`;
+        },
+        (reason) => {
+          this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        },
+      );
+  }
+
+  private getDismissReason(reason: any): string {
+    switch (reason) {
+      case ModalDismissReasons.ESC:
+        return "by pressing ESC";
+      case ModalDismissReasons.BACKDROP_CLICK:
+        return "by clicking on a backdrop";
+      default:
+        return `with: ${reason}`;
     }
+  }
 
-    refreshData() {
-        //  this.listUtilisateurAdvancedSearch(this.pageOptions, this.searchData);
-        //this.listUtilisateurAdvancedProfile(this.pageOptions?.totalPages, this.size, this.filterValue, '', this.searchData?.matricule, this.searchData?.prenom, this.searchData?.nom, this.searchData?.region, this.searchData?.ia, this.searchData?.ief,this.searchData?.etablissement);
-        this.listUtilisateursAdvanced(
-            this.pageOptions?.totalPages,
-            this.size,
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '');
+  getStruct(code: any) {
+    if (code) {
+      this.spinner.show();
+      this.referenceService
+        .listEtablissementByEFFCode(code)
+        .subscribe((response) => {
+          if (response.success) {
+            this.etablissement = response.data;
+            this.spinner.hide();
+          }
+        });
 
-        /*  const  matricule  = this.searchData?.matricule !== undefined ? this.searchData?.matricule : '';
+      this.spinner.hide();
+    }
+  }
+
+  refreshData() {
+    //  this.listUtilisateurAdvancedSearch(this.pageOptions, this.searchData);
+    //this.listUtilisateurAdvancedProfile(this.pageOptions?.totalPages, this.size, this.filterValue, '', this.searchData?.matricule, this.searchData?.prenom, this.searchData?.nom, this.searchData?.region, this.searchData?.ia, this.searchData?.ief,this.searchData?.etablissement);
+    this.listUtilisateursAdvanced(
+      this.pageOptions?.totalPages,
+      this.size,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    );
+
+    /*  const  matricule  = this.searchData?.matricule !== undefined ? this.searchData?.matricule : '';
           const   prenom =  this.searchData?.prenom !== undefined ? this.searchData?.prenom : '';
           const   nom =  this.searchData?.nom !== undefined ? this.searchData?.nom : '';
           const    region =   this.searchData?.region !== undefined ? this.searchData?.region : '';
@@ -309,469 +283,622 @@ export class ListUtilisateurComponent implements OnInit {
     
     
          */
+  }
 
-    }
+  onCreateUser() {
+    this.router.navigate(["create-utilisateur"], {
+      relativeTo: this.route.parent,
+    });
+  }
+  onEditUser(user: any) {
+    this.router.navigate([user.id, "edit-utilisateur"], {
+      relativeTo: this.route.parent,
+    });
+  }
 
-    onCreateUser() {
-        this.router.navigate(['create-utilisateur'], { relativeTo: this.route.parent })
-    }
-    onEditUser(user: any) {
-        this.router.navigate([user.id, 'edit-utilisateur'], { relativeTo: this.route.parent })
-    }
+  onViewUser(user: any) {
+    this.router.navigate([user.id, "detail-utilisateur"], {
+      relativeTo: this.route.parent,
+    });
+  }
 
-    onViewUser(user: any) {
-        this.router.navigate([user.id, 'detail-utilisateur'], { relativeTo: this.route.parent })
-    }
-
-
-    /*  onSearch(): void {
+  /*  onSearch(): void {
   
           this.listUtilisateurAdvancedSearch(this.pageOptions, this.searchData)
   
       }
   */
 
-    listUtilisateurAdvancedProfile(page: number, size: number, filter: string, profile: string, matricule: string, prenom: string, nom: string, region: string, ia: string, ief: string, etablissement: string): void {
+  listUtilisateurAdvancedProfile(
+    page: number,
+    size: number,
+    filter: string,
+    profile: string,
+    matricule: string,
+    prenom: string,
+    nom: string,
+    region: string,
+    ia: string,
+    ief: string,
+    etablissement: string,
+    typeSystemeEnseignement: string,
+  ): void {
+    this.spinner.show();
+    this.userService
+      .listUtilisateurDeconectedAdvanced(
+        page,
+        size,
+        filter,
+        profile,
+        matricule,
+        prenom,
+        nom,
+        region,
+        ia,
+        ief,
+        etablissement,
+        typeSystemeEnseignement,
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          this.userList = data?.payload;
+          this.spinner.hide();
 
-        this.spinner.show()
-        this.userService.listUtilisateurDeconectedAdvanced(page, size, filter,
-            profile, matricule, prenom, nom, region, ia, ief, etablissement
-        ).subscribe(data => {
-
-            if (data?.status === 'OK') {
-
-
-                this.userList = data?.payload;
-                this.spinner.hide();
-
-                this.collectionSize = data.metadata?.totalElements ?? 0
-                this.pageSize = data.metadata?.size ?? 0
-
-            } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-            }
-        });
-    }
-
-
-    onSearch() {
-        const matricule = this.searchData?.matricule !== undefined ? this.searchData?.matricule : '';
-        const prenom = this.searchData?.prenom !== undefined ? this.searchData?.prenom : '';
-        const nom = this.searchData?.nom !== undefined ? this.searchData?.nom : '';
-        const region = this.searchData?.region !== undefined ? this.searchData?.region : '';
-        const ia = this.searchData?.ia !== undefined ? this.searchData?.ia : '';
-        const ief = this.searchData?.ief !== undefined ? this.searchData?.ief : '';
-        const etablissement = this.searchData?.etablissement !== undefined ? this.searchData?.etablissement : '';
-        const profile = this.searchData?.profile !== undefined ? this.searchData?.profile : '';
-        this.listUtilisateurAdvancedProfile(this.pageOptions?.totalPages, this.pageOptions?.size, this.filterValue, profile, matricule, prenom, nom, region, ia, ief, etablissement);
-
-    }
-
-
-
-    refreshData1(event: any) {
-        this.totalPages = +event.target['text'] - 1;
-        if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»") {
-            this.listUtilisateurAdvanced(this.searchData);
+          this.collectionSize = data.metadata?.totalElements ?? 0;
+          this.pageSize = data.metadata?.size ?? 0;
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
         }
+      });
+  }
 
+  onSearch() {
+    const matricule =
+      this.searchData?.matricule !== undefined
+        ? this.searchData?.matricule
+        : "";
+    const prenom =
+      this.searchData?.prenom !== undefined ? this.searchData?.prenom : "";
+    const nom = this.searchData?.nom !== undefined ? this.searchData?.nom : "";
+    const region =
+      this.searchData?.region !== undefined ? this.searchData?.region : "";
+    const ia = this.searchData?.ia !== undefined ? this.searchData?.ia : "";
+    const ief = this.searchData?.ief !== undefined ? this.searchData?.ief : "";
+    const etablissement =
+      this.searchData?.etablissement !== undefined
+        ? this.searchData?.etablissement
+        : "";
+    const typeSystemeEnseignement =
+      this.searchData?.typeSystemeEnseignement !== undefined
+        ? this.searchData?.typeSystemeEnseignement
+        : "";
+    const profile =
+      this.searchData?.profile !== undefined ? this.searchData?.profile : "";
+    this.listUtilisateurAdvancedProfile(
+      this.pageOptions?.totalPages,
+      this.pageOptions?.size,
+      this.filterValue,
+      profile,
+      matricule,
+      prenom,
+      nom,
+      region,
+      ia,
+      ief,
+      etablissement,
+      typeSystemeEnseignement,
+    );
+  }
+
+  refreshData1(event: any) {
+    this.totalPages = +event.target["text"] - 1;
+    if (
+      event.target["text"] != undefined &&
+      event.target["text"] != "««" &&
+      event.target["text"] != "«" &&
+      event.target["text"] != "»" &&
+      event.target["text"] != "»»"
+    ) {
+      this.listUtilisateurAdvanced(this.searchData);
     }
+  }
 
+  onResetfiltre() {
+    this.isSearchResult = !this.isSearchResult;
+    this.searchForm.reset();
+    this.refreshData();
+  }
 
-    onResetfiltre() {
-        this.isSearchResult = !this.isSearchResult;
-        this.searchForm.reset();
-        this.refreshData();
-    }
+  onAdvancedSearch() {
+    this.searchData = {
+      matricule: this.searchForm.controls["matricule"].value,
+      prenom: this.searchForm.controls["prenom"].value,
+      nom: this.searchForm.controls["nom"].value,
+      //  profile:  searchForm.controls['profile'].value !== '' ? searchForm.controls['profile'].value : undefined,
+      region: this.searchForm.controls["region"].value,
+      ia: this.searchForm.controls["ia"].value,
+      ief: this.searchForm.controls["ief"].value,
+      etablissement: this.searchForm.controls["etablissement"].value,
+      typeSystemeEnseignement:
+        this.searchForm.controls["typeSystemeEnseignement"].value,
+    };
 
+    // this.listUtilisateursAdvanced(this.pageOptions?.totalPages, this.pageOptions?.size,'', '',this.searchData?.matricule,this.searchData?.prenom, this.searchData?.nom,   this.searchData?.region, this.searchData?.ia, this.searchData?.ief, this.searchData?.etablissement);
 
-    onAdvancedSearch() {
+    this.listUtilisateursAdvanced(
+      this.pageOptions?.totalPages,
+      this.pageOptions?.size,
+      "",
+      "",
+      this.searchData?.matricule,
+      this.searchData?.prenom,
+      this.searchData?.nom,
+      this.searchData?.region,
+      this.searchData?.ia,
+      this.searchData?.ief,
+      this.searchData?.etablissement,
+      this.searchData?.typeSystemeEnseignement,
+    );
+    // this.listUtilisateurAdvanced( this.searchData)
 
-        this.searchData = {
-            matricule: this.searchForm.controls['matricule'].value,
-            prenom: this.searchForm.controls['prenom'].value,
-            nom: this.searchForm.controls['nom'].value,
-            //  profile:  searchForm.controls['profile'].value !== '' ? searchForm.controls['profile'].value : undefined,
-            region: this.searchForm.controls['region'].value,
-            ia: this.searchForm.controls['ia'].value,
-            ief: this.searchForm.controls['ief'].value,
-            etablissement: this.searchForm.controls['etablissement'].value
+    this.isSearchResult = true;
+    this.modalService.dismissAll();
+  }
 
+  onSearchProfile() {
+    this.listUtilisateurAdvancedSearchProfile(this.searchData);
+  }
+
+  listUtilisateurAdvancedSearch(pageOptions: any, searchData: any): void {
+    this.spinner.show();
+    // console.log(this.totalPages)
+    this.userService
+      .listUtilisateurDeconectedAdvanced(
+        this.totalPages,
+        this.size,
+        this.filterValue,
+        searchData?.profile !== undefined ? searchData?.profile : "",
+        searchData?.matricule !== undefined ? searchData?.matricule : "",
+        searchData?.prenom !== undefined ? searchData?.prenom : "",
+        searchData?.nom !== undefined ? searchData?.nom : "",
+        searchData?.region !== undefined ? searchData?.region : "",
+        searchData?.ia !== undefined ? searchData?.ia : "",
+        searchData?.ief !== undefined ? searchData?.ief : "",
+        searchData?.etablissement !== undefined
+          ? searchData?.etablissement
+          : "",
+        searchData?.typeSystemeEnseignement !== undefined
+          ? searchData?.typeSystemeEnseignement
+          : "",
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          setTimeout(() => {
+            this.userList = data?.payload;
+            //  this.spinner.hide();
+
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+            this.pageSize = data.metadata?.size ?? 0;
+          }, 2000);
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
         }
+      });
+  }
+  listUtilisateurAdvancedSearchProfile(searchData: any): void {
+    //  this.spinner.show()
 
+    //  console.log(this.profile)
+    this.userService
+      .listUtilisateurDeconectedAdvanced(
+        this.pageOptions?.totalPages,
+        this.pageOptions?.size,
+        "",
+        this.profile,
+        searchData?.matricule !== undefined ? searchData?.matricule : "",
+        searchData?.prenom !== undefined ? searchData?.prenom : "",
+        searchData?.nom !== undefined ? searchData?.nom : "",
+        searchData?.region !== undefined ? searchData?.region : "",
+        searchData?.ia !== undefined ? searchData?.ia : "",
+        searchData?.ief !== undefined ? searchData?.ief : "",
+        searchData?.etablissement !== undefined
+          ? searchData?.etablissement
+          : "",
+        searchData?.typeSystemeEnseignement !== undefined
+          ? searchData?.typeSystemeEnseignement
+          : "",
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          setTimeout(() => {
+            this.userList = data?.payload;
+            //  this.spinner.hide();
 
-        // this.listUtilisateursAdvanced(this.pageOptions?.totalPages, this.pageOptions?.size,'', '',this.searchData?.matricule,this.searchData?.prenom, this.searchData?.nom,   this.searchData?.region, this.searchData?.ia, this.searchData?.ief, this.searchData?.etablissement);
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+            this.pageSize = data.metadata?.size ?? 0;
+          }, 2000);
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
 
-        this.listUtilisateursAdvanced(
-            this.pageOptions?.totalPages,
-            this.pageOptions?.size,
-            '',
-            '',
-            this.searchData?.matricule,
-            this.searchData?.prenom,
-            this.searchData?.nom,
-            this.searchData?.region,
-            this.searchData?.ia,
-            this.searchData?.ief,
-            this.searchData?.etablissement);
-        // this.listUtilisateurAdvanced( this.searchData)
+  listUtilisateurAdvanced(searchData: any): void {
+    this.spinner.show();
 
-        this.isSearchResult = true;
-        this.modalService.dismissAll();
-    }
+    this.userService
+      .listUtilisateurDeconectedAdvanced(
+        this.totalPages,
+        this.size,
+        this.filterValue,
 
-    onSearchProfile() {
-        this.listUtilisateurAdvancedSearchProfile(this.searchData);
-    }
+        searchData?.profile !== undefined ? searchData?.profile : "",
+        searchData?.matricule !== undefined ? searchData?.matricule : "",
+        searchData?.prenom !== undefined ? searchData?.prenom : "",
+        searchData?.nom !== undefined ? searchData?.nom : "",
+        searchData?.region !== undefined ? searchData?.region : "",
+        searchData?.ia !== undefined ? searchData?.ia : "",
+        searchData?.ief !== undefined ? searchData?.ief : "",
+        searchData?.etablissement !== undefined
+          ? searchData?.etablissement
+          : "",
+        searchData?.typeSystemeEnseignement !== undefined
+          ? searchData?.typeSystemeEnseignement
+          : "",
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          setTimeout(() => {
+            this.userList = data?.payload;
+            this.spinner.hide();
 
-    listUtilisateurAdvancedSearch(pageOptions: any, searchData: any): void {
-        this.spinner.show()
-        // console.log(this.totalPages)
-        this.userService.listUtilisateurDeconectedAdvanced(this.totalPages, this.size, this.filterValue,
-            searchData?.profile !== undefined ? searchData?.profile : '',
-            searchData?.matricule !== undefined ? searchData?.matricule : '',
-            searchData?.prenom !== undefined ? searchData?.prenom : '',
-            searchData?.nom !== undefined ? searchData?.nom : '',
-            searchData?.region !== undefined ? searchData?.region : '',
-            searchData?.ia !== undefined ? searchData?.ia : '',
-            searchData?.ief !== undefined ? searchData?.ief : '',
-            searchData?.etablissement !== undefined ? searchData?.etablissement : '',
-        ).subscribe(data => {
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+            this.pageSize = data.metadata?.size ?? 0;
+          }, 2000);
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
 
-            if (data?.status === 'OK') {
+  listUtilisateursAdvanced(
+    page: number,
+    size: number,
+    filter: string,
+    profile: string,
+    matricule: string,
+    prenom: string,
+    nom: string,
+    region: string,
+    ia: string,
+    ief: string,
+    etablissement: string,
+    typeSystemeEnseignement?: string,
+  ): void {
+    matricule = matricule !== undefined ? matricule : "";
+    prenom = prenom !== undefined ? prenom : "";
+    nom = nom !== undefined ? nom : "";
+    profile = profile !== undefined ? profile : "";
+    region = region !== undefined ? region : "";
+    ia = ia !== undefined ? ia : "";
+    ief = ief !== undefined ? ief : "";
+    etablissement = etablissement !== undefined ? etablissement : "";
+    typeSystemeEnseignement = typeSystemeEnseignement ?? "";
 
-                setTimeout(() => {
-                    this.userList = data?.payload;
-                    //  this.spinner.hide();
-
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.pageSize = data.metadata?.size ?? 0
-
-                }, 2000);
-
-            } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-            }
-        });
-    }
-    listUtilisateurAdvancedSearchProfile(searchData: any): void {
-        //  this.spinner.show()
-
-        //  console.log(this.profile)
-        this.userService.listUtilisateurDeconectedAdvanced(this.pageOptions?.totalPages, this.pageOptions?.size, '',
-            this.profile,
-            searchData?.matricule !== undefined ? searchData?.matricule : '',
-            searchData?.prenom !== undefined ? searchData?.prenom : '',
-            searchData?.nom !== undefined ? searchData?.nom : '',
-            searchData?.region !== undefined ? searchData?.region : '',
-            searchData?.ia !== undefined ? searchData?.ia : '',
-            searchData?.ief !== undefined ? searchData?.ief : '',
-            searchData?.etablissement !== undefined ? searchData?.etablissement : '',
-        ).subscribe(data => {
-
-            if (data?.status === 'OK') {
-
-                setTimeout(() => {
-                    this.userList = data?.payload;
-                    //  this.spinner.hide();
-
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.pageSize = data.metadata?.size ?? 0
-
-                }, 2000);
-
-            } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-            }
-        });
-    }
-
-    listUtilisateurAdvanced(searchData: any): void {
-        this.spinner.show()
-
-        this.userService.listUtilisateurDeconectedAdvanced(this.totalPages, this.size, this.filterValue,
-
-            searchData?.profile !== undefined ? searchData?.profile : '',
-            searchData?.matricule !== undefined ? searchData?.matricule : '',
-            searchData?.prenom !== undefined ? searchData?.prenom : '',
-            searchData?.nom !== undefined ? searchData?.nom : '',
-            searchData?.region !== undefined ? searchData?.region : '',
-            searchData?.ia !== undefined ? searchData?.ia : '',
-            searchData?.ief !== undefined ? searchData?.ief : '',
-            searchData?.etablissement !== undefined ? searchData?.etablissement : ''
-        ).subscribe(data => {
-
-            if (data?.status === 'OK') {
-
-                setTimeout(() => {
-                    this.userList = data?.payload;
-                    this.spinner.hide();
-
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.pageSize = data.metadata?.size ?? 0
-
-                }, 2000);
-
-            } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-            }
-        });
-    }
-
-
-    listUtilisateursAdvanced(page: number, size: number, filter: string, profile: string, matricule: string, prenom: string, nom: string, region: string, ia: string, ief: string, etablissement: string): void {
-
-        matricule = matricule !== undefined ? matricule : '';
-        prenom = prenom !== undefined ? prenom : '';
-        nom = nom !== undefined ? nom : '';
-        profile = profile !== undefined ? profile : '';
-        region = region !== undefined ? region : '';
-        ia = ia !== undefined ? ia : '';
-        ief = ief !== undefined ? ief : '';
-        etablissement = etablissement !== undefined ? etablissement : '';
-
-
-        this.userService.listUtilisateurDeconectedAdvanced(page, size, filter,
-            profile,
-            matricule,
-            prenom,
-            nom,
-            region,
-            ia,
-            ief,
-            etablissement
-        ).subscribe(data => {
-            this.spinner.show()
-            if (data?.status === 'OK') {
-
-                setTimeout(() => {
-                    this.userList = data?.payload;
-                    this.spinner.hide();
-
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.pageSize = data.metadata?.size ?? 0
-
-                }, 2000);
-
-            } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-            }
-        });
-    }
-
-
-    listUtilisateur(pageOptions: any, filterValue: any): void {
+    this.userService
+      .listUtilisateurDeconectedAdvanced(
+        page,
+        size,
+        filter,
+        profile,
+        matricule,
+        prenom,
+        nom,
+        region,
+        ia,
+        ief,
+        etablissement,
+        typeSystemeEnseignement,
+      )
+      .subscribe((data) => {
         this.spinner.show();
-        this.userService.listUtilisateurDeconected(pageOptions?.page, pageOptions?.size, filterValue).subscribe(data => {
+        if (data?.status === "OK") {
+          setTimeout(() => {
+            this.userList = data?.payload;
+            this.spinner.hide();
 
-            if (data?.status === 'OK') {
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+            this.pageSize = data.metadata?.size ?? 0;
+          }, 2000);
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
 
-                //  this.spinner.show();
-                setTimeout(() => {
-                    this.userList = data?.payload;
-                    this.spinner.hide();
+  listUtilisateur(pageOptions: any, filterValue: any): void {
+    this.spinner.show();
+    this.userService
+      .listUtilisateurDeconected(
+        pageOptions?.page,
+        pageOptions?.size,
+        filterValue,
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          //  this.spinner.show();
+          setTimeout(() => {
+            this.userList = data?.payload;
+            this.spinner.hide();
 
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.pageSize = data.metadata?.size ?? 0
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+            this.pageSize = data.metadata?.size ?? 0;
+          }, 2000);
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
 
-                }, 2000);
+  changeStatus(user: any): void {
+    Swal.fire({
+      title: "Êtes-vous sûr ?",
+      text: "Vous ne pourrez pas revenir en arrière !",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "rgba(29, 74, 123, 1)",
+      cancelButtonColor: "#FF4D4F",
+      confirmButtonText: "Confirmer",
+      cancelButtonText: "Annuler",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.changeStatus(user?.id).subscribe({
+          next: (response) => {
+            if (!user.status) {
+              this.text = "Activé";
+              user.status = true;
             } else {
-                this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
+              this.text = "Désactivé";
+              user.status = false;
             }
-        });
-    }
 
-
-
-    changeStatus(user: any): void {
-
-        Swal.fire({
-            title: 'Êtes-vous sûr ?',
-            text: "Vous ne pourrez pas revenir en arrière !",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: 'rgba(29, 74, 123, 1)',
-            cancelButtonColor: '#FF4D4F',
-            confirmButtonText: 'Confirmer',
-            cancelButtonText: 'Annuler'
-        }).then((result) => {
-
-            if (result.isConfirmed) {
-
-                this.userService.changeStatus(user?.id).subscribe({
-                    next: (response) => {
-
-                        if (!user.status) {
-                            this.text = "Activé";
-                            user.status = true
-                        } else {
-                            this.text = "Désactivé";
-                            user.status = false
-                        }
-
-
-                        Swal.fire({
-                            title: this.text,
-                            text: `L'utilisateur ${user.prenom + ' ' + user.nom} a été ${this.text}.`,
-                            icon: 'success',
-                            timer: 1500,
-                            showCancelButton: false,
-                            showConfirmButton: false
-                        })
-
-                    }
-                })
-
-
-
-            }
-        })
-
-
-    }
-
-
-
-    closeModal() {
-        this.modalService.dismissAll();
-    }
-
-    lookingSearchForm() {
-        this.advancedSearchForm = this.formBuilder.group({
-            region: [''],
-            ia: [''],
-            ief: [''],
-            etablissement: [''],
-            specialite: [''],
-            matricule: [''],
-            structure: [''],
-            corps: [''],
-            grade: [''],
-            prenom: [''],
-            nom: [''],
-            dateNaissance: [''],
-            cni: [''],
-            telephone: [''],
-            email: [''],
-
-        });
-    }
-
-
-    onCancle() {
-        console.log("ici")
-        this.advancedSearchForm.reset();
-        this.listUtilisateurDecoPage(0, 10, "", "", "", "", "", "", "", "", "", "", "", "", "", "");
-        this.closeModal();
-    }
-
-    onSearchUser() {
-
-        this.listUtilisateurDecoPage(this.page, this.pageSize,
-            this.advancedSearchForm.value['region'],
-            this.advancedSearchForm.value['ia'],
-            this.advancedSearchForm.value['ief'],
-            this.advancedSearchForm.value['etablissement'],
-            this.advancedSearchForm.value['specialite'],
-            this.advancedSearchForm.value['corps'],
-            this.advancedSearchForm.value['grade'],
-            this.advancedSearchForm.value['matricule'],
-            this.advancedSearchForm.value['prenom'],
-            this.advancedSearchForm.value['nom'],
-            this.advancedSearchForm.value['dateNaissance'],
-            this.advancedSearchForm.value['cni'],
-            this.advancedSearchForm.value['telephone'],
-            this.advancedSearchForm.value['email']
-        )
-
-
-
-
-
-        this.isSearchUser = !this.isSearchUser;
-
-        this.closeModal();
-    }
-
-    onAdvancedSearchForm() {
-        this.listUtilisateurDecoPage(0, this.size,
-            this.advancedSearchForm.value['region'],
-            this.advancedSearchForm.value['ia'],
-            this.advancedSearchForm.value['ief'],
-            this.advancedSearchForm.value['etablissement'],
-            this.advancedSearchForm.value['specialite'],
-            this.advancedSearchForm.value['corps'],
-            this.advancedSearchForm.value['grade'],
-            this.advancedSearchForm.value['matricule'],
-            this.advancedSearchForm.value['prenom'],
-            this.advancedSearchForm.value['nom'],
-            this.advancedSearchForm.value['dateNaissance'],
-            this.advancedSearchForm.value['cni'],
-            this.advancedSearchForm.value['telephone'],
-            this.advancedSearchForm.value['email']
-        )
-
-        this.closeModal();
-    }
-
-    listUtilisateurDecoPage(page: number, size: number, region: string, ia: string, ief: string,
-        etablissement: string, specialite: string, corps: string, grade: string, matricule: string, prenom: string,
-        nom: string, dateNaissance: string, cni: string, telephone: string, email: string) {
-
-        this.userService.getAllDecoUser(page , size, region, ia, ief,
-            etablissement, specialite, corps, grade, matricule, prenom, nom, dateNaissance, cni, telephone, email)
-            .subscribe(data => {
-                if (data?.status === 'OK') {
-
-
-                    this.userList = data?.payload;
-
-
-                    this.spinner.hide();
-
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.size = data.metadata?.size ?? 0
-
-
-                } else {
-                    this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-                }
+            Swal.fire({
+              title: this.text,
+              text: `L'utilisateur ${user.prenom + " " + user.nom} a été ${this.text}.`,
+              icon: "success",
+              timer: 1500,
+              showCancelButton: false,
+              showConfirmButton: false,
             });
+          },
+        });
+      }
+    });
+  }
 
-    }
+  closeModal() {
+    this.modalService.dismissAll();
+  }
 
+  lookingSearchForm() {
+    this.advancedSearchForm = this.formBuilder.group({
+      region: [""],
+      ia: [""],
+      ief: [""],
+      etablissement: [""],
+      specialite: [""],
+      matricule: [""],
+      structure: [""],
+      corps: [""],
+      grade: [""],
+      prenom: [""],
+      nom: [""],
+      dateNaissance: [""],
+      cni: [""],
+      telephone: [""],
+      email: [""],
+    });
+  }
 
+  onCancle() {
+    console.log("ici");
+    this.advancedSearchForm.reset();
+    this.listUtilisateurDecoPage(
+      0,
+      10,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    );
+    this.closeModal();
+  }
 
-    listUtilisateurDecoPaging() {
-        this.spinner.show();
+  onSearchUser() {
+    this.listUtilisateurDecoPage(
+      this.page,
+      this.pageSize,
+      this.advancedSearchForm.value["region"],
+      this.advancedSearchForm.value["ia"],
+      this.advancedSearchForm.value["ief"],
+      this.advancedSearchForm.value["etablissement"],
+      this.advancedSearchForm.value["typeSystemeEnseignement"],
+      this.advancedSearchForm.value["specialite"],
+      this.advancedSearchForm.value["corps"],
+      this.advancedSearchForm.value["grade"],
+      this.advancedSearchForm.value["matricule"],
+      this.advancedSearchForm.value["prenom"],
+      this.advancedSearchForm.value["nom"],
+      this.advancedSearchForm.value["dateNaissance"],
+      this.advancedSearchForm.value["cni"],
+      this.advancedSearchForm.value["telephone"],
+      this.advancedSearchForm.value["email"],
+    );
 
-        this.userService.getAllDecoUser(this.page , this.pageSize, "", "", "",
-            "", "", "", "", "", "", "", "", "", "", "")
-            .subscribe(data => {
-                if (data?.status === 'OK') {
+    this.isSearchUser = !this.isSearchUser;
 
-                    // console.log(data);
-                    this.userList = data?.payload;
+    this.closeModal();
+  }
 
-                    this.spinner.hide();
+  onAdvancedSearchForm() {
+    this.listUtilisateurDecoPage(
+      0,
+      this.size,
+      this.advancedSearchForm.value["region"],
+      this.advancedSearchForm.value["ia"],
+      this.advancedSearchForm.value["ief"],
+      this.advancedSearchForm.value["etablissement"],
+      this.advancedSearchForm.value["typeSystemeEnseignement"],
+      this.advancedSearchForm.value["specialite"],
+      this.advancedSearchForm.value["corps"],
+      this.advancedSearchForm.value["grade"],
+      this.advancedSearchForm.value["matricule"],
+      this.advancedSearchForm.value["prenom"],
+      this.advancedSearchForm.value["nom"],
+      this.advancedSearchForm.value["dateNaissance"],
+      this.advancedSearchForm.value["cni"],
+      this.advancedSearchForm.value["telephone"],
+      this.advancedSearchForm.value["email"],
+    );
 
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.size = data.metadata?.size ?? 0
+    this.closeModal();
+  }
 
+  listUtilisateurDecoPage(
+    page: number,
+    size: number,
+    region: string,
+    ia: string,
+    ief: string,
+    etablissement: string,
+    typeSystemeEnseignement: string,
+    specialite: string,
+    corps: string,
+    grade: string,
+    matricule: string,
+    prenom: string,
+    nom: string,
+    dateNaissance: string,
+    cni: string,
+    telephone: string,
+    email: string,
+  ) {
+    this.userService
+      .getAllDecoUser(
+        page,
+        size,
+        region,
+        ia,
+        ief,
+        etablissement,
+        typeSystemeEnseignement,
+        specialite,
+        corps,
+        grade,
+        matricule,
+        prenom,
+        nom,
+        dateNaissance,
+        cni,
+        telephone,
+        email,
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          this.userList = data?.payload;
 
-                } else {
-                    this.alertService.showAlert({ status: data?.status, message: data?.message, titre: 'Utilisateurs' });
-                }
-            });
+          this.spinner.hide();
 
-    }
+          this.collectionSize = data.metadata?.totalElements ?? 0;
+          this.size = data.metadata?.size ?? 0;
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
 
+  listUtilisateurDecoPaging() {
+    this.spinner.show();
 
-    refreshData2() {
-        this.listUtilisateurDecoPaging();
-    }
+    this.userService
+      .getAllDecoUser(
+        this.page,
+        this.pageSize,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      )
+      .subscribe((data) => {
+        if (data?.status === "OK") {
+          // console.log(data);
+          this.userList = data?.payload;
 
+          this.spinner.hide();
 
+          this.collectionSize = data.metadata?.totalElements ?? 0;
+          this.size = data.metadata?.size ?? 0;
+        } else {
+          this.alertService.showAlert({
+            status: data?.status,
+            message: data?.message,
+            titre: "Utilisateurs",
+          });
+        }
+      });
+  }
+
+  refreshData2() {
+    this.listUtilisateurDecoPaging();
+  }
 }
-
-
