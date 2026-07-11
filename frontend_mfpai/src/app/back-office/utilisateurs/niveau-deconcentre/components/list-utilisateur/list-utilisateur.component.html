@@ -3,10 +3,21 @@
         <div class="panel-list-text">
             <h3>Rechercher</h3>
             <ng-container *ngIf="userInfos?.profil[0]?.code === 'ADMIN-DRH'">
-                <button class="button button-primary" type="button" (click)="onCreateUser()">
-                    <i class="fa fa-add"></i>
-                    Nouvel utilisateur
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="button button-outline-primary" type="button"
+                        (click)="onOpenDuplicates(duplicatesPanel)">
+                        <i class="fa fa-clone"></i>
+                        Doublons
+                    </button>
+                    <button class="button button-outline-primary" type="button" (click)="onOpenImport(importUsers)">
+                        <i class="fa fa-upload"></i>
+                        Charger liste
+                    </button>
+                    <button class="button button-primary" type="button" (click)="onCreateUser()">
+                        <i class="fa fa-add"></i>
+                        Nouvel utilisateur
+                    </button>
+                </div>
             </ng-container>
         </div>
     </div>
@@ -134,6 +145,7 @@
                     <label class="form-label form-label-sm">Téléphone</label>
                     <input type="text" formControlName="telephone" class="form-control form-control-sm"
                         placeholder="Saisir" />
+
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Email</label>
@@ -148,7 +160,7 @@
                         (click)="onSearchUser()">Rechercher</button>
                 </div>
                 <div class="col-lg-2 col-sm-6">
-                    <button class="button button-outline-primary w-100" type="reset" >Annuler</button>
+                    <button class="button button-outline-primary w-100" type="reset">Annuler</button>
                 </div>
             </div>
         </form>
@@ -283,7 +295,7 @@
                     (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
                 </ngb-pagination-->
                 <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-                                (pageChange)="refreshData2()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                    (pageChange)="refreshData2()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
                 </ngb-pagination>
             </div>
         </div>
@@ -357,3 +369,170 @@
         </ng-template>
     </div>
 </ng-container>
+
+<!-- Modal : Charger une liste d'utilisateurs (import Excel/CSV) -->
+<ng-template #importUsers let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5">Charger une liste d'utilisateurs</h1>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body py-md-3">
+        <ng-container *ngIf="!importResult">
+            <p class="text-black-50">
+                Sélectionnez un fichier <strong>Excel (.xlsx, .xls)</strong> ou <strong>CSV</strong> contenant la liste
+                des utilisateurs. La première ligne du fichier doit contenir les en-têtes des colonnes. Champs
+                obligatoires pour chaque ligne : <strong>Matricule, Prénom, Nom, Sexe, Établissement, Type système
+                    enseignement, IEF, IA</strong> — les autres champs sont facultatifs. Les fichiers volumineux sont
+                traités par lots de 1000 lignes.
+            </p>
+
+            <div class="mb-3">
+                <a href="javascript:void(0)" (click)="downloadImportTemplate()">
+                    <i class="fa fa-download me-1"></i>
+                    Télécharger le modèle (CSV)
+                </a>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Fichier</label>
+                <input type="file" class="form-control" accept=".xlsx,.xls,.csv"
+                    (change)="onImportFileSelected($event)" />
+            </div>
+            <p *ngIf="importFile" class="text-black-50 mb-0">
+                <i class="fa fa-file me-1"></i>{{ importFile.name }}
+            </p>
+        </ng-container>
+
+        <!-- Résultat de l'import -->
+        <ng-container *ngIf="importResult">
+            <div class="d-flex gap-3 mb-3">
+                <span class="badge bg-secondary">Total : {{ importResult.total }}</span>
+                <span class="badge bg-success">Importés : {{ importResult.imported }}</span>
+                <span class="badge bg-danger">En erreur : {{ importResult.failed }}</span>
+            </div>
+            <div class="table-responsive" *ngIf="importResult.errors?.length > 0">
+                <table class="table table-custom">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col">Ligne</th>
+                            <th scope="col">Matricule</th>
+                            <th scope="col">Prénom</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Sexe</th>
+                            <th scope="col">Établissement</th>
+                            <th scope="col">Type système enseignement</th>
+                            <th scope="col">IEF</th>
+                            <th scope="col">IA</th>
+                            <th scope="col">Erreur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let err of pagedImportErrors">
+                            <td>{{ err.ligne }}</td>
+                            <td>{{ err.matricule }}</td>
+                            <td>{{ err.prenom }}</td>
+                            <td>{{ err.nom }}</td>
+                            <td>{{ err.sexe }}</td>
+                            <td>{{ err.etablissement }}</td>
+                            <td>{{ err.typeSystemeEnseignement }}</td>
+                            <td>{{ err.ief }}</td>
+                            <td>{{ err.ia }}</td>
+                            <td class="text-danger">{{ err.message }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <ngb-pagination *ngIf="importResult.errors?.length > importErrorsPageSize"
+                class="mt-2 d-flex justify-content-center" [collectionSize]="importResult.errors.length"
+                [(page)]="importErrorsPage" [pageSize]="importErrorsPageSize" [maxSize]="3" [rotate]="true"
+                [boundaryLinks]="true">
+            </ngb-pagination>
+            <p *ngIf="importResult.failed === 0" class="text-success m-0">
+                <i class="fa fa-check-circle me-1"></i>Toutes les lignes ont été importées avec succès.
+            </p>
+        </ng-container>
+    </div>
+
+    <div class="modal-footer">
+        <ng-container *ngIf="!importResult">
+            <button type="button" class="button button-secondary" [disabled]="!importFile || importLoading"
+                (click)="onSubmitImport()">
+                <i class="fa fa-upload me-1"></i>
+                {{ importLoading ? 'Import en cours...' : 'Importer' }}
+            </button>
+            <button type="button" class="button button-outline-primary" (click)="modal.dismiss()">Annuler</button>
+        </ng-container>
+        <button *ngIf="importResult" type="button" class="button button-secondary"
+            (click)="modal.close()">Fermer</button>
+    </div>
+</ng-template>
+
+<!-- Modal : Détection / suppression des doublons de matricule -->
+<ng-template #duplicatesPanel let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5">Doublons de matricule</h1>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body py-md-3">
+        <p class="text-black-50">
+            Cet outil détecte les utilisateurs (niveau déconcentré) partageant le même matricule. Pour chaque
+            matricule en doublon, l'enregistrement le plus ancien est conservé ; les autres peuvent être
+            <strong>définitivement supprimés</strong>.
+        </p>
+
+        <button type="button" class="button button-secondary mb-3" [disabled]="duplicateLoading"
+            (click)="onDetectDuplicates()">
+            <i class="fa fa-search me-1"></i>
+            {{ duplicateLoading ? 'Détection en cours...' : 'Détecter les doublons' }}
+        </button>
+
+        <ng-container *ngIf="duplicateReport">
+            <div class="d-flex gap-3 mb-3">
+                <span class="badge bg-warning text-dark">Matricules en doublon : {{ duplicateReport.matriculesEnDoublon
+                    }}</span>
+                <span class="badge bg-danger">Enregistrements à supprimer : {{ duplicateReport.enregistrementsSupprimes
+                    }}</span>
+            </div>
+
+            <ng-container *ngIf="duplicateReport.groupes?.length > 0">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr class="table-light">
+                                <th scope="col">Matricule</th>
+                                <th scope="col">ID conservé</th>
+                                <th scope="col">IDs supprimés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let groupe of pagedDuplicateGroups">
+                                <td>{{ groupe.matricule }}</td>
+                                <td>{{ groupe.idConserve }}</td>
+                                <td style="white-space: normal; word-break: break-word; min-width: 200px;">{{
+                                    groupe.idsSupprimes?.join(', ') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ngb-pagination *ngIf="duplicateReport.groupes.length > duplicatesPageSize"
+                    class="mt-2 d-flex justify-content-center" [collectionSize]="duplicateReport.groupes.length"
+                    [(page)]="duplicatesPage" [pageSize]="duplicatesPageSize" [maxSize]="3" [rotate]="true"
+                    [boundaryLinks]="true">
+                </ngb-pagination>
+            </ng-container>
+
+            <button *ngIf="duplicateReport.matriculesEnDoublon > 0" type="button"
+                class="button button-outline-primary mt-2" style="color:#FF4D4F;border-color:#FF4D4F;"
+                (click)="onRemoveDuplicates()">
+                <i class="fa fa-trash me-1"></i>
+                Supprimer les doublons
+            </button>
+        </ng-container>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary" (click)="modal.close()">Fermer</button>
+    </div>
+</ng-template>
