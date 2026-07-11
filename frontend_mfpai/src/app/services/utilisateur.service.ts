@@ -48,6 +48,29 @@ export class UtilisateurService {
     const API_URL = `${environment.apiUrl}utilisateur/deconected/add`;
     return this._http.post<ResponseApi>(API_URL, credentials);
   }
+
+  /**
+   * Import en masse d'utilisateurs de niveau déconcentré à partir
+   * d'un fichier Excel (.xlsx/.xls) ou CSV. Les champs manquants sont tolérés.
+   */
+  importUtilisateursDeconected(file: File): Observable<ResponseApi> {
+    const API_URL = `${environment.apiUrl}utilisateur/deconected/import`;
+    const formData = new FormData();
+    formData.append("file", file);
+    return this._http.post<ResponseApi>(API_URL, formData);
+  }
+
+  /** Détecte les matricules en doublon (niveau déconcentré) sans rien supprimer. */
+  findDuplicateUtilisateursDeconected(): Observable<ResponseApi> {
+    const API_URL = `${environment.apiUrl}utilisateur/deconected/duplicates`;
+    return this._http.get<ResponseApi>(API_URL);
+  }
+
+  /** Supprime les doublons de matricule (niveau déconcentré), conserve le plus ancien. */
+  removeDuplicateUtilisateursDeconected(): Observable<ResponseApi> {
+    const API_URL = `${environment.apiUrl}utilisateur/deconected/duplicates`;
+    return this._http.delete<ResponseApi>(API_URL);
+  }
   getDeconnected(id: number): Observable<ResponseApiData> {
     return this._http.get<ResponseApi>(
       `${environment.apiUrl}utilisateur/deconected/${id}`,

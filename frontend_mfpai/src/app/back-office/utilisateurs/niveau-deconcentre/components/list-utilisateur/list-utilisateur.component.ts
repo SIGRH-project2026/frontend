@@ -63,6 +63,19 @@ export class ListUtilisateurComponent implements OnInit {
   speciality: any;
   userInfos: any;
 
+  // Import (charger liste d'utilisateurs)
+  importFile: File | null = null;
+  importResult: any = null;
+  importLoading = false;
+  importErrorsPage = 1;
+  importErrorsPageSize = 10;
+
+  // Détection/suppression des doublons de matricule
+  duplicateReport: any = null;
+  duplicateLoading = false;
+  duplicatesPage = 1;
+  duplicatesPageSize = 10;
+
   regionCode: string = "";
   iaCode: string = "";
   iefCode: string = "";
@@ -900,5 +913,239 @@ export class ListUtilisateurComponent implements OnInit {
 
   refreshData2() {
     this.listUtilisateurDecoPaging();
+  }
+
+  // ==========================================================================
+  // Import en masse d'utilisateurs (Charger liste)
+  // ==========================================================================
+
+  get pagedImportErrors(): any[] {
+    const errors = this.importResult?.errors ?? [];
+    const start = (this.importErrorsPage - 1) * this.importErrorsPageSize;
+    return errors.slice(start, start + this.importErrorsPageSize);
+  }
+
+  onOpenImport(content: TemplateRef<any>) {
+    this.importFile = null;
+    this.importResult = null;
+    this.importLoading = false;
+    this.modalService.open(content, {
+      ariaLabelledBy: "modal-basic-title",
+      size: "lg",
+      centered: true,
+      backdrop: "static",
+      scrollable: true,
+    });
+  }
+
+  onOpenDuplicates(content: TemplateRef<any>) {
+    this.duplicateReport = null;
+    this.duplicateLoading = false;
+    this.modalService.open(content, {
+      ariaLabelledBy: "modal-basic-title",
+      size: "lg",
+      centered: true,
+      backdrop: "static",
+      scrollable: true,
+    });
+  }
+
+  onImportFileSelected(event: any) {
+    const files: FileList = event?.target?.files;
+    this.importFile = files && files.length > 0 ? files[0] : null;
+  }
+
+  onSubmitImport() {
+    if (!this.importFile) {
+      return;
+    }
+    this.importLoading = true;
+    this.spinner.show();
+    this.userService.importUtilisateursDeconected(this.importFile).subscribe({
+      next: (response: any) => {
+        this.importLoading = false;
+        this.spinner.hide();
+        if (response?.success) {
+          this.importResult = response.data;
+          this.importErrorsPage = 1;
+          // Rafraîchir la liste affichée si une recherche est active
+          if (this.isSearchUser) {
+            this.refreshData2();
+          }
+        } else {
+          this.userService.showSwal("error", response?.message);
+        }
+      },
+      error: (error) => {
+        this.importLoading = false;
+        this.spinner.hide();
+        this.userService.showSwal(
+          "error",
+          error?.error?.message ??
+            "Une erreur est survenue lors de l'import du fichier.",
+        );
+      },
+    });
+  }
+
+  downloadImportTemplate() {
+    const headers = [
+      "matricule",
+      "prenom",
+      "nom",
+      "email",
+      "telephone",
+      "adresse",
+      "sexe",
+      "situationMatrimoniale",
+      "nationalite",
+      "lieuDeNaissance",
+      "dateNaissance",
+      "cni",
+      "profil",
+      "corps",
+      "grade",
+      "fonction",
+      "specialite",
+      "structure",
+      "typePoste",
+      "typeMatricule",
+      "region",
+      "ia",
+      "ief",
+      "etablissement",
+      "typeSystemeEnseignement",
+      "nombreEnfants",
+    ];
+    const exampleRow = [
+      "SN123456",
+      "Awa",
+      "Diop",
+      "awa.diop@example.sn",
+      "770000000",
+      "Dakar",
+      "F",
+      "Célibataire",
+      "Sénégalaise",
+      "Dakar",
+      "1990-01-15",
+      "1234567890123",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "IA Dakar",
+      "IEF Dakar Ville",
+      "Lycée Blaise Diagne",
+      "Secondaire Général",
+      "0",
+    ];
+    const csvContent =
+      headers.join(";") + "\n" + exampleRow.join(";") + "\n";
+    const blob = new Blob(["﻿" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "modele_import_utilisateurs.csv";
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // ==========================================================================
+  // Détection / suppression des doublons de matricule
+  // ==========================================================================
+
+  get pagedDuplicateGroups(): any[] {
+    const groupes = this.duplicateReport?.groupes ?? [];
+    const start = (this.duplicatesPage - 1) * this.duplicatesPageSize;
+    return groupes.slice(start, start + this.duplicatesPageSize);
+  }
+
+  onDetectDuplicates() {
+    this.duplicateLoading = true;
+    this.duplicateReport = null;
+    this.spinner.show();
+    this.userService.findDuplicateUtilisateursDeconected().subscribe({
+      next: (response: any) => {
+        this.duplicateLoading = false;
+        this.spinner.hide();
+        if (response?.success) {
+          this.duplicateReport = response.data;
+          this.duplicatesPage = 1;
+          if (!this.duplicateReport?.matriculesEnDoublon) {
+            Swal.fire({
+              icon: "success",
+              html: "Aucun doublon de matricule détecté.",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        } else {
+          this.userService.showSwal("error", response?.message);
+        }
+      },
+      error: (error) => {
+        this.duplicateLoading = false;
+        this.spinner.hide();
+        this.userService.showSwal(
+          "error",
+          error?.error?.message ??
+            "Une erreur est survenue lors de la détection des doublons.",
+        );
+      },
+    });
+  }
+
+  onRemoveDuplicates() {
+    if (!this.duplicateReport?.matriculesEnDoublon) {
+      return;
+    }
+    Swal.fire({
+      title: "Êtes-vous sûr ?",
+      html: `${this.duplicateReport.matriculesEnDoublon} matricule(s) en doublon seront nettoyés (l'enregistrement le plus ancien de chaque matricule est conservé, les autres seront <strong>définitivement supprimés</strong>).`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "rgba(29, 74, 123, 1)",
+      cancelButtonColor: "#FF4D4F",
+      confirmButtonText: "Confirmer la suppression",
+      cancelButtonText: "Annuler",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.spinner.show();
+        this.userService.removeDuplicateUtilisateursDeconected().subscribe({
+          next: (response: any) => {
+            this.spinner.hide();
+            if (response?.success) {
+              this.duplicateReport = response.data;
+              this.duplicatesPage = 1;
+              Swal.fire({
+                icon: "success",
+                html: `${response.data?.enregistrementsSupprimes ?? 0} doublon(s) supprimé(s).`,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+              this.refreshData2();
+            } else {
+              this.userService.showSwal("error", response?.message);
+            }
+          },
+          error: (error) => {
+            this.spinner.hide();
+            this.userService.showSwal(
+              "error",
+              error?.error?.message ??
+                "Une erreur est survenue lors de la suppression des doublons.",
+            );
+          },
+        });
+      }
+    });
   }
 }
