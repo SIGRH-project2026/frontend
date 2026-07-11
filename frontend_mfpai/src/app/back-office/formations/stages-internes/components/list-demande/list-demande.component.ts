@@ -118,8 +118,8 @@ export class ListDemandeComponent implements OnInit {
    */
   canCreateDemandeStage(){
     // profil apte a effectuer une demande de stage
-    // ADMIN-DRH peut créer en secours lorsque la division métier (DFC) n'est pas disponible
-    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH']
+    // ADMIN-DRH et Directeur-DRH peuvent créer en secours lorsque la division métier (DFC) n'est pas disponible
+    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH', 'Directeur-DRH']
     // let profils = ['Chef-bureau-dfc', 'Chef-division-dfc','Agent-bureau-dfc','Chef-division-dgcaa','Chef-division-das','Chef-division-dgpeec']
     // profil de l'utilisateyr connecter
     let userProfils = this.credentialSercice.getUserInfos()?.profil
@@ -129,12 +129,12 @@ export class ListDemandeComponent implements OnInit {
   }
 
   /**
-   * L'ADMIN-DRH agit en secours de la division métier (DFC) et peut traiter
-   * une demande de bout en bout lorsque celle-ci n'est pas disponible.
+   * L'ADMIN-DRH et le Directeur-DRH ont une vue/gestion globale : ils agissent en secours
+   * de la division métier (DFC) et peuvent traiter une demande de bout en bout.
    */
   isAdminDrh(): boolean {
     let userProfils = this.credentialSercice.getUserInfos()?.profil
-    return userProfils?.some((item: Profil) => item.code === 'ADMIN-DRH') ?? false
+    return userProfils?.some((item: Profil) => item.code === 'ADMIN-DRH' || item.code === 'Directeur-DRH') ?? false
   }
 
 
@@ -420,8 +420,8 @@ export class ListDemandeComponent implements OnInit {
 
   canAuthorize() {
     // profil apte a effectuer une demande de stage
-    // ADMIN-DRH peut autoriser en secours lorsque la division métier (DFC) n'est pas disponible
-    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH']
+    // ADMIN-DRH et Directeur-DRH peuvent autoriser en secours lorsque la division métier (DFC) n'est pas disponible
+    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH', 'Directeur-DRH']
     // let profils = ['Chef-bureau-dfc', 'Chef-division-dfc','Agent-bureau-dfc','Chef-division-dgcaa','Chef-division-das','Chef-division-dgpeec']
     // profil de l'utilisateyr connecter
     let userProfils = this.credentialSercice.getUserInfos()?.profil

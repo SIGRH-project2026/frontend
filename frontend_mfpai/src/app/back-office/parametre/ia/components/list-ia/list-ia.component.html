@@ -2,7 +2,7 @@
     <div class="panel-list-header">
         <div class="panel-list-text">
             <h3>Liste des IA</h3>
-            <ng-container *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'">
+            <ng-container *ngIf="(this.userInfos?.profil[0]?.code === 'ADMIN-DRH' || this.userInfos?.profil[0]?.code === 'Directeur-DRH')">
                 <button class="button button-primary" type="button" (click)="openModal(Add_dossier, null)">
                     <i class="fa fa-add"></i>
                     Nouveau IA
@@ -47,7 +47,7 @@
                                 <div [appStatus]="ia.statut" class="status-badge"
                                     (click)="changeStatus(ia)"></div>
                             </td>
-                            <ng-container *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'; else noAction">
+                            <ng-container *ngIf="(this.userInfos?.profil[0]?.code === 'ADMIN-DRH' || this.userInfos?.profil[0]?.code === 'Directeur-DRH'); else noAction">
                                 <td>
                                     <div class="dropdown">
                                         <button class="fab-button" type="button" data-bs-toggle="dropdown"
@@ -71,7 +71,7 @@
                                                     <span>Activer</span>
                                                 </a>
                                             </li>
-                                            <li *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'">
+                                            <li *ngIf="(this.userInfos?.profil[0]?.code === 'ADMIN-DRH' || this.userInfos?.profil[0]?.code === 'Directeur-DRH')">
                                                 <a class="dropdown-item" (click)="openModal(Edit_ia, ia)">
                                                     <i class="fa fa-edit me-2" title="modifier" type="button"></i>
                                                     <span>Modifier</span>

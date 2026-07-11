@@ -1,4 +1,26 @@
-<div class="panel-form">
+<div class="panel-form" *ngIf="canSelectEtab">
+    <div class="panel-form-header">
+        <div class="panel-form-text w-100">
+            <h3>Sélection de l'établissement</h3>
+        </div>
+    </div>
+    <div class="panel-list-body">
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <label class="form-label">Établissement</label>
+                <select class="form-control" #etabSelect (change)="onSelectEtablissement(etabSelect.value)">
+                    <option value="">-- Choisir un établissement --</option>
+                    <option *ngFor="let etab of etablissements" [value]="etab.code">{{ etab.label }}</option>
+                </select>
+            </div>
+        </div>
+        <p *ngIf="selectedEtabCode && !isCreatedFiche" class="mt-3 mb-0 text-muted">
+            Aucune fiche synoptique n'est renseignée pour cet établissement.
+        </p>
+    </div>
+</div>
+
+<div class="panel-form" *ngIf="!canSelectEtab || isCreatedFiche">
     <div class="panel-form-header">
         <div class="panel-form-text w-100">
             <h3>Information générale</h3>
@@ -51,7 +73,7 @@
     </div>
 </div>
 
-<div class="panel-form mt-3" *ngIf="!isCreatedFiche">
+<div class="panel-form mt-3" *ngIf="!isCreatedFiche && !canSelectEtab">
     <div class="panel-list-body py-0">
 
         <div class="col-lg-12">

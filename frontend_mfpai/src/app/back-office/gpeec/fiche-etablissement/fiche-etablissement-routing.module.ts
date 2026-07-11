@@ -23,6 +23,8 @@ const routes: Routes = [
         data: {
           role: [
             'Chef-etablissement',
+            'ADMIN-DRH',
+            'Directeur-DRH',
           ],
           breadcrumb : ''
         }
