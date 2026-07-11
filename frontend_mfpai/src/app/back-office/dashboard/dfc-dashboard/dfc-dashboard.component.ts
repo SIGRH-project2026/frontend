@@ -73,6 +73,7 @@ export class DFCDASHBOARDComponent implements OnInit {
 
   canSeeDFCCentral(){
     let roles = [
+      'ADMIN-DRH',
       'Chef-division-dfc',
       'Chef-division-das',
       'Directeur-DRH',
@@ -129,6 +130,7 @@ export class DFCDASHBOARDComponent implements OnInit {
     // -Formations Cloturées
     // -Nbre agents formés
     let roles = [
+      'ADMIN-DRH',
       'Chef-division-dfc',
       'Chef-division-das',
       'Directeur-DRH',

@@ -22,7 +22,7 @@ const routes: Routes = [
         component: ListExpressionComponent,
         canActivate: [IsRoleGuard],
         data: {
-          role: [ 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General','Représentant-IEF','Representant-IA'],
+          role: [ 'ADMIN-DRH', 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General','Représentant-IEF','Representant-IA'],
           breadcrumb : ''
         }
       },

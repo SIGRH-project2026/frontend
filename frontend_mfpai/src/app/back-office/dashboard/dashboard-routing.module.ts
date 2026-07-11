@@ -33,6 +33,7 @@ const routes: Routes = [
             component : DFCDASHBOARDComponent,
             data : {
               role : [
+                'ADMIN-DRH',
                 'Chef-division-dfc',
                 'Chef-division-das',
                 'Directeur-DRH',
@@ -49,6 +50,7 @@ const routes: Routes = [
             component : DGPEECDASHBOARDComponent,
             data : {
               role : [
+                'ADMIN-DRH',
                 'Chef-etablissement',
                 'Chef-EFF',
                 'Chef-cfp',
@@ -69,6 +71,7 @@ const routes: Routes = [
             component : CourrierDRHDaschboardComponent,
             data: {
               role: [
+                'ADMIN-DRH',
                 'Chef-division-dfc',
                 'Chef-division-das',
                 'Directeur-DRH',
@@ -85,6 +88,7 @@ const routes: Routes = [
             component : DgcaaComponent,
             data: {
               role: [
+                'ADMIN-DRH',
                 'Chef-EFF',
                 'Chef-cfp',
                 'Chef-etablissement',
@@ -107,6 +111,7 @@ const routes: Routes = [
             component : AffairesSocialesComponent,
             data: {
               role: [
+                'ADMIN-DRH',
                 'Chef-EFF',
                 'Chef-cfp',
                 'Chef-etablissement',

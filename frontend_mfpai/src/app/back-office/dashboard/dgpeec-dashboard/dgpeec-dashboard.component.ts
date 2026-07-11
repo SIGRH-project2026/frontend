@@ -44,18 +44,18 @@ export class DGPEECDASHBOARDComponent implements OnInit{
 
 
   items = [
-    { title: "IA", count: 0, statut: 'Total', path: '/parametrage/ia', role :['Chef-division-dgpeec','Directeur-DRH'] },
-    { title: "IEF", count: 0, statut: 'Total', path: '/parametrage/ief', role :['Chef-division-dgpeec','Directeur-DRH', 'Representant-IA'] },
-    { title: "Établissement", count: 0, statut: 'Total', path: '/parametrage/etablissement', role :['Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Demandes de besoins en personnel', count: 0, statut: ' besoins en personnel', path: '/gpeec/besoin-en-personnel-recues', role :['Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Mutations ', count: 0, statut: 'Total', path: '/gpeec/dashboard-mutation-recues/all', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Mutations ', count: 0, statut: 'validées', path: '/gpeec/dashboard-mutation-recues/VALIDER', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Mutations ', count: 0, statut: 'non accordées', path: '/gpeec/dashboard-mutation-recues/REJETER', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Mutations ', count: 0, statut: 'En cours', path: '/gpeec/dashboard-mutation-recues/inProgress', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Permutations', count: 0, statut: 'Total', path: '/gpeec/dashboard-permutation-recues/all', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF']},
-    { title: 'Permutations', count: 0, statut: 'validées', path: '/gpeec/dashboard-permutation-recues/VALIDER', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-    { title: 'Permutations', count: 0, statut: 'non accordées', path: '/gpeec/dashboard-permutation-recues/REJETER', role :['Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
-   
+    { title: "IA", count: 0, statut: 'Total', path: '/parametrage/ia', role :['ADMIN-DRH','Chef-division-dgpeec','Directeur-DRH'] },
+    { title: "IEF", count: 0, statut: 'Total', path: '/parametrage/ief', role :['ADMIN-DRH','Chef-division-dgpeec','Directeur-DRH', 'Representant-IA'] },
+    { title: "Établissement", count: 0, statut: 'Total', path: '/parametrage/etablissement', role :['ADMIN-DRH','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Demandes de besoins en personnel', count: 0, statut: ' besoins en personnel', path: '/gpeec/besoin-en-personnel-recues', role :['ADMIN-DRH','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Mutations ', count: 0, statut: 'Total', path: '/gpeec/dashboard-mutation-recues/all', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Mutations ', count: 0, statut: 'validées', path: '/gpeec/dashboard-mutation-recues/VALIDER', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Mutations ', count: 0, statut: 'non accordées', path: '/gpeec/dashboard-mutation-recues/REJETER', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Mutations ', count: 0, statut: 'En cours', path: '/gpeec/dashboard-mutation-recues/inProgress', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Permutations', count: 0, statut: 'Total', path: '/gpeec/dashboard-permutation-recues/all', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF']},
+    { title: 'Permutations', count: 0, statut: 'validées', path: '/gpeec/dashboard-permutation-recues/VALIDER', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+    { title: 'Permutations', count: 0, statut: 'non accordées', path: '/gpeec/dashboard-permutation-recues/REJETER', role :['ADMIN-DRH','Chef-etablissement','Chef-EFF','Chef-cfp','Chef-service','Chef-division','Chef-division-dgpeec','Directeur-DRH','Representant-IA','Représentant-IEF'] },
+
 
   ];
 
