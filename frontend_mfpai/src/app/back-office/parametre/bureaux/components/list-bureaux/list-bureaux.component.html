@@ -3,7 +3,7 @@
         <div class="panel-list-text">
             <h3>Liste bureaux</h3>
 
-            <ng-container *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'">
+            <ng-container *ngIf="(this.userInfos?.profil[0]?.code === 'ADMIN-DRH' || this.userInfos?.profil[0]?.code === 'Directeur-DRH')">
                 <button class="button button-primary" type="button" (click)="openModalAddAgent(Add, null)">
                     <i class="fa fa-add"></i>
                     Nouveau bureau
@@ -50,7 +50,7 @@
                                 <div [appStatus]="bureau.statut" class="status-badge"
                                     (click)="changeStatus(bureau)"></div>
                             </td>
-                            <ng-container *ngIf="this.userInfos?.profil[0]?.code === 'ADMIN-DRH'; else noAction">
+                            <ng-container *ngIf="(this.userInfos?.profil[0]?.code === 'ADMIN-DRH' || this.userInfos?.profil[0]?.code === 'Directeur-DRH'); else noAction">
                                 <td>
                                     <div class="dropdown">
                                         <button class="fab-button" type="button" data-bs-toggle="dropdown"

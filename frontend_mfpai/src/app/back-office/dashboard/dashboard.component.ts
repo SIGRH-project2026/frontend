@@ -61,6 +61,7 @@ export class DashboardComponent implements OnInit{
             ], canSee: true },
         { title: 'Personnel', icon: 'fa-solid fa-users', count: 0, route: '/gpeec/personnel', role :[
                 'ADMIN-DRH',
+                'Directeur-DRH',
             ], canSee: true },
         { title: 'Imputations', icon: 'fa-solid fa-people-arrows', count: 5, route:'Affaire-sociales', role :[
                 'ADMIN-DRH',

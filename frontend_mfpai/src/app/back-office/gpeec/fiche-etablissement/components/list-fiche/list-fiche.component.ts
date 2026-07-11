@@ -68,7 +68,13 @@ export class ListFicheComponent implements OnInit, AfterContentChecked{
   quantumsValuesListClasses: QuantumValues[] = [];
   typeFormation: string = "filiere";
   typeFormation2: string = "cfiliere";
-  
+
+  // ADMIN-DRH / Directeur-DRH n'ont pas d'établissement propre :
+  // ils sélectionnent un établissement pour en visualiser la fiche synoptique
+  canSelectEtab: boolean = false;
+  etablissements: any[] = [];
+  selectedEtabCode: string = '';
+
   private initializeSelectpicker(): void {
     // Initialiser Bootstrap-select ici
     $('#selectDisciplineClasse').selectpicker();
@@ -117,12 +123,55 @@ export class ListFicheComponent implements OnInit, AfterContentChecked{
 
   ngOnInit(): void {
   //  this.autocompleteFormateurs = this.formateurs.map(participant => `${participant.matricule} ${participant.prenom} ${participant.nom}`);
-   
-    this.getFicheEtablissement()
+
+    this.canSelectEtab = (this.userInfos?.profil ?? [])
+      .some((p: any) => p.code === 'ADMIN-DRH' || p.code === 'Directeur-DRH');
+
+    if (this.canSelectEtab) {
+      // l'admin choisit l'établissement à visualiser ; on ne charge rien tant qu'aucun choix n'est fait
+      this.loadEtablissements()
+    } else {
+      this.getFicheEtablissement()
+    }
     this.getAllFiliere()
     this.initFormFiliereDiscp()
     this.getListDiscplines()
     this.initFormClassProf()
+  }
+
+  loadEtablissements(){
+    this.referenceService.listEtablissement().subscribe({
+      next: (data: any) => {
+        this.etablissements = data.payload ?? data.data ?? []
+      }
+    })
+  }
+
+  onSelectEtablissement(code: string){
+    this.selectedEtabCode = code
+    if (!code) {
+      this.isCreatedFiche = false
+      this.user = new DeconectedDTO()
+      this.ficheSnoptique = new FicheSynoptique()
+      return
+    }
+    this.ficheService.getFicheByCodeEtab(code).subscribe({
+      next : (data : ResponseApi2) => {
+        if (data.status?.includes("OK") && data.payload) {
+          this.ficheSnoptique = data.payload
+          this.user = this.ficheSnoptique.chefEtablissemnt
+          this.isCreatedFiche = true
+        } else {
+          // établissement sans fiche synoptique renseignée
+          this.isCreatedFiche = false
+          this.ficheSnoptique = new FicheSynoptique()
+          this.user = new DeconectedDTO()
+        }
+      },
+      error : (error) => {
+        console.error('Une erreur est survenue :', error);
+      }
+    })
   }
   onTabChange(event: any, classe : boolean) {
     if(!classe)
