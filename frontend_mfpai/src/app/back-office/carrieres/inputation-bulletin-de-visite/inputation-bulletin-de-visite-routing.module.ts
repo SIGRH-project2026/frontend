@@ -21,6 +21,7 @@ const routes: Routes = [
         data: {
           role: [
 
+            'ADMIN-DRH',
             'Chef-division-das',
             'Directeur-DRH',
             'Representant-IA',
@@ -51,6 +52,7 @@ const routes: Routes = [
         data: {
           role: [
 
+            'ADMIN-DRH',
             'Chef-division-das',
             'Directeur-DRH',
             'Representant-IA',
@@ -58,7 +60,7 @@ const routes: Routes = [
             'Agent-bureau-das',
             'Chef-bureau-das',
 
-           ],
+    ],
           breadcrumb: 'Détails Agent'
         },
       
@@ -69,6 +71,7 @@ const routes: Routes = [
         data: {
           role: [
 
+            'ADMIN-DRH',
             'Chef-division-das',
             'Directeur-DRH',
             'Representant-IA',
@@ -76,7 +79,7 @@ const routes: Routes = [
             'Agent-bureau-das',
             'Chef-bureau-das',
 
-       
+
 
            ],
           breadcrumb : 'Formulaire de création'

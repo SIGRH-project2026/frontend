@@ -118,13 +118,23 @@ export class ListDemandeComponent implements OnInit {
    */
   canCreateDemandeStage(){
     // profil apte a effectuer une demande de stage
-    let profils = [ 'Chef-division-dfc']
+    // ADMIN-DRH peut créer en secours lorsque la division métier (DFC) n'est pas disponible
+    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH']
     // let profils = ['Chef-bureau-dfc', 'Chef-division-dfc','Agent-bureau-dfc','Chef-division-dgcaa','Chef-division-das','Chef-division-dgpeec']
     // profil de l'utilisateyr connecter
     let userProfils = this.credentialSercice.getUserInfos()?.profil
 
     // verification ...
     return userProfils!.some((item: Profil) => profils!.includes(item.code!));
+  }
+
+  /**
+   * L'ADMIN-DRH agit en secours de la division métier (DFC) et peut traiter
+   * une demande de bout en bout lorsque celle-ci n'est pas disponible.
+   */
+  isAdminDrh(): boolean {
+    let userProfils = this.credentialSercice.getUserInfos()?.profil
+    return userProfils?.some((item: Profil) => item.code === 'ADMIN-DRH') ?? false
   }
 
 
@@ -138,7 +148,7 @@ export class ListDemandeComponent implements OnInit {
       return false
     let userProfils = this.credentialSercice.getUserInfos()?.profil
 
-    return userProfils?.filter(profile => demande.division.code.toLowerCase() ===  (this.lenProfilCode(profile.code) === 2 ? profile.code.split('-')[1].toLowerCase() : profile.code.split('-')[2].toLowerCase())).length != 0 && demande.statutDemandeStage.code === 'ENREGISTRER'
+    return (this.isAdminDrh() || userProfils?.filter(profile => demande.division.code.toLowerCase() ===  (this.lenProfilCode(profile.code) === 2 ? profile.code.split('-')[1].toLowerCase() : profile.code.split('-')[2].toLowerCase())).length != 0) && demande.statutDemandeStage.code === 'ENREGISTRER'
 
   }
 
@@ -151,7 +161,7 @@ export class ListDemandeComponent implements OnInit {
       return false
     let userProfils = this.credentialSercice.getUserInfos()?.profil
 
-    return userProfils?.filter(profil => demande.division.code.toLowerCase() ===  (this.lenProfilCode(profil.code) === 2 ? profil.code.split('-')[1].toLowerCase() : profil.code.split('-')[2].toLowerCase())).length != 0 && demande.statutDemandeStage.code === 'AUTORISER'
+    return (this.isAdminDrh() || userProfils?.filter(profil => demande.division.code.toLowerCase() ===  (this.lenProfilCode(profil.code) === 2 ? profil.code.split('-')[1].toLowerCase() : profil.code.split('-')[2].toLowerCase())).length != 0) && demande.statutDemandeStage.code === 'AUTORISER'
   }
 
   canGiverSetAttestation(demande: DemandeStage){
@@ -159,7 +169,7 @@ export class ListDemandeComponent implements OnInit {
       return false
     let userProfils = this.credentialSercice.getUserInfos()?.profil
 
-    return userProfils?.filter(profil => profil.code === 'Chef-division-dfc').length != 0 && demande.statutDemandeStage.code === 'AUTORISER'
+    return (this.isAdminDrh() || userProfils?.filter(profil => profil.code === 'Chef-division-dfc').length != 0) && demande.statutDemandeStage.code === 'AUTORISER'
   }
 
 
@@ -410,7 +420,8 @@ export class ListDemandeComponent implements OnInit {
 
   canAuthorize() {
     // profil apte a effectuer une demande de stage
-    let profils = [ 'Chef-division-dfc']
+    // ADMIN-DRH peut autoriser en secours lorsque la division métier (DFC) n'est pas disponible
+    let profils = [ 'Chef-division-dfc', 'ADMIN-DRH']
     // let profils = ['Chef-bureau-dfc', 'Chef-division-dfc','Agent-bureau-dfc','Chef-division-dgcaa','Chef-division-das','Chef-division-dgpeec']
     // profil de l'utilisateyr connecter
     let userProfils = this.credentialSercice.getUserInfos()?.profil

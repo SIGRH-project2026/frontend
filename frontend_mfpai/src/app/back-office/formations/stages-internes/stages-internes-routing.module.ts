@@ -27,6 +27,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Chef-division-dgpeec',
             'Chef-division-dgcaa',
@@ -43,6 +44,7 @@ const routes: Routes = [
         component: NouvelleDemandeComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -56,6 +58,7 @@ const routes: Routes = [
         component: DetailDemandeComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -82,6 +85,7 @@ const routes: Routes = [
         component: ImputerDemandeComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -95,6 +99,7 @@ const routes: Routes = [
         component: DonnerAvisDemandeComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -108,6 +113,7 @@ const routes: Routes = [
         component: EnregisterRapportStageComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -121,6 +127,7 @@ const routes: Routes = [
         component: EnregisterAttestationStageComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',
@@ -134,6 +141,7 @@ const routes: Routes = [
         component: AutorisationStageComponent,
         data: {
           role: [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Directeur-DRH',
             'Chef-bureau-dfc',

@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit{
     userInfos: any;
     sections = [
         { title: 'Formation Continue', icon: 'fa-graduation-cap', count: 7, route: 'DFC' , role :[
+                'ADMIN-DRH',
                 'Chef-division-dfc',
                 'Chef-division-das',
                 'Directeur-DRH',
@@ -23,6 +24,7 @@ export class DashboardComponent implements OnInit{
                 'Chef-division-dgpeec',
             ], canSee: true },
         { title: 'Mutations/Permutations', icon: 'fa-solid fa-hand-holding', count: 9, route: 'DGPEEC', role :[
+                'ADMIN-DRH',
                 'Chef-etablissement',
                 'Chef-EFF',
                 'Chef-cfp',
@@ -36,6 +38,7 @@ export class DashboardComponent implements OnInit{
                 'Représentant-IEF'
             ], canSee: true },
         { title: 'Demandes d\'actes', icon: 'fa-solid fa-user', count: 5, route: 'DGCAA' , role :[
+                'ADMIN-DRH',
                 'Chef-EFF',
                 'Chef-cfp',
                 'Chef-etablissement',
@@ -56,7 +59,11 @@ export class DashboardComponent implements OnInit{
                 'Chef-division-dgpeec',
                 'Assistant-DRH'
             ], canSee: true },
+        { title: 'Personnel', icon: 'fa-solid fa-users', count: 0, route: '/gpeec/personnel', role :[
+                'ADMIN-DRH',
+            ], canSee: true },
         { title: 'Imputations', icon: 'fa-solid fa-people-arrows', count: 5, route:'Affaire-sociales', role :[
+                'ADMIN-DRH',
                 'Chef-EFF',
                 'Chef-cfp',
                 'Chef-etablissement',
@@ -104,6 +111,7 @@ export class DashboardComponent implements OnInit{
 
     canSeeDFC(){
         let roles = [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Chef-division-das',
             'Directeur-DRH',
@@ -121,6 +129,7 @@ export class DashboardComponent implements OnInit{
 
     canSeeCourrierDRH(){
         let roles = [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Chef-division-das',
             'Directeur-DRH',
@@ -137,6 +146,7 @@ export class DashboardComponent implements OnInit{
         // -Formations Cloturées
         // -Nbre agents formés
         let roles = [
+            'ADMIN-DRH',
             'Chef-division-dfc',
             'Chef-division-das',
             'Directeur-DRH',
@@ -155,7 +165,13 @@ export class DashboardComponent implements OnInit{
         //   this.alertService.showAlert({titre: 'Access DFC', status: 'EXCEPTION', message: "Vous n'avez pas la permission d'accéder à cette ressource !"})
         // }else{
         this.activeSection = sectionRoute;
-        this.router.navigate([sectionRoute], { relativeTo: this.route.parent });
+        // une route absolue (ex: '/gpeec/personnel') navigue vers une page dédiée,
+        // les routes relatives (DFC, DGPEEC, ...) affichent le sous-dashboard correspondant
+        if (sectionRoute.startsWith('/')) {
+            this.router.navigateByUrl(sectionRoute);
+        } else {
+            this.router.navigate([sectionRoute], { relativeTo: this.route.parent });
+        }
         // }
     }
     viewBox(item : any) : boolean{

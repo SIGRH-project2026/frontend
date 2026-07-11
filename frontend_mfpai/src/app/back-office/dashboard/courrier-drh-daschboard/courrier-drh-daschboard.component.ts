@@ -54,6 +54,7 @@ export class CourrierDRHDaschboardComponent implements OnInit {
   isCentralUser(){
 
     let roles = [
+      'ADMIN-DRH',
       'Chef-division-dfc',
       'Chef-division-das',
       'Directeur-DRH',

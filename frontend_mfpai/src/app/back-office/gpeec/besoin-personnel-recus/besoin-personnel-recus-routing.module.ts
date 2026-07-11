@@ -18,7 +18,7 @@ const routes: Routes = [
         component : ListeDesBesoinsRecusComponent,
         canActivate: [IsRoleGuard],
         data: {
-          role: [ 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General'],
+          role: [ 'ADMIN-DRH', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General'],
           breadcrumb : ''
         }
       },
