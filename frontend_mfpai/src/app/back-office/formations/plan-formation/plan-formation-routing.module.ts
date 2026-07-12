@@ -25,7 +25,7 @@ const routes: Routes = [
         path: '',
         component: ListPlanFormationComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des plans de formation'
         },
       },
       // Routing creation plan de formation

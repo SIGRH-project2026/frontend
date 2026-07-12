@@ -19,7 +19,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [ 'ADMIN-DRH', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des expressions reçues'
         }
       },
       {
@@ -27,7 +27,7 @@ const routes: Routes = [
         path: ':Id/details-besoins-recus',
         component: DetailDemandeEnPersonnelRecusComponent,
         data: {
-          breadcrumb: 'Détails  '
+          breadcrumb: 'Détails expression'
         },
       
       },

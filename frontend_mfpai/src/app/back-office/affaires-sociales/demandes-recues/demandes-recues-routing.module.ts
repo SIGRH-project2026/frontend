@@ -32,7 +32,7 @@ const routes: Routes = [
                   'Directeur-CFP',
                   'Directeur-EFF',
           ],
-          breadcrumb : ''
+          breadcrumb: 'Liste des demandes'
         }
       },
       {

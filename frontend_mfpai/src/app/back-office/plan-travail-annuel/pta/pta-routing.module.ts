@@ -21,7 +21,7 @@ const routes: Routes = [
         path: '',
         component: ListPtaComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des PTA'
         },
       },
       {

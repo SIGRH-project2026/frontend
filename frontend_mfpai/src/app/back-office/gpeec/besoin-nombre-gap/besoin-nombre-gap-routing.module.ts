@@ -19,7 +19,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [ 'ADMIN-DRH', 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General','Representant-IA'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des besoins'
         }
       },
       {

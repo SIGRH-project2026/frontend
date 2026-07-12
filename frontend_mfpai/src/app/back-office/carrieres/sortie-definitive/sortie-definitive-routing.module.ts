@@ -10,7 +10,7 @@ const routes: Routes = [
     path: '',
     component : MainComponent,
     data:{
-      breadcrumb : 'Sortie temporaire'
+      breadcrumb : 'Sortie définitive'
     },
     children : [
       {
@@ -24,7 +24,7 @@ const routes: Routes = [
             'Directeur-DRH',
             'Admin-General',
             'Directeur-DRH'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des agents'
         }
       },
       {
@@ -32,7 +32,7 @@ const routes: Routes = [
         path: ':id/details-agent',
         component: DetailsAgentComponent,
         data: {
-          breadcrumb: 'Details Agent'
+          breadcrumb: 'Détails Agent'
         },
       
       },

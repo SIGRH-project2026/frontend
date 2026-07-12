@@ -16,7 +16,7 @@ const routes: Routes = [
         path: '',
         component : ListDesMatiereDeficitsComponent,
         data: {
-          breadcrumb : ''
+          breadcrumb: 'Liste des horaires'
         }
       },
       {

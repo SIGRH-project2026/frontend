@@ -23,7 +23,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [ 'ADMIN-DRH', 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General','Représentant-IEF','Representant-IA'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des expressions'
         }
       },
       // Routing creation expression
@@ -39,7 +39,7 @@ const routes: Routes = [
         path: '',
         component: SingleExpressionComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des expressions'
         },
         children: [
           // Routing edit expression
