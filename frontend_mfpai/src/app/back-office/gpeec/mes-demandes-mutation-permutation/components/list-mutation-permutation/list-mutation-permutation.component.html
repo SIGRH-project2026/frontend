@@ -11,7 +11,7 @@
                         Demander une mutation
                     </button>
                     <ng-container >
-                        <button *ngIf="pourTraitement" class="button button-primary" type="button" (click)="genererOSMutation(true, 0)">
+                        <button *ngIf="pourTraitement && profile !== 'Chef-etablissement' && profile !== 'Chef-cfp'" class="button button-primary" type="button" (click)="genererOSMutation(true, 0)">
                             <i class="fa fa-add"></i>
                             Générer OS
                         </button>
