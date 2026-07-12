@@ -50,6 +50,18 @@ export class UtilisateurService {
   }
 
   /**
+   * Import en masse d'utilisateurs de niveau central à partir
+   * d'un fichier Excel (.xlsx/.xls) ou CSV. Les champs manquants sont tolérés
+   * et les doublons sont bloqués ligne par ligne côté serveur.
+   */
+  importUtilisateursCentral(file: File): Observable<ResponseApi> {
+    const API_URL = `${environment.apiUrl}utilisateur/central/import`;
+    const formData = new FormData();
+    formData.append("file", file);
+    return this._http.post<ResponseApi>(API_URL, formData);
+  }
+
+  /**
    * Import en masse d'utilisateurs de niveau déconcentré à partir
    * d'un fichier Excel (.xlsx/.xls) ou CSV. Les champs manquants sont tolérés.
    */

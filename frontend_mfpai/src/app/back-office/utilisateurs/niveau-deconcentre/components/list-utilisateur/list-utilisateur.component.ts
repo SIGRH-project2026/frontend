@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, inject } from "@angular/core";
+import { Component, OnDestroy, OnInit, TemplateRef, inject } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
@@ -6,6 +6,7 @@ import { NgxSpinnerService } from "ngx-spinner";
 import Swal from "sweetalert2";
 import { DeconectedDTO, Profil } from "../../../../../models/utilisateur";
 import { CredentialsService } from "../../../../../services/credentials.service";
+import { ListeUtilisateurStateService } from "../../../../../services/liste-utilisateur-state.service";
 import { ReferencesService } from "../../../../../services/references.service";
 import { UtilisateurService } from "../../../../../services/utilisateur.service";
 
@@ -27,7 +28,10 @@ interface SearchData {
   templateUrl: "./list-utilisateur.component.html",
   styleUrls: ["./list-utilisateur.component.css"],
 })
-export class ListUtilisateurComponent implements OnInit {
+export class ListUtilisateurComponent implements OnInit, OnDestroy {
+  /** Clé d'identification de l'état de recherche conservé en mémoire. */
+  private static readonly STATE_KEY = "utilisateurs-niveau-deconcentre";
+
   headers!: string[];
   page = 0;
   pageSize = 10;
@@ -100,6 +104,7 @@ export class ListUtilisateurComponent implements OnInit {
     private referenceService: ReferencesService,
     private formBuilder: FormBuilder,
     private credentialsService: CredentialsService,
+    private listeStateService: ListeUtilisateurStateService,
   ) {}
 
   ngOnInit(): void {
@@ -166,6 +171,81 @@ export class ListUtilisateurComponent implements OnInit {
     this.referenceService.lisStructure().subscribe((response) => {
       if (response.success) this.structure = response.data;
     });
+
+    // Restaure la recherche précédente si l'on revient d'une autre page
+    // (ex. détail ou modification d'un utilisateur). L'état est perdu au
+    // rechargement complet de la page.
+    const savedState = this.listeStateService.get(
+      ListUtilisateurComponent.STATE_KEY,
+    );
+    if (savedState) {
+      this.restoreSearchState(savedState);
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Conserve les critères de recherche et la pagination pour les restaurer
+    // au retour sur la liste (tant que la page n'est pas actualisée).
+    this.listeStateService.save(ListUtilisateurComponent.STATE_KEY, {
+      formValue: this.advancedSearchForm?.value,
+      isSearchUser: this.isSearchUser,
+      page: this.page,
+      pageSize: this.pageSize,
+    });
+  }
+
+  /** Restaure le formulaire de recherche puis relance la requête correspondante. */
+  private restoreSearchState(savedState: any): void {
+    if (savedState.formValue) {
+      this.advancedSearchForm.patchValue(savedState.formValue);
+
+      // Recharge les listes déroulantes dépendantes des valeurs restaurées.
+      const { structure, region, ia, ief, corps } = savedState.formValue;
+      if (structure) {
+        this.getStruct(structure);
+      }
+      if (region) {
+        this.getListIA(region);
+      }
+      if (ia) {
+        this.getListEF(ia);
+      }
+      if (ief) {
+        this.getListEtablissement(ief);
+      } else if (ia) {
+        this.getListEtabByIA(ia);
+      }
+      if (corps) {
+        this.getGradeFromCorps(corps);
+      }
+    }
+    this.isSearchUser = savedState.isSearchUser;
+    this.page = savedState.page ?? 0;
+    this.pageSize = savedState.pageSize ?? 10;
+
+    if (this.isSearchUser) {
+      // Relance la recherche avec les critères restaurés : résultats
+      // conservés et données à jour (utile après une modification).
+      this.listUtilisateurDecoPage(
+        this.page,
+        this.pageSize,
+        this.advancedSearchForm.value["region"],
+        this.advancedSearchForm.value["ia"],
+        this.advancedSearchForm.value["ief"],
+        this.advancedSearchForm.value["etablissement"],
+        this.advancedSearchForm.value["typeSystemeEnseignement"],
+        this.advancedSearchForm.value["specialite"],
+        this.advancedSearchForm.value["corps"],
+        this.advancedSearchForm.value["grade"],
+        this.advancedSearchForm.value["matricule"],
+        this.advancedSearchForm.value["prenom"],
+        this.advancedSearchForm.value["nom"],
+        this.advancedSearchForm.value["dateNaissance"],
+        this.advancedSearchForm.value["cni"],
+        this.advancedSearchForm.value["telephone"],
+        this.advancedSearchForm.value["email"],
+      );
+    }
   }
 
   getListIA(code: any): void {

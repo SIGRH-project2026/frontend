@@ -20,7 +20,7 @@ const routes: Routes = [
         path: '',
         component: ListUtilisateurComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des utilisateurs'
         },
       },
       // Routing creation utilisateur
@@ -35,7 +35,9 @@ const routes: Routes = [
         path: '',
         component: SingleUtilisateurComponent,
         data: {
-          breadcrumb: ''
+          // Affiché comme étape intermédiaire (Liste -> Détail/Modification),
+          // son URL pointe vers la liste des utilisateurs.
+          breadcrumb: 'Liste des utilisateurs'
         },
         children: [
           // Routing edit utilisateur

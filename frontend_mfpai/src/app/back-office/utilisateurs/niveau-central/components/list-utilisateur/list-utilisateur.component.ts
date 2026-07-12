@@ -1,8 +1,9 @@
-import { Component, OnInit, TemplateRef, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import {UtilisateurService} from "../../../../../services/utilisateur.service";
+import {ListeUtilisateurStateService} from "../../../../../services/liste-utilisateur-state.service";
 import {CentralLevel, DeconectedDTO, Profil} from "../../../../../models/utilisateur";
 
 import {FormBuilder, FormGroup, NgForm, Validators} from "@angular/forms";
@@ -25,7 +26,9 @@ interface SearchData {
   templateUrl: './list-utilisateur.component.html',
   styleUrls: ['./list-utilisateur.component.css']
 })
-export class ListUtilisateurComponent implements OnInit{
+export class ListUtilisateurComponent implements OnInit, OnDestroy{
+    /** Clé d'identification de l'état de recherche conservé en mémoire. */
+    private static readonly STATE_KEY = 'utilisateurs-niveau-central';
     isSearchResult = false;
     headers!: string[];
     page = 0;
@@ -58,6 +61,13 @@ export class ListUtilisateurComponent implements OnInit{
      corpsGrade: any;
      userInfos:   any;
 
+    // Import (charger liste d'utilisateurs de niveau central)
+    importFile: File | null = null;
+    importResult: any = null;
+    importLoading = false;
+    importErrorsPage = 1;
+    importErrorsPageSize = 10;
+
 
    constructor(
     private router: Router,
@@ -67,7 +77,8 @@ export class ListUtilisateurComponent implements OnInit{
     private formBuilder: FormBuilder,
     private spinner: NgxSpinnerService,
     private referenceService: ReferencesService,
-    private credentialsService: CredentialsService
+    private credentialsService: CredentialsService,
+    private listeStateService: ListeUtilisateurStateService
 
    ) { }
   
@@ -75,18 +86,78 @@ export class ListUtilisateurComponent implements OnInit{
     // Initialize data and headers
     this.headers = ['Matricule','Prénom', 'Nom','Profil','Entités', 'Statut','Action'];
       this.userInfos = this.credentialsService.getUserInfos();
-      this.refreshData()
-      //this.listUtilisateur(this.pageOptions, this.filterValue);
-
-
-     // this.listUtilisateurAdvanced(this.totalPages, this.size, "", "",  this.searchData?.matricule, this.searchData?.prenom, this.searchData?.nom, this.searchData?.direction);
-     this.listUtilisateurCenPage(this.page, this.pageSize, "", "","", "","","", "", "", "", "", "", "", "", "");
 
       this.lookingSearchForm();
       this.initForm();
 
+      // Restaure la recherche précédente si l'on revient d'une autre page
+      // (ex. détail ou modification d'un utilisateur). L'état est perdu au
+      // rechargement complet de la page, ce qui relance le chargement standard.
+      const savedState = this.listeStateService.get(ListUtilisateurComponent.STATE_KEY);
+      if (savedState) {
+          this.restoreSearchState(savedState);
+      } else {
+          this.refreshData();
+          this.listUtilisateurCenPage(this.page, this.pageSize, "", "","", "","","", "", "", "", "", "", "", "", "");
+      }
+  }
 
+  ngOnDestroy(): void {
+      // Conserve les critères de recherche et la pagination pour les restaurer
+      // au retour sur la liste (tant que la page n'est pas actualisée).
+      this.listeStateService.save(ListUtilisateurComponent.STATE_KEY, {
+          formValue: this.advancedSearchForm?.value,
+          isSearchUser: this.isSearchUser,
+          page: this.page,
+          pageSize: this.pageSize,
+      });
+  }
 
+  /** Restaure le formulaire de recherche puis relance la requête correspondante. */
+  private restoreSearchState(savedState: any): void {
+      if (savedState.formValue) {
+          this.advancedSearchForm.patchValue(savedState.formValue);
+
+          // Recharge les listes déroulantes dépendantes des valeurs restaurées.
+          const { direction, division, corps } = savedState.formValue;
+          if (direction) {
+              this.getProfileDirection(direction);
+          }
+          if (division) {
+              this.getListBureau(division);
+              this.getProfileDivision(division);
+          }
+          if (corps) {
+              this.getGradeFromCorps(corps);
+          }
+      }
+      this.isSearchUser = savedState.isSearchUser;
+      this.page = savedState.page ?? 0;
+      this.pageSize = savedState.pageSize ?? 10;
+
+      if (this.isSearchUser) {
+          // Relance la recherche avec les critères restaurés : résultats
+          // conservés et données à jour (utile après une modification).
+          this.listUtilisateurCenPage(this.page, this.pageSize,
+              this.advancedSearchForm.value['region'],
+              this.advancedSearchForm.value['direction'],
+              this.advancedSearchForm.value['division'],
+              this.advancedSearchForm.value['bureau'],
+              this.advancedSearchForm.value['specialite'],
+              this.advancedSearchForm.value['corps'],
+              this.advancedSearchForm.value['grade'],
+              this.advancedSearchForm.value['matricule'],
+              this.advancedSearchForm.value['prenom'],
+              this.advancedSearchForm.value['nom'],
+              this.advancedSearchForm.value['dateNaissance'],
+              this.advancedSearchForm.value['cni'],
+              this.advancedSearchForm.value['telephone'],
+              this.advancedSearchForm.value['email']
+          );
+      } else {
+          this.refreshData();
+          this.listUtilisateurCenPage(this.page, this.pageSize, "", "","", "","","", "", "", "", "", "", "", "", "");
+      }
   }
 
 
@@ -528,6 +599,104 @@ export class ListUtilisateurComponent implements OnInit{
 
     onCancel() {
         this.isSearchUser = !this.isSearchUser;
+    }
+
+    // ==========================================================================
+    // Import en masse d'utilisateurs (Charger liste) — niveau central
+    // ==========================================================================
+
+    get pagedImportErrors(): any[] {
+        const errors = this.importResult?.errors ?? [];
+        const start = (this.importErrorsPage - 1) * this.importErrorsPageSize;
+        return errors.slice(start, start + this.importErrorsPageSize);
+    }
+
+    onOpenImport(content: TemplateRef<any>) {
+        this.importFile = null;
+        this.importResult = null;
+        this.importLoading = false;
+        this.modalService.open(content, {
+            ariaLabelledBy: "modal-basic-title",
+            size: "lg",
+            centered: true,
+            backdrop: "static",
+            scrollable: true,
+        });
+    }
+
+    onImportFileSelected(event: any) {
+        const files: FileList = event?.target?.files;
+        this.importFile = files && files.length > 0 ? files[0] : null;
+    }
+
+    onSubmitImport() {
+        if (!this.importFile) {
+            return;
+        }
+        this.importLoading = true;
+        this.spinner.show();
+        this.userService.importUtilisateursCentral(this.importFile).subscribe({
+            next: (response: any) => {
+                this.importLoading = false;
+                this.spinner.hide();
+                if (response?.success) {
+                    this.importResult = response.data;
+                    this.importErrorsPage = 1;
+                    // Rafraîchir la liste affichée si une recherche est active
+                    if (this.isSearchUser) {
+                        this.refreshData2();
+                    }
+                } else {
+                    this.userService.showSwal("error", response?.message);
+                }
+            },
+            error: (error) => {
+                this.importLoading = false;
+                this.spinner.hide();
+                this.userService.showSwal(
+                    "error",
+                    error?.error?.message ??
+                        "Une erreur est survenue lors de l'import du fichier.",
+                );
+            },
+        });
+    }
+
+    downloadImportTemplate() {
+        // En-têtes alignés sur le fichier réel des utilisateurs de niveau central.
+        // La colonne ETABLISSEMENT (aussi acceptée sous le nom SERVICE ou
+        // DIRECTION) représente la direction de rattachement de l'agent.
+        const headers = [
+            "MATRICULE",
+            "PRENOMS",
+            "NOM",
+            "SEXE",
+            "ETABLISSEMENT",
+            "TYPE SYSTEME ENSEIGNEMENT",
+            "IEF",
+            "IA",
+        ];
+        const exampleRow = [
+            "609447/H",
+            "Alioune",
+            "Seck",
+            "M",
+            "DIRECTION DE L'INSERTION",
+            "Structures Admin. MFPAA",
+            "Niveau Central",
+            "Niveau Central (15eme Région)",
+        ];
+        const csvContent =
+            headers.join(";") + "\n" + exampleRow.join(";") + "\n";
+        const blob = new Blob(["﻿" + csvContent], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "modele_import_utilisateurs_central.csv";
+        link.click();
+        window.URL.revokeObjectURL(url);
     }
 }
 

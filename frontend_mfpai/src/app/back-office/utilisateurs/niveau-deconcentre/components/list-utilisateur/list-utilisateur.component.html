@@ -2,13 +2,14 @@
     <div class="panel-list-header">
         <div class="panel-list-text">
             <h3>Rechercher</h3>
-            <ng-container *ngIf="(userInfos?.profil[0]?.code === 'ADMIN-DRH' || userInfos?.profil[0]?.code === 'Directeur-DRH')">
+            <ng-container
+                *ngIf="(userInfos?.profil[0]?.code === 'ADMIN-DRH' || userInfos?.profil[0]?.code === 'Directeur-DRH')">
                 <div class="d-flex gap-2">
-                    <button class="button button-outline-primary" type="button"
+                    <!-- <button class="button button-outline-primary" type="button"
                         (click)="onOpenDuplicates(duplicatesPanel)">
                         <i class="fa fa-clone"></i>
                         Doublons
-                    </button>
+                    </button> -->
                     <button class="button button-outline-primary" type="button" (click)="onOpenImport(importUsers)">
                         <i class="fa fa-upload"></i>
                         Charger liste

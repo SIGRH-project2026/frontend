@@ -48,35 +48,7 @@
             <h5 class="title-form">Informations personnelles</h5>
             <div class="row details py-3 g-3">
 
-                <ng-container  *ngIf="centralLevel?.matriculeFonctionnaire">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>Matricule</span>
-                            <span>{{ centralLevel?.matricule }}</span>
-                        </div>
-                    </div>
-
-                </ng-container>
-
-                <ng-container  *ngIf="centralLevel?.matriculeContratuel">
-                <div class="col-lg-4 col-sm-6">
-                    <div class="details-item">
-                        <span>Matricule</span>
-                        <span>{{ centralLevel?.matricule }}</span>
-                    </div>
-                </div>
-                </ng-container>
-
-                <ng-container  *ngIf="centralLevel?.matriculeVacataire">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>Matricule</span>
-                            <span>{{ centralLevel?.matricule }}</span>
-                        </div>
-                    </div>
-                </ng-container>
-
-                <ng-container  *ngIf="centralLevel?.matriculeDecisionnaire">
+                <ng-container *ngIf="centralLevel?.matricule">
                     <div class="col-lg-4 col-sm-6">
                         <div class="details-item">
                             <span>Matricule</span>
