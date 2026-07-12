@@ -26,7 +26,7 @@ const routes: Routes = [
             'ADMIN-DRH',
             'Directeur-DRH',
           ],
-          breadcrumb : ''
+          breadcrumb: 'Liste des fiches'
         }
       },
       // Routing Nouvelle fiche établissement

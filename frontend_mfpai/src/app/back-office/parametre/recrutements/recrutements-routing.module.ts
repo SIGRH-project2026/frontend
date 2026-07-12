@@ -18,7 +18,7 @@ const routes: Routes = [
         // canActivate: [IsRoleGuard],
         data: {
           role: [ 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des recrutements'
         }
       },
       {
@@ -27,7 +27,7 @@ const routes: Routes = [
         // canActivate: [IsRoleGuard],
         data: {
           role: [ 'Chef-etablissement', 'Chef-division-dgpeec', 'Directeur-DRH', 'Admin-General'],
-          breadcrumb : ''
+          breadcrumb: 'Formulaire de création'
         }
       },
    

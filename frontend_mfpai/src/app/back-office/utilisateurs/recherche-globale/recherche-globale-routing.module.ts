@@ -16,14 +16,14 @@ const routes: Routes = [
         path: '',
         component: ListUtilisateurComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des utilisateurs'
         },
       },
       {
         path: ':userId/change-profil',
         component: ChangeProfilComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Changer le profil'
         },
       },
       // Routing creation utilisateur

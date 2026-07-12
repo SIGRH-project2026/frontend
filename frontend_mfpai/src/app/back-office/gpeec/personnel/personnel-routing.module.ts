@@ -16,7 +16,7 @@ const routes: Routes = [
         path: '',
         component: ListPersonnelComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste du personnel'
         }
       },
       {

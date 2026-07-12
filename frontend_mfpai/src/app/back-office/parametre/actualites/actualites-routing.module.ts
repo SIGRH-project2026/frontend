@@ -16,7 +16,7 @@ const routes: Routes = [
         path: '',
         component: ListActualiteComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des actualités'
         },
       },
        {

@@ -8,7 +8,7 @@ const routes: Routes = [
     path: '',
     component: MainComponent,
     data: {
-      breadcrumb: 'divisions'
+      breadcrumb: 'Divisions'
     },
     children: [
       {

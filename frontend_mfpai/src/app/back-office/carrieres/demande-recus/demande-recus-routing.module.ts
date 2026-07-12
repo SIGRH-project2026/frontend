@@ -19,7 +19,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [ 'Chef-division-dgcaa', 'ADMIN-DRH', 'Directeur-DRH','Chef-division-dfc','Chef-division-dgpeec' ,'Chef-division-das','Chef-service','Chef-etablissement','Chef-cfp','Chef-EFF','Representant-IA','Représentant-IEF'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des demandes'
         }
       },
       {

@@ -11,7 +11,7 @@ const routes: Routes = [
     path: '',
     component: MainComponent,
     data: {
-      breadcrumb: 'Mes demandes de permutations recues'
+      breadcrumb: 'Mes demandes de permutations reçues'
     },
     children: [
       // Routing list 
@@ -19,14 +19,14 @@ const routes: Routes = [
         path: '',
         component: ListPermutationComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des demandes'
         },
       },
       {
         path: '',
         component: SingleMutationComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des demandes'
         },
         children: [
           {

@@ -20,7 +20,7 @@ const routes: Routes = [
         component: ListDemandeComponent,
 
         data: {
-          breadcrumb : ''
+          breadcrumb: 'Liste des demandes'
         }
       },
       {

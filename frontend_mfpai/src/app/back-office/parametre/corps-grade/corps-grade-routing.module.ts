@@ -17,7 +17,7 @@ const routes: Routes = [
         path: '',
         component: ListCorpsGradeComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des corps et grades'
         },
       },
       {

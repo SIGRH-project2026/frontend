@@ -21,7 +21,7 @@ const routes: Routes = [
         component: ListIndicateurComponent,
         data: {
 
-          breadcrumb: ''
+          breadcrumb: 'Liste des indicateurs'
         },
       },
       {

@@ -36,7 +36,7 @@ const routes: Routes = [
             'Chef-bureau-dfc',
             'Agent-bureau-dfc',
           ],
-          breadcrumb: ''
+          breadcrumb: 'Liste des demandes'
         },
       },
       {

@@ -33,7 +33,7 @@ const routes: Routes = [
             'Chef-division-das',
             'ADMIN-DRH',
             'Directeur-DRH'],
-          breadcrumb: '',
+          breadcrumb: 'Liste des campagnes',
 
         },
       },
@@ -41,7 +41,7 @@ const routes: Routes = [
         path: '',
         component: SingleCampagneComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des campagnes'
         },
         children: [
           // Routing soumettre expression de besoins

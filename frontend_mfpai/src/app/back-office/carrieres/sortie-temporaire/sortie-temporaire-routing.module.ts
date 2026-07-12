@@ -20,7 +20,7 @@ const routes: Routes = [
         canActivate: [IsRoleGuard],
         data: {
           role: [ 'Chef-division-dgcaa', 'ADMIN-DRH', 'Directeur-DRH', 'Admin-General'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des agents'
         }
       },
       {
@@ -28,7 +28,7 @@ const routes: Routes = [
         path: ':id/details-agent',
         component: DetailsAgentComponent,
         data: {
-          breadcrumb: 'Details Agent'
+          breadcrumb: 'Détails Agent'
         },
       
       },

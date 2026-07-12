@@ -25,7 +25,7 @@ const routes: Routes = [
             "Directeur-DRH",
             "Admin-General",
           ],
-          breadcrumb: "",
+          breadcrumb: 'Liste des établissements',
         },
       },
       {
@@ -39,7 +39,7 @@ const routes: Routes = [
             "Directeur-DRH",
             "Admin-General",
           ],
-          breadcrumb: "",
+          breadcrumb: 'Formulaire de création',
         },
       },
 
@@ -54,7 +54,7 @@ const routes: Routes = [
             "Directeur-DRH",
             "Admin-General",
           ],
-          breadcrumb: "",
+          breadcrumb: 'Formulaire de modification',
         },
       },
 

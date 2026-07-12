@@ -21,14 +21,14 @@ const routes: Routes = [
         path: '',
         component: ListMutationPermutationComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des demandes'
         },
       },
       {
         path: '',
         component: SingleMutationComponent,
         data: {
-          breadcrumb: ''
+          breadcrumb: 'Liste des demandes'
         },
         children: [
           // Routing  

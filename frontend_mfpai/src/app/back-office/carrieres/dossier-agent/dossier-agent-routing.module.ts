@@ -24,14 +24,14 @@ const routes: Routes = [
               'ADMIN-DRH',
               'Directeur-DRH',
               'Assistant-DRH'],
-          breadcrumb : ''
+          breadcrumb: 'Liste des dossiers'
         }
       },
       {
         path: 'create-dossier-agent/:matricule',
         component : AddDossierAgentComponent,
         data: {
-          breadcrumb : 'Formulaire de creation'
+          breadcrumb : 'Formulaire de création'
         }
       },
     ]

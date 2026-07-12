@@ -42,7 +42,7 @@ const routes: Routes = [
             'Directeur-EFF',
 
            ],
-          breadcrumb : ''
+          breadcrumb: 'Liste des agents'
         }
       },
       {
