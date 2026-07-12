@@ -2,12 +2,19 @@
     <div class="panel-list-header">
         <div class="panel-list-text">
             <h3>Rechercher</h3>
-           <ng-container *ngIf="(userInfos?.profil[0]?.code === 'ADMIN-DRH' || userInfos?.profil[0]?.code === 'Directeur-DRH')">
-               <button class="button button-primary" type="button" (click)="onCreateUser()">
-                   <i class="fa fa-add"></i>
-                   Nouvel utilisateur
-               </button>
-           </ng-container>
+            <ng-container
+                *ngIf="(userInfos?.profil[0]?.code === 'ADMIN-DRH' || userInfos?.profil[0]?.code === 'Directeur-DRH')">
+                <div class="d-flex gap-2">
+                    <button class="button button-outline-primary" type="button" (click)="onOpenImport(importUsers)">
+                        <i class="fa fa-upload"></i>
+                        Charger liste
+                    </button>
+                    <button class="button button-primary" type="button" (click)="onCreateUser()">
+                        <i class="fa fa-add"></i>
+                        Nouvel utilisateur
+                    </button>
+                </div>
+            </ng-container>
         </div>
     </div>
     <div class="panel-list-body">
@@ -23,7 +30,7 @@
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Direction</label>
                     <select class="form-select" #directionValue formControlName="direction"
-                            (change)="getProfileDirection($any($event.target).value);">
+                        (change)="getProfileDirection($any($event.target).value);">
                         <option value="" selected>Sélectionner</option>
                         <option *ngFor="let dir of direction" [value]="dir.code">{{dir?.label}}</option>
                     </select>
@@ -74,7 +81,7 @@
                 <div class="col-sm-4">
                     <label class="form-label">Corps</label>
                     <select class="form-select" formControlName="corps"
-                            (change)="getGradeFromCorps($any($event.target).value)">
+                        (change)="getGradeFromCorps($any($event.target).value)">
                         <option value="">Sélectionner</option>
                         <option *ngFor="let corp of corpsGrade" [value]="corp.code">{{corp?.label}}</option>
                     </select>
@@ -103,46 +110,49 @@
 
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Matricule</label>
-                    <input type="text" class="form-control form-control-sm" placeholder="Saisir"  formControlName="matricule" />
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir"
+                        formControlName="matricule" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Prénom</label>
-                    <input type="text" class="form-control form-control-sm" placeholder="Saisir" formControlName="prenom" />
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir"
+                        formControlName="prenom" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Nom</label>
-                    <input type="text" class="form-control form-control-sm" placeholder="Saisir" formControlName="nom" />
+                    <input type="text" class="form-control form-control-sm" placeholder="Saisir"
+                        formControlName="nom" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Date de naissance</label>
-                    <input type="date" class="form-control form-control-sm" placeholder="Saisir" formControlName="dateNaissance" />
+                    <input type="date" class="form-control form-control-sm" placeholder="Saisir"
+                        formControlName="dateNaissance" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">CNI</label>
-                    <input type="text" class="form-control form-control-sm"
-                           formControlName="cni"
-                           placeholder="Saisir(min: 13 chiffres, max: 14 chiffres)" />
+                    <input type="text" class="form-control form-control-sm" formControlName="cni"
+                        placeholder="Saisir(min: 13 chiffres, max: 14 chiffres)" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Téléphone</label>
-                    <input type="text" class="form-control form-control-sm"
-                           formControlName="telephone"
-                           placeholder="Saisir" />
+                    <input type="text" class="form-control form-control-sm" formControlName="telephone"
+                        placeholder="Saisir" />
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label form-label-sm">Email</label>
-                    <input type="email" class="form-control form-control-sm"
-                           formControlName="email"
-                           placeholder="Saisir" />
+                    <input type="email" class="form-control form-control-sm" formControlName="email"
+                        placeholder="Saisir" />
                 </div>
             </div>
             <!-- ACTIONS -->
             <div class="row g-3 mt-2">
                 <div class="col-lg-2 col-sm-6">
-                    <button class="button button-secondary w-100" type="button" (click)="onSearchUser()">Rechercher</button>
+                    <button class="button button-secondary w-100" type="button"
+                        (click)="onSearchUser()">Rechercher</button>
                 </div>
                 <div class="col-lg-2 col-sm-6">
-                    <button class="button button-outline-primary w-100" (click)="onCancel()"  type="reset">Annuler</button>
+                    <button class="button button-outline-primary w-100" (click)="onCancel()"
+                        type="reset">Annuler</button>
                 </div>
             </div>
         </form>
@@ -209,7 +219,8 @@
                                     {{ user?.direction?.label || '' }}
                                 </td>
                                 <td>
-                                    <div [appStatus]="user.status" class="status-badge" (click)="changeStatus(user)"></div>
+                                    <div [appStatus]="user.status" class="status-badge" (click)="changeStatus(user)">
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="dropdown">
@@ -219,27 +230,31 @@
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a class="dropdown-item" href="javascript:(0)" (click)="onEditUser(user)">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="onEditUser(user)">
                                                     <i class="fa fa-edit me-2"></i>
                                                     <span>Modifier</span>
                                                 </a>
                                             </li>
                                             <li *ngIf="user.status">
-                                                <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(user)">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="changeStatus(user)">
                                                     <i class="fa fa-lock me-2" title="Activer" id="status"
                                                         type="button"></i>
                                                     <span>Activer</span>
                                                 </a>
                                             </li>
                                             <li *ngIf="!user.status">
-                                                <a class="dropdown-item" href="javascript:(0)" (click)="changeStatus(user)">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="changeStatus(user)">
                                                     <i class="fa fa-lock-open me-2" title="Activer" id="status"
                                                         type="button"></i>
                                                     <span>Activer</span>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item" href="javascript:(0)" (click)="onViewUser(user)">
+                                                <a class="dropdown-item" href="javascript:(0)"
+                                                    (click)="onViewUser(user)">
                                                     <i class="fa fa-eye me-2"></i>
                                                     <span>Voir détails</span>
                                                 </a>
@@ -259,7 +274,7 @@
                     </tbody>
                 </table>
             </div>
-    
+
             <!-- PAGINATION -->
             <div class="flex-row-between">
                 <div class="d-flex align-items-center">
@@ -277,17 +292,17 @@
                 </ngb-pagination-->
 
                 <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-                                (pageChange)="refreshData2()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                    (pageChange)="refreshData2()" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
                 </ngb-pagination>
             </div>
         </div>
-    
+
         <!-- Modal -->
         <ng-template #filterAvancer let-modal>
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="filterAvancerLabel">Recherche avancée</h1>
             </div>
-    
+
             <div class="modal-body py-md-3">
                 <form [formGroup]="searchForm">
                     <div class="row g-3">
@@ -313,7 +328,7 @@
                     </div>
                 </form>
             </div>
-    
+
             <div class="modal-footer">
                 <button type="submit" class="button button-secondary w-100"
                     (click)="onAdvancedSearch();">Rechercher</button>
@@ -327,10 +342,106 @@
 
 </ng-container>
 <ng-container *ngIf="!isSearchUser">
-        <div class="col-lg-12">
-            <div class="empty-list shadow-none">
-                <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
-                <p>Aucun utilisateur</p>
-            </div>
+    <div class="col-lg-12">
+        <div class="empty-list shadow-none">
+            <img src="assets/icons/empty-list.svg" alt="Aucune donnée disponible">
+            <p>Aucun utilisateur</p>
         </div>
+    </div>
 </ng-container>
+
+<!-- Modal : Charger une liste d'utilisateurs de niveau central (import Excel/CSV) -->
+<ng-template #importUsers let-modal>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5">Charger une liste d'utilisateurs</h1>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body py-md-3">
+        <ng-container *ngIf="!importResult">
+            <p class="text-black-50">
+                Sélectionnez un fichier <strong>Excel (.xlsx, .xls)</strong> ou <strong>CSV</strong> contenant la liste
+                des utilisateurs. La première ligne du fichier doit contenir les en-têtes des colonnes :
+                <strong>Matricule, Prénoms, Nom, Sexe, Etablissement (ou Service), Type système enseignement, IEF,
+                    IA</strong>. Les champs <strong>Matricule, Prénoms, Nom, Sexe et Etablissement/Service</strong>
+                sont obligatoires. La colonne <strong>Etablissement/Service</strong> représente la direction de
+                rattachement de l'agent : elle est rapprochée automatiquement d'une direction existante, sinon la
+                direction est créée telle que fournie dans le fichier. Les colonnes IA, IEF et Type système
+                enseignement ne sont pas utilisées au niveau central. Les doublons (matricule, email, CNI) sont
+                automatiquement bloqués. Les fichiers volumineux sont traités par lots de 1000 lignes.
+            </p>
+
+            <div class="mb-3">
+                <a href="javascript:void(0)" (click)="downloadImportTemplate()">
+                    <i class="fa fa-download me-1"></i>
+                    Télécharger le modèle (CSV)
+                </a>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Fichier</label>
+                <input type="file" class="form-control" accept=".xlsx,.xls,.csv"
+                    (change)="onImportFileSelected($event)" />
+            </div>
+            <p *ngIf="importFile" class="text-black-50 mb-0">
+                <i class="fa fa-file me-1"></i>{{ importFile.name }}
+            </p>
+        </ng-container>
+
+        <!-- Résultat de l'import -->
+        <ng-container *ngIf="importResult">
+            <div class="d-flex gap-3 mb-3">
+                <span class="badge bg-secondary">Total : {{ importResult.total }}</span>
+                <span class="badge bg-success">Importés : {{ importResult.imported }}</span>
+                <span class="badge bg-danger">En erreur : {{ importResult.failed }}</span>
+            </div>
+            <div class="table-responsive" *ngIf="importResult.errors?.length > 0">
+                <table class="table table-custom">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col">Ligne</th>
+                            <th scope="col">Matricule</th>
+                            <th scope="col">Prénoms</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Sexe</th>
+                            <th scope="col">Etablissement/Service</th>
+                            <th scope="col">Erreur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let err of pagedImportErrors">
+                            <td>{{ err.ligne }}</td>
+                            <td>{{ err.matricule }}</td>
+                            <td>{{ err.prenom }}</td>
+                            <td>{{ err.nom }}</td>
+                            <td>{{ err.sexe }}</td>
+                            <td>{{ err.service }}</td>
+                            <td class="text-danger">{{ err.message }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <ngb-pagination *ngIf="importResult.errors?.length > importErrorsPageSize"
+                class="mt-2 d-flex justify-content-center" [collectionSize]="importResult.errors.length"
+                [(page)]="importErrorsPage" [pageSize]="importErrorsPageSize" [maxSize]="3" [rotate]="true"
+                [boundaryLinks]="true">
+            </ngb-pagination>
+            <p *ngIf="importResult.failed === 0" class="text-success m-0">
+                <i class="fa fa-check-circle me-1"></i>Toutes les lignes ont été importées avec succès.
+            </p>
+        </ng-container>
+    </div>
+
+    <div class="modal-footer">
+        <ng-container *ngIf="!importResult">
+            <button type="button" class="button button-secondary" [disabled]="!importFile || importLoading"
+                (click)="onSubmitImport()">
+                <i class="fa fa-upload me-1"></i>
+                {{ importLoading ? 'Import en cours...' : 'Importer' }}
+            </button>
+            <button type="button" class="button button-outline-primary" (click)="modal.dismiss()">Annuler</button>
+        </ng-container>
+        <button *ngIf="importResult" type="button" class="button button-secondary"
+            (click)="modal.close()">Fermer</button>
+    </div>
+</ng-template>

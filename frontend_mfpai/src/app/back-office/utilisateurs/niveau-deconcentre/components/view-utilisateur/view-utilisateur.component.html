@@ -56,39 +56,10 @@
             <h5 class="title-form">Informations personnelles</h5>
             <div class="row details py-3 g-3">
 
-                <ng-container *ngIf=" deconectedDTO?.matriculeFonctionnaire">
-                    <div class="row details py-3 g-3">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Matricule</span>
-                                <span>{{ deconectedDTO?.matricule}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </ng-container>
-
-                <ng-container *ngIf=" deconectedDTO?.matriculeContratuel">
+                <ng-container *ngIf="deconectedDTO?.matricule">
                     <div class="col-lg-4 col-sm-6">
                         <div class="details-item">
                             <span>Matricule</span>
-                            <span>{{ deconectedDTO?.matricule}}</span>
-                        </div>
-                    </div>
-                </ng-container>
-
-                <ng-container  *ngIf="deconectedDTO?.matriculeVacataire">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>Matricule</span>
-                            <span>{{ deconectedDTO?.matricule }}</span>
-                        </div>
-                    </div>
-                </ng-container>
-
-                <ng-container  *ngIf="deconectedDTO?.matriculeDecisionnaire">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>Matricule </span>
                             <span>{{ deconectedDTO?.matricule }}</span>
                         </div>
                     </div>
