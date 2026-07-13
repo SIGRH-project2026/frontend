@@ -94,6 +94,7 @@ export class ListMutationPermutationComponent implements OnInit {
   listServ: any;
   profile : any
   isDGPEEC: boolean =false;
+  isOsManager: boolean =false;
   isProfOrFormateur: boolean =false;
   activatedUrl!: string;
   dashboardMutation = false
@@ -139,6 +140,12 @@ export class ListMutationPermutationComponent implements OnInit {
 
 
     }
+
+    // Profils habilités à générer l'OS et à téléverser l'OS signé pour les permutations :
+    // DGPEEC (chef de division et chefs de bureau) + Directeur-DRH + Admin-DRH
+    this.isOsManager = this.profilConnecte.some((pro : any) =>
+        pro.code === "Chef-division-dgpeec" || pro.code === "bureau-mo-rec" ||
+        pro.code === "Directeur-DRH" || pro.code === "ADMIN-DRH")
     //if(this.profile === 'Professeur' || this.profile === 'Formateurs')
 
     if(this.profile?.code?.includes("Chef-service") || this.profile?.code?.includes("Chef-division"))
