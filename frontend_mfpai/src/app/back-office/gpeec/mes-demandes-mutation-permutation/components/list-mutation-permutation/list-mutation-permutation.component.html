@@ -28,7 +28,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="tabIndex === 1 && permutations.length > 0" >
-                    <button  *ngIf="pourTraitement && profilConnecte[0].code=='Chef-division-dgpeec' || profilConnecte[0].code=='bureau-mo-rec' " class="button button-primary" type="button" (click)="genererOS()">
+                    <button  *ngIf="pourTraitement && isOsManager" class="button button-primary" type="button" (click)="genererOS()">
                         <i class="fa fa-add"></i>
                         Générer OS
                     </button>
@@ -313,14 +313,14 @@
                                                             <span>Modifier</span>
                                                         </a>
                                                     </li>
-                                                    <li   *ngIf="pourTraitement && isDGPEEC && demande.traitementPermutation?.statut?.code ==='TRAITEE'">
+                                                    <li   *ngIf="pourTraitement && isOsManager && demande.traitementPermutation?.statut?.code ==='TRAITEE'">
                                                         <a class="dropdown-item" href="javascript:(0)"  (click)="openModalUploadPermuationOs(UPLOAD_PERMUTATION_OS, demande.id)">
                                                             <!-- <i class="fa fa-sync-alt me-2"></i> -->
                                                             <img src="assets/icons/generate.svg" alt="Soumettre OS" title="Soumettre OS">
                                                             <span>Soumettre OS signé</span>
                                                         </a>
                                                     </li>
-                                                    <li   *ngIf="isProfOrFormateur && demande.traitementPermutation?.statut?.code ==='VALIDER'">
+                                                    <li   *ngIf="demande.traitementPermutation?.statut?.code ==='VALIDER' && (isOsManager || !pourTraitement)">
                                                         <a class="dropdown-item" href="javascript:(0)"  (click)="Telecharger(demande.ordreService)">
                                                             <!-- <i class="fa fa-sync-alt me-2"></i> -->
                                                             <img src="assets/icons/download.svg" alt="Téléchager OS" title="Téléchager OS">

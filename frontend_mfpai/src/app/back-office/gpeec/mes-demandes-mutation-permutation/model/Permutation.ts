@@ -35,4 +35,5 @@ export class PermutationDTO{
    datePermutation !: Date
    motifPermutation !: string
    traitementPermutation !: TraitementPermutation
+   ordreService !: string
 }
