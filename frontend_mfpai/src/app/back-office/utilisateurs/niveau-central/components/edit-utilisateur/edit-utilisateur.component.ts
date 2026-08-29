@@ -250,9 +250,11 @@ export class EditUtilisateurComponent implements  OnInit{
                         this.centralLevel = response.data;
 
                       //  console.log(this.centralLevel);
-                        this.profile = this.centralLevel.profils[0];
+                        this.profile = this.centralLevel.profils?.[0];
 
-                        this.getGradeFromCorps(this.centralLevel?.corpsGrade.code);
+                        if (this.centralLevel?.corpsGrade?.code) {
+                            this.getGradeFromCorps(this.centralLevel.corpsGrade.code);
+                        }
                        // this.getListBureau(this.centralLevel?.division?.code);
 
                       /*  if(this.centralLevel?.division?.code){
@@ -262,7 +264,7 @@ export class EditUtilisateurComponent implements  OnInit{
                       //  this.getGradeFromCorps(this.centralLevel?.corpsGrade?.code)
 
 
-                        if(!this.centralLevel?.division?.code) {
+                        if(!this.centralLevel?.division?.code && this.centralLevel?.direction?.code) {
                             this.getProfileDirection(this.centralLevel?.direction?.code);
                         }
 
@@ -278,7 +280,7 @@ export class EditUtilisateurComponent implements  OnInit{
                             this.getListBureau(this.centralLevel?.bureau?.code);
                             this.getProfileBureauWithOutCD(this.centralLevel?.division?.code)
 
-                        }if(!this.centralLevel?.bureau?.code ) {
+                        }if(!this.centralLevel?.bureau?.code && this.centralLevel?.division?.code) {
 
                             this.getProfileDivision(this.centralLevel?.division?.code);
                         }
@@ -383,8 +385,14 @@ export class EditUtilisateurComponent implements  OnInit{
                             this.validationResult =  this.centralLevel?.matriculeFonctionnaire.split("/")[1];
                         }else if( this.centralLevel?.matriculeVacataire) {
                             this.validationResult =     this.centralLevel?.matriculeVacataire.split("/")[1];
-                        }else {
-                            this.validationResult =    this.centralLevel?.matriculeDecisionnaire.split("/")[1];
+                        }else if (this.centralLevel?.matriculeDecisionnaire) {
+                            this.validationResult = this.centralLevel.matriculeDecisionnaire.split("/")[1] || '';
+                        } else {
+                            this.validationResult = this.centralLevel?.matricule?.split("/")[1] || '';
+                        }
+
+                        if (this.centralLevel?.typeMatricule?.code) {
+                            this.onTypeMatriculeChange(this.centralLevel.typeMatricule.code);
                         }
 
 
@@ -591,19 +599,6 @@ export class EditUtilisateurComponent implements  OnInit{
 
     centralLevelForm(): CentralLevelDTO {
 
-        if(this.centralForm.controls['typeMatricule'].value === 'MATFONC') {
-            this.centralForm.patchValue({
-                matriculeContratuel:  ""
-
-            })
-        }else  if(this.centralForm.controls['typeMatricule'].value === 'MATCON') {
-            this.centralForm.patchValue({
-                matriculeFonctionnaire:  ""
-
-            })
-        }
-
-
         return <CentralLevelDTO>{
             ...new CentralLevelDTO(),
             region:  this.centralRegionForm.controls['region'].value,
@@ -696,6 +691,18 @@ export class EditUtilisateurComponent implements  OnInit{
         if (!this.centralForm!.valid || !this.centralRegionForm!.valid  ) {
 
             this.checkConstraintsValidation();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Formulaire incomplet',
+                html: 'Veuillez renseigner ou corriger les champs obligatoires signalés en rouge.',
+                confirmButtonColor: 'rgba(29, 74, 123, 1)'
+            }).then(() => {
+                const firstInvalidControl = document.querySelector(
+                    'form .ng-invalid:not(form)'
+                ) as HTMLElement | null;
+                firstInvalidControl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidControl?.focus();
+            });
         }else {
 
             const dto = this.centralLevelForm();
@@ -716,24 +723,22 @@ export class EditUtilisateurComponent implements  OnInit{
                 confirmButtonText: 'Oui',
                 cancelButtonText: 'Non'
             }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
                 this.spinner.show()
                 this.userService.updateUserCentral(this.userId ,dto).subscribe({
                     next: (response: ResponseApi) => {
 
-                        if (result.isConfirmed) {
-
-                            this.spinner.hide();
-                            Swal.fire({
-                                icon: 'success',
-                                // title: 'Modification de compte',
-                                html: 'L\'utilisateur  a été modifié(e) avec succès.',
-                                showConfirmButton: false,
-                                timer: 2000
-                            }).then(() => {
-                                this.router.navigate(['utilisateurs/niveau-central']);
-
-                            })
-                        }
+                        this.spinner.hide();
+                        Swal.fire({
+                            icon: 'success',
+                            html: 'L\'utilisateur  a été modifié(e) avec succès.',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            this.router.navigate(['utilisateurs/niveau-central']);
+                        })
 
 
                     },
@@ -788,15 +793,44 @@ export class EditUtilisateurComponent implements  OnInit{
         //  console.log(`La lettre correspondant à la différence des sommes des chiffres impairs et pairs de ${newMatricule} est ${this.validationResult}`);
     }
 
+    onTypeMatriculeChange(typeCode: string): void {
+        const controlByType: { [key: string]: string } = {
+            MATFONC: 'matriculeFonctionnaire',
+            MATCON: 'matriculeContratuel',
+            MATVAC: 'matriculeVacataire',
+            MATDEE: 'matriculeDecisionnaire'
+        };
+        const controlName = controlByType[typeCode];
+        if (!controlName) {
+            return;
+        }
 
+        const control = this.centralForm.get(controlName);
+        const source = (this.centralLevel as any)?.[controlName]
+            || this.centralLevel?.matricule
+            || this.centralLevel?.matriculeFonctionnaire
+            || this.centralLevel?.matriculeContratuel
+            || this.centralLevel?.matriculeVacataire
+            || this.centralLevel?.matriculeDecisionnaire;
 
-    splitValueMatricule(matricule: string): string {
-       return   matricule !== undefined ? matricule.split("/")[0] :  matricule;
+        if (!control?.value && source) {
+            control?.setValue(this.splitValueMatricule(source), { emitEvent: false });
+        }
+
+        const completeMatricule = source || control?.value;
+        const savedLetter = completeMatricule?.includes('/') ? completeMatricule.split('/')[1] : '';
+        this.validationResult = savedLetter || this.calculateLetterFromMatricule(control?.value || '');
     }
 
 
-    addValueMatricule(newMatricule: string, validationResult: string): string {
-        return  newMatricule !== ''  ? newMatricule + "/" + validationResult : ''  ;
+
+    splitValueMatricule(matricule: string | null | undefined): string {
+       return matricule ? matricule.split("/")[0] : '';
+    }
+
+
+    addValueMatricule(newMatricule: string | null | undefined, validationResult: string): string {
+        return newMatricule ? newMatricule + (validationResult ? "/" + validationResult : '') : '';
     }
 
 }

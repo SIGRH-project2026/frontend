@@ -109,8 +109,8 @@
                 </select>
                 <span style="white-space: nowrap">entrées</span>
             </div>
-            <ngb-pagination [collectionSize]="collectionSize" [(page)]="totalPages" [pageSize]="size"
-                            (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            <ngb-pagination [collectionSize]="collectionSize" [page]="page" [pageSize]="pageSize"
+                            (pageChange)="onPageChange($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
             </ngb-pagination>
         </div>
     </div>

@@ -108,8 +108,53 @@ export class SidebarComponent implements OnInit {
     this.referenceService.getMenus(this.profileId)
          .subscribe((data : any) =>{
           console.log("data", data)
-          this.menuItems = this.sortMenus(data)
+          this.menuItems = this.sortMenus(this.normalizeMenus(data))
          })
+  }
+
+  /**
+   * Les intitulés de menu viennent de la base et certains ont été enregistrés
+   * avec un mauvais décodage UTF-8 (ex. « ParamÃ©trage »). Les chemins restent
+   * la référence fiable : on reprend le libellé local lorsqu'il existe et on
+   * répare les autres valeurs reçues de l'API.
+   */
+  private normalizeMenus(menus: Menu[]): Menu[] {
+    const localTitles = new Map<string, string>();
+
+    const indexLocalTitles = (items: Menu[]) => {
+      items.forEach(item => {
+        // Plusieurs menus parents utilisent « # » : ce chemin n'est donc pas
+        // une clé unique et leur titre doit être réparé directement.
+        if (item.menPath !== '#' && !localTitles.has(item.menPath)) {
+          localTitles.set(item.menPath, item.menTitle);
+        }
+        if (item.children?.length) {
+          indexLocalTitles(item.children as Menu[]);
+        }
+      });
+    };
+
+    const normalize = (items: Menu[]): Menu[] => items.map(item => ({
+      ...item,
+      menTitle: localTitles.get(item.menPath) ?? this.repairMojibake(item.menTitle),
+      children: item.children?.length ? normalize(item.children as Menu[]) : item.children,
+    }));
+
+    indexLocalTitles(MENUITEMS);
+    return normalize(menus);
+  }
+
+  private repairMojibake(value: string): string {
+    if (!value || !/[ÃÂâ]/.test(value)) {
+      return value;
+    }
+
+    try {
+      const bytes = Uint8Array.from(value, character => character.charCodeAt(0));
+      return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    } catch {
+      return value;
+    }
   }
 
 
@@ -299,7 +344,7 @@ const MENUITEMS: Menu[] = [
     ],
   },
   {
-    menTitle: 'Gestion Formations',
+    menTitle: 'Gestion des formations',
     menIconType: 'assets/icons/formations.svg',
     menType: 'sub',
     menPath: '#',
@@ -405,13 +450,13 @@ const MENUITEMS: Menu[] = [
         role: ['ADMIN-DRH', 'Admin-General'],
       },
       {
-        menTitle: 'Etablissements',
+        menTitle: 'Établissements',
         menPath: '/parametrage/etablissement',
         menType: 'link',
         role: ['ADMIN-DRH', 'Admin-General'],
       },
       {
-        menTitle: 'Specialités',
+        menTitle: 'Spécialités',
         menPath: '/parametrage/specialite',
         menType: 'link',
         role: ['ADMIN-DRH', 'Admin-General'],
@@ -423,7 +468,7 @@ const MENUITEMS: Menu[] = [
         role: ['ADMIN-DRH', 'Admin-General'],
       },
       {
-        menTitle: 'Corps-grade',
+        menTitle: 'Corps et grades',
         menPath: '/parametrage/corp-grade',
         menType: 'link',
         role: ['ADMIN-DRH', 'Admin-General'],
@@ -440,7 +485,7 @@ const MENUITEMS: Menu[] = [
     role: ['ADMIN-DRH', 'Admin-General'],
     children: [
       {
-        menTitle: 'Mon Dossier',
+        menTitle: 'Mon dossier',
         menPath: '/carrieres/mon-dossier',
         menType: 'link',
         role: ['ADMIN-DRH', 'Admin-General', 'Assistant-DRH', 'Chef-division-dfc', 'Agent-bureau-dfc', 'Chef-division-dgcaa', 'Chef-bureau-dgcaa', 'Agent-bureau-dgcaa', 'Chef-division-dgpeec', 'Chef-bureau-dgpeec', 'Agent-bureau-dgpeec', 'Chef-service', 'Coordinateur', 'Gestionnaire', 'Agent', 'Chef-bureau-af', 'Chef-etablissement', 'Representant-IA', 'Représentant-IEF', 'Representant-BFPA', 'Formateurs', 'Chef-cfp', 'Professeur'],

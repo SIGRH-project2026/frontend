@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import { HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import Swal from "sweetalert2";
 import { catchError, Observable, throwError} from "rxjs";
-import {AuthResponse, ResetOrForgetFormDTO} from "../models/auth-response";
+import {ActivateAccountDTO, AuthResponse, ResetOrForgetFormDTO} from "../models/auth-response";
 import {AuthResponseApi} from "../models/response-api.model";
 
 
@@ -35,6 +35,11 @@ export class AuthService {
     const API_URL = `${this.apiUrl}auth/login`;
     return this.http.post<AuthResponseApi>(API_URL, credentials).pipe(catchError(this.error));
 
+  }
+
+  activateAccount(data: ActivateAccountDTO): Observable<AuthResponseApi> {
+    return this.http.post<AuthResponseApi>(`${this.apiUrl}auth/activate-account`, data)
+      .pipe(catchError(this.error));
   }
 
   forgotPassword(login: string): Observable<AuthResponseApi> {

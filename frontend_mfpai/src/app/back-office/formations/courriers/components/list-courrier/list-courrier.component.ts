@@ -38,7 +38,7 @@ export class ListCourrierComponent implements OnInit {
   isOk = true;
   initOk = true;
   canCreateCourrier = false;
-  page= 0;
+  page = 1;
   pageSize = 10;
   collectionSize = 0;
   listTypeDemande!: Demande []
@@ -280,36 +280,34 @@ export class ListCourrierComponent implements OnInit {
 
 
   refreshData(event: any) {
+    this.page = 1;
     switch (this.statutCourrier) {
       case 'ALL':
-        this.getAllCourrier(0, 10, "", "",  '', "",  "","","")
+        this.getAllCourrier(0, this.pageSize, "", "",  '', "",  "","","")
         break
       case 'TRAITER':
-        this.getAllCourrier(0, 10, "", "", '', "",  "","",'TRAITER')
+        this.getAllCourrier(0, this.pageSize, "", "", '', "",  "","",'TRAITER')
         break
       case 'NONTRAITER':
-        this.getAllCourrier(0, 10, "", "", '', "",  "",'','NONTRAITER')
+        this.getAllCourrier(0, this.pageSize, "", "", '', "",  "",'','NONTRAITER')
         break
     }
   }
 
 
-  refreshData1(event: any) {
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»"){
-      switch (this.statutCourrier) {
-        case 'ALL':
-          this.getAllCourrier(0, 10, "", "",  '', "",  "","","")
-          break
-        case 'TRAITER':
-          this.getAllCourrier(0, 10, "", "", '', "",  "","",'TRAITER')
-          break
-        case 'NONTRAITER':
-          this.getAllCourrier(0, 10, "", "", '', "",  "",'','NONTRAITER')
-          break
-      }
-
+  onPageChange(page: number) {
+    this.page = page;
+    switch (this.statutCourrier) {
+      case 'ALL':
+        this.getAllCourrier(page - 1, this.pageSize, "", "",  '', "",  "","","")
+        break
+      case 'TRAITER':
+        this.getAllCourrier(page - 1, this.pageSize, "", "", '', "",  "","",'TRAITER')
+        break
+      case 'NONTRAITER':
+        this.getAllCourrier(page - 1, this.pageSize, "", "", '', "",  "",'','NONTRAITER')
+        break
     }
-
   }
 
   onCreateCourrier() {

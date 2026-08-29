@@ -17,11 +17,9 @@ import {CredentialsService} from "../../../../../services/credentials.service";
 export class ListIaComponent  implements OnInit {
 
   headers: string[] = ['Région', 'IA',  'Statut',  'Action'];
-  page = 0;
+  page = 1;
   pageSize = 10;
-
-  totalPages = 0;
-  size = 10;
+  statut = '';
 
   region: Region[]=[];
 
@@ -57,7 +55,8 @@ export class ListIaComponent  implements OnInit {
   }
 
   refreshData() {
-    this.listIAAdvanced(this.totalPages, this.size, "", "");
+    this.page = 1;
+    this.listIAAdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
 
@@ -126,8 +125,6 @@ export class ListIaComponent  implements OnInit {
             this.ialiteList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -175,13 +172,9 @@ export class ListIaComponent  implements OnInit {
 
   }
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listIAAdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listIAAdvanced(page - 1, this.pageSize, "", this.statut);
   }
 
   onAddIA() {
@@ -259,9 +252,9 @@ export class ListIaComponent  implements OnInit {
 
 
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-
-    this.listIAAdvanced(0, this.size, '', selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listIAAdvanced(0, this.pageSize, '', this.statut);
   }
 
   onViewImage(imageUrl: string, title: string) {

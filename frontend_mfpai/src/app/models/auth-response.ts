@@ -31,11 +31,19 @@ export interface ResetOrForgetFormDTO {
     passwordConfirmed?: string
 }
 
+export interface ActivateAccountDTO {
+    matricule: string
+    defaultPassword: string
+    newPassword: string
+    passwordConfirmed: string
+}
+
 
 
 export interface UserToken {
     id: number
     email: string
+    matricule?: string
     prenom: string
     nom: string
     profil: Profil[]

@@ -43,18 +43,23 @@ export class ListUtilisateurComponent implements OnInit {
   }
 
   search() {
-  this.spinner.show();
-    this.utilisateurService.getSearchUser(this.searchForm.controls['filter'].value).subscribe({
+    this.spinner.show();
+    this.showTable = false;
+    this.userResultCen = undefined as any;
+    this.userResultDec = undefined as any;
+    this.profile = undefined as any;
+    const filter = this.searchForm.controls['filter'].value?.trim();
+    this.utilisateurService.getSearchUser(filter).subscribe({
       next: data => {
         if(data.success){
             if (data?.data?.typeUser === 'CEN') {
                this.userResultCen = data?.data;
-              this.profile = this.userResultCen.profils[0];
+              this.profile = this.userResultCen.profils?.[0];
               this.spinner.hide();
               this.showTable = true;
             }else if (data?.data?.typeUser === 'DEC') {
               this.userResultDec = data?.data;
-              this.profile = this.userResultDec.profils[0];
+              this.profile = this.userResultDec.profils?.[0];
               this.spinner.hide();
 
               this.showTable = true;
@@ -63,7 +68,14 @@ export class ListUtilisateurComponent implements OnInit {
 
             this.showTable = false;
           }
+        } else {
+          this.spinner.hide();
+          this.showTable = false;
         }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.showTable = false;
       }
     })
 
@@ -96,9 +108,17 @@ export class ListUtilisateurComponent implements OnInit {
 
   }
 
+  onEditUser(): void {
+    const user = this.userResultCen || this.userResultDec;
+    if (!user?.id) {
+      return;
+    }
+
+    const niveau = this.userResultCen ? 'niveau-central' : 'niveau-deconcentre';
+    this.router.navigate(['/utilisateurs', niveau, user.id, 'edit-utilisateur']);
+  }
+
 }
-
-
 
 
 

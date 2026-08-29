@@ -30,7 +30,6 @@ export class ListPtaComponent implements OnInit {
   initPtaFormGroup!: FormGroup;
   advancedSearchForm!: FormGroup;
    direction: any;
-  totalPages = 0;
 
   userInfos: any;
   constructor(
@@ -143,17 +142,14 @@ export class ListPtaComponent implements OnInit {
     }
   }
   refreshData(event: any) {
-    this.getAllPTA(0, event, "", "","", "","", "", "");
+    this.page = 1;
+    this.getAllPTA(0, event, this.searchForm.value.filterValue, "","", "","", "", "");
   }
 
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text']-1;
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»"){
-      this.getAllPTA(this.totalPages, this.size, this.searchForm.value.filterValue, "", "", "",  "","", "");
-
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.getAllPTA(page - 1, this.size, this.searchForm.value.filterValue, "", "", "",  "","", "");
   }
 
   onCreatePTA() {

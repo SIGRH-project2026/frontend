@@ -140,11 +140,13 @@ export class TraiterExpressionComponent implements OnInit {
    * rafraichir donnees
    */
   refreshData() {
+    this.page = 1;
     this.getExpressionDeBesoins(0,this.pageSize!,'NON_TRAITER', "",'','','','')
   }
 
-  refreshData1(event: any){
-    this.getExpressionDeBesoins(+event.target['text']-1,this.pageSize!,'NON_TRAITER', "",'','','','')
+  onPageChange(page: number){
+    this.page = page;
+    this.getExpressionDeBesoins(page - 1,this.pageSize!,'NON_TRAITER', "",'','','','')
   }
 
 
@@ -245,7 +247,7 @@ export class TraiterExpressionComponent implements OnInit {
               this.selectedRows = []
               // this.
               Swal.fire({
-                title: 'Traitement reussi',
+                title: 'Traitement réussi',
                 icon: 'success',
                 timer: 1500,
                 showCancelButton: false,

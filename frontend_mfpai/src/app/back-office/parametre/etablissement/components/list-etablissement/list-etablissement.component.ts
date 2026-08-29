@@ -21,20 +21,19 @@ export class ListEtablissementComponent implements OnInit {
     "Région",
     "IA",
     "IEF",
-    "Etablissement",
-    "Type Etablissement",
+    "Établissement",
+    "Type d’établissement",
     "Statut",
     "Action",
   ];
   page = 1;
   pageSize = 10;
 
-  totalPages = 0;
-  size = 10;
+  statut = '';
 
   etablissementList: Etablissement[] = [];
 
-  collectionSize = this.etablissementList.length;
+  collectionSize = 0;
 
 
   text = '';
@@ -55,12 +54,12 @@ export class ListEtablissementComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.listEtablissementAdvanced(0, 10, "", "");
     this.refreshData();
   }
 
   refreshData() {
-    this.listEtablissementAdvanced(this.totalPages, this.size, "", "");
+    this.page = 1;
+    this.listEtablissementAdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
   onCreateDivisionBureaux() {
@@ -83,16 +82,20 @@ export class ListEtablissementComponent implements OnInit {
     statut: string
   ) {
 
-    this.spinner.show()
+    this.spinner.show();
     this.parametreService
       .listEtablissementAdvanced(page, size, filter, statut)
-      .subscribe((data) => {
-        if (data?.status === "OK") {
-          this.etablissementList = data?.payload;
-          this.spinner.hide()
-          this.collectionSize = data.metadata?.totalElements ?? 0;
-          this.size = data.metadata?.size ?? 0;
-        }
+      .subscribe({
+        next: (data) => {
+          if (data?.status === "OK") {
+            this.etablissementList = data?.payload;
+            this.collectionSize = data.metadata?.totalElements ?? 0;
+          }
+          this.spinner.hide();
+        },
+        error: () => {
+          this.spinner.hide();
+        },
       });
   }
 
@@ -133,23 +136,15 @@ export class ListEtablissementComponent implements OnInit {
     });
   }
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target["text"] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target["text"] != undefined) {
-      this.listEtablissementAdvanced(
-        +event.target["text"] - 1,
-        this.size!,
-        "",
-        ""
-      );
-    }
+  onPageChange(page: number) {
+    this.page = page;
+    this.listEtablissementAdvanced(page - 1, this.pageSize, "", this.statut);
   }
 
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-
-    this.listEtablissementAdvanced(0, this.size, "", selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listEtablissementAdvanced(0, this.pageSize, "", this.statut);
   }
 
   closeModal() {
@@ -182,7 +177,6 @@ export class ListEtablissementComponent implements OnInit {
 
 
 }
-
 
 
 

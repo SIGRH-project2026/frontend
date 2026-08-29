@@ -1,7 +1,7 @@
 <div class="panel-form">
     <div class="panel-form-header">
         <div class="panel-form-text">
-            <h3>Modifier {{ etablissementForm?.get('label')?.value || 'Etablissement' }}</h3>
+            <h3>Modifier {{ etablissementForm?.get('label')?.value || 'Établissement' }}</h3>
         </div>
     </div>
     <div class="panel-list-body">
@@ -88,14 +88,14 @@
                 <ng-container *ngIf="etablissementForm.get('structure')?.value === 'MIN'">
                     <!-- Libellé Etablissement -->
                     <div class="col-sm-6">
-                        <label class="form-label">Libellé Etablissement</label>
+                        <label class="form-label">Libellé établissement</label>
                         <input type="text" class="form-control" placeholder="Saisir" 
                                formControlName="label" />
                     </div>
 
                     <!-- Sigle Etablissement -->
                     <div class="col-sm-6">
-                        <label class="form-label">Sigle Etablissement</label>
+                        <label class="form-label">Sigle établissement</label>
                         <input type="text" class="form-control" placeholder="Saisir" 
                                formControlName="code" />
                     </div>

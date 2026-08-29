@@ -230,7 +230,7 @@
                 <button type="button" class="button button-primary text-white" (click)="modifier()"  *ngIf="!pourTraitement && permutation?.traitementPermutation?.statut?.code == 'AMODIFIER'" [disabled]="!aModifierForm.valid">Envoyer</button>
                 <button type="button" class="button button-primary text-white" (click)="onValid()"  *ngIf="pourTraitement">Valider</button>
                 <button type="button" class="button button-primary text-white" (click)="onAccept()" *ngIf="isProfOrFormateur">Accepter</button>
-                <button type="button" class="button button-yellow text-white" (click)="onModifier()" *ngIf="pourTraitement && permutation?.traitementPermutation?.statut?.code=='TRAITEMENT'">A modifier</button>
+                <button type="button" class="button button-yellow text-white" (click)="onModifier()" *ngIf="pourTraitement && permutation?.traitementPermutation?.statut?.code=='TRAITEMENT'">À modifier</button>
                 <button type="button" class="button button-red text-white" (click)="onRejet()" *ngIf="isDGPEEC || isProfOrFormateur ">Rejeter</button>
             </div>
         </div>
@@ -263,7 +263,7 @@
     </div>
 </ng-template>
 
-<!-- Modal A modifier -->
+<!-- Modal À modifier -->
 <ng-template #amodifierModal let-modal>
     <div class="modal-header">
         <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du renvoie de modification</h1>

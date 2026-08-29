@@ -21,8 +21,7 @@ export class ListeDivisionComponent implements OnInit {
   headers: string[] = ['Direction', 'Division',  'Statut',  'Action'];
   page = 1;
   pageSize = 10;
-  totalPages = 0;
-  size = 10;
+  statut = '';
   region: Region[]=[];
   divisionList: Division[] =[];
 
@@ -78,7 +77,8 @@ export class ListeDivisionComponent implements OnInit {
 
 
   refreshData() {
-    this.listDivisionAdvanced(0, 10, "", "");
+    this.page = 1;
+    this.listDivisionAdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
   onCreateDivisionBureaux() {
@@ -93,8 +93,6 @@ export class ListeDivisionComponent implements OnInit {
             this.divisionList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -246,19 +244,16 @@ export class ListeDivisionComponent implements OnInit {
 		);
 	}
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listDivisionAdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listDivisionAdvanced(page - 1, this.pageSize, "", this.statut);
   }
 
 
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-    this.listDivisionAdvanced(0, this.size, '', selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listDivisionAdvanced(0, this.pageSize, '', this.statut);
   }
 
 }

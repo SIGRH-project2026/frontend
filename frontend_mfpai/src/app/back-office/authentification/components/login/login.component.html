@@ -6,8 +6,8 @@
     <div class="row">
       <form  [formGroup]="loginForm" >
         <div class="col-sm-12  mb-3">
-          <label class="form-label">Identifiant</label>
-          <input type="text" class="form-control" placeholder="Saisir" name="username" id="username" formControlName="login">
+          <label class="form-label">Email ou matricule</label>
+          <input type="text" class="form-control" placeholder="Saisir votre email ou matricule" name="username" id="username" formControlName="login">
         </div>
         <div class="col-sm-12">
           <label class="form-label">Mot de passe</label>
@@ -28,6 +28,11 @@
         <div class="col-md-12">
           <button class="w-100" id="button-login" type="button" (click)="onLogin()" [disabled]="loginForm.invalid">Se
             connecter</button>
+        </div>
+        <div class="col-md-12 text-center mt-3">
+          <a [routerLink]="['/auth/activate-account']" style="color: rgba(29, 74, 123, 1);">
+            Première connexion ? Activer mon compte
+          </a>
         </div>
       </form>
     </div>

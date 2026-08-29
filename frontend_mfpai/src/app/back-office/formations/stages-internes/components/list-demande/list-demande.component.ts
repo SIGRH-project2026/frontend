@@ -296,18 +296,19 @@ export class ListDemandeComponent implements OnInit {
    * @param event
    */
   refreshData(event: any) {
+    this.page = 1;
     switch (this.statutDemandeStage){
       case 'ALL':
-        this.getAllDemandeStage(0,10,'',"","","","","","","")
+        this.getAllDemandeStage(0,this.pageSize,'',"","","","","","","")
         break;
       case 'AUTORISER':
-        this.getAllDemandeStage(0,10,'',"","","","","","","AUTORISER")
+        this.getAllDemandeStage(0,this.pageSize,'',"","","","","","","AUTORISER")
         break;
       case 'ENREGISTRER':
-        this.getAllDemandeStage(0,10,'',"","","","","","","ENREGISTRER")
+        this.getAllDemandeStage(0,this.pageSize,'',"","","","","","","ENREGISTRER")
         break;
       case 'NONAUTORISER':
-        this.getAllDemandeStage(0,10,'',"","","","","","","NONAUTORISER")
+        this.getAllDemandeStage(0,this.pageSize,'',"","","","","","","NONAUTORISER")
         break;
 
     }
@@ -316,28 +317,25 @@ export class ListDemandeComponent implements OnInit {
 
   /**
    * pagination
-   * @param event
+   * @param page
    */
-  refreshData1(event: any) {
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»"){
-      switch (this.statutDemandeStage){
-        case 'ALL':
-          this.getAllDemandeStage(+event.target['text']-1,10,'',"","","","","","",this.selectedType)
-          break;
-        case 'AUTORISER':
-          this.getAllDemandeStage(+event.target['text']-1,10,'',"","","","","","",'AUTORISER')
-          break;
-        case 'ENREGISTRER':
-          this.getAllDemandeStage(+event.target['text']-1,10,'',"","","","","","",'ENREGISTRER')
-          break;
-        case 'NONAUTORISER':
-          this.getAllDemandeStage(+event.target['text']-1,10,'',"","","","","","",'NONAUTORISER')
-          break;
-
-      }
+  onPageChange(page: number) {
+    this.page = page;
+    switch (this.statutDemandeStage){
+      case 'ALL':
+        this.getAllDemandeStage(page-1,this.pageSize,'',"","","","","","",this.selectedType)
+        break;
+      case 'AUTORISER':
+        this.getAllDemandeStage(page-1,this.pageSize,'',"","","","","","",'AUTORISER')
+        break;
+      case 'ENREGISTRER':
+        this.getAllDemandeStage(page-1,this.pageSize,'',"","","","","","",'ENREGISTRER')
+        break;
+      case 'NONAUTORISER':
+        this.getAllDemandeStage(page-1,this.pageSize,'',"","","","","","",'NONAUTORISER')
+        break;
 
     }
-
   }
 
 

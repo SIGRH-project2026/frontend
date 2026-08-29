@@ -19,7 +19,7 @@ import * as XLSX from 'xlsx';
 })
 export class ListCampagneComponent implements OnInit {
   
-  page= 0;
+  page = 1;
   pageSize = 10;
   collectionSize = 0;
   campaigns: CampagneInterface[] = []; // Initialize with an empty array or fetch from a service
@@ -59,7 +59,7 @@ export class ListCampagneComponent implements OnInit {
     //   this.getAllCampagne(+localStorage.getItem("page")!-1,this.pageSize,"", this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
       // localStorage.removeItem("page")
     // }else{
-      this.getAllCampagne(this.page,this.pageSize,"", this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
+      this.getAllCampagne(this.page - 1,this.pageSize,"", this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
 
     // }
 
@@ -296,23 +296,21 @@ export class ListCampagneComponent implements OnInit {
   }
 
   refreshData() {
-
-    this.getAllCampagne(0,this.pageSize,"", "" ,"","");
+    this.page = 1;
+    this.getAllCampagne(0,this.pageSize,this.selectedYear!, this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
 
   }
 
 
-  refreshData1(event: any) {
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»"){
-      this.getAllCampagne(+event.target['text']-1,this.pageSize,"", this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.getAllCampagne(page - 1,this.pageSize,this.selectedYear!, this.searchData.nom ,this.searchData.dateDebut,this.searchData.dateFin);
   }
 
 
 
   onSearch(): void {
-    this.page = 0
+    this.page = 1
     this.getAllCampagne(0, this.pageSize, "", this.searchData.nom, this.searchData.dateDebut, this.searchData.dateFin);
   }
 

@@ -183,7 +183,7 @@ export class AddEtablissementComponent implements OnInit {
       next: (response) => {
         Swal.fire({
           icon: "success",
-          html: "Etablissement enregistrée avec succès.",
+          html: "Établissement enregistré avec succès.",
           showConfirmButton: false,
           timer: 2000,
         }).then(() => {

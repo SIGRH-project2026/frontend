@@ -21,8 +21,7 @@ export class ListeIefComponent  implements OnInit {
   headers: string[] = ['Région', 'IA',  'IEF','Statut',  'Action'];
   page = 1;
   pageSize = 10;
-  totalPages = 0;
-  size = 10;
+  statut = '';
 
   region: Region[]=[];
   ia: Ia[]=[];
@@ -59,7 +58,8 @@ export class ListeIefComponent  implements OnInit {
   }
 
   refreshData() {
-    this.listIEFdvanced(this.totalPages, this.size, "", "");
+    this.page = 1;
+    this.listIEFdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
   onCreateRecrutement() {
@@ -132,8 +132,6 @@ export class ListeIefComponent  implements OnInit {
             this.iEFliteList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -183,13 +181,9 @@ export class ListeIefComponent  implements OnInit {
 
   }
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listIEFdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listIEFdvanced(page - 1, this.pageSize, "", this.statut);
   }
 
   onAddIEF() {
@@ -293,9 +287,9 @@ export class ListeIefComponent  implements OnInit {
   }
 
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-
-    this.listIEFdvanced(0, this.size, '', selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listIEFdvanced(0, this.pageSize, '', this.statut);
   }
 
 }

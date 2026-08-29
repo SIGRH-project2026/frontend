@@ -103,8 +103,8 @@
                                 </select>
                                 <span style="white-space: nowrap">entrées</span>
                             </div>
-                            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-                                            (pageChange)="refreshData2()"  [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            <ngb-pagination [collectionSize]="collectionSize" [page]="page" [pageSize]="pageSize"
+                                            (pageChange)="onPageChange($event)"  [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
                             </ngb-pagination>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                                 </select>
                                 <span style="white-space: nowrap">entrées</span>
                             </div>
-                            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+                            <ngb-pagination [collectionSize]="collectionSize" [page]="page" [pageSize]="pageSize" (pageChange)="onPageChange($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
                             </ngb-pagination>
                         </div>
                     </div>

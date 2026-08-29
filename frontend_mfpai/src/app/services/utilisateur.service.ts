@@ -125,13 +125,19 @@ export class UtilisateurService {
     nom: string,
     direction: string,
   ): Observable<ResponseApiData> {
-    // http://localhost:9080/api/v1/mfpai/utilisateur/central/listAvancedPage?size=10&matricule=SN874&prenom=Ousmane&nom=Fall&direction=Autres directions&page=0&filter=SN874
-    // console.log(`${environment.apiUrl}utilisateur/central/listAvancedPage?page=${page}&size=${size}&filter=${filter}&profile=${profile}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&direction=${direction}`)
+    const params = new HttpParams()
+      .set("page", Math.max(0, page ?? 0))
+      .set("size", size ?? 10)
+      .set("filter", (filter ?? "").trim())
+      .set("profile", (profile ?? "").trim())
+      .set("matricule", (matricule ?? "").trim())
+      .set("prenom", (prenom ?? "").trim())
+      .set("nom", (nom ?? "").trim())
+      .set("direction", (direction ?? "").trim());
     return this._http.get<ResponseApi>(
-      `${environment.apiUrl}utilisateur/central/listAvancedPage?page=${page}&size=${size}&filter=${filter}&profile=${profile}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&direction=${direction}`,
+      `${environment.apiUrl}utilisateur/central/listAvancedPage`,
+      { params },
     );
-
-    // return this._http.get<ResponseApi>(`${environment.apiUrl}utilisateur/central/listAvancedPage?size=${size}&profile=${profile}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&direction=${direction}&page=${page}&filter=${filter}`);
   }
 
   listParamAdvanced(
@@ -191,9 +197,27 @@ export class UtilisateurService {
     telephone: string,
     email: string,
   ): Observable<ResponseApiData> {
-    // console.log("log",`${environment.apiUrl}utilisateur/deconected/listDecoPage?page=${page}&size=${size}&region=${region}&ia=${ia}&ief=${ief}&etablissement=${etablissement}&typeSystemeEnseignement=${typeSystemeEnseignement}&specialite=${specialite}&corps=${corps}&grade=${grade}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&dateNaissance=${dateNaissance}&cni=${cni}&telephone=${telephone}&email=${email}`)
+    const params = new HttpParams()
+      .set("page", Math.max(0, page ?? 0))
+      .set("size", size ?? 10)
+      .set("region", (region ?? "").trim())
+      .set("ia", (ia ?? "").trim())
+      .set("ief", (ief ?? "").trim())
+      .set("etablissement", (etablissement ?? "").trim())
+      .set("typeSystemeEnseignement", (typeSystemeEnseignement ?? "").trim())
+      .set("specialite", (specialite ?? "").trim())
+      .set("corps", (corps ?? "").trim())
+      .set("grade", (grade ?? "").trim())
+      .set("matricule", (matricule ?? "").trim())
+      .set("prenom", (prenom ?? "").trim())
+      .set("nom", (nom ?? "").trim())
+      .set("dateNaissance", (dateNaissance ?? "").trim())
+      .set("cni", (cni ?? "").trim())
+      .set("telephone", (telephone ?? "").trim())
+      .set("email", (email ?? "").trim());
     return this._http.get<ResponseApiData>(
-      `${environment.apiUrl}utilisateur/deconected/listDecoPage?page=${page}&size=${size}&region=${region}&ia=${ia}&ief=${ief}&etablissement=${etablissement}&typeSystemeEnseignement=${typeSystemeEnseignement}&specialite=${specialite}&corps=${corps}&grade=${grade}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&dateNaissance=${dateNaissance}&cni=${cni}&telephone=${telephone}&email=${email}`,
+      `${environment.apiUrl}utilisateur/deconected/listDecoPage`,
+      { params },
     );
   }
 
@@ -221,9 +245,22 @@ export class UtilisateurService {
     etablissement: string,
     typeSystemeEnseignement: string,
   ): Observable<ResponseApiData> {
-    //console.log(`${environment.apiUrl}utilisateur/deconected/listAdvandedPage?page=${page}&size=${size}&filter=${filter}&profile=${profile}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&region=${region}&ia=${ia}&ief=${ief}&etablissement=${etablissement}`)
+    const params = new HttpParams()
+      .set("page", Math.max(0, page ?? 0))
+      .set("size", size ?? 10)
+      .set("filter", (filter ?? "").trim())
+      .set("profile", (profile ?? "").trim())
+      .set("matricule", (matricule ?? "").trim())
+      .set("prenom", (prenom ?? "").trim())
+      .set("nom", (nom ?? "").trim())
+      .set("region", (region ?? "").trim())
+      .set("ia", (ia ?? "").trim())
+      .set("ief", (ief ?? "").trim())
+      .set("etablissement", (etablissement ?? "").trim())
+      .set("typeSystemeEnseignement", (typeSystemeEnseignement ?? "").trim());
     return this._http.get<ResponseApi>(
-      `${environment.apiUrl}utilisateur/deconected/listAdvandedPage?page=${page}&size=${size}&filter=${filter}&profile=${profile}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&region=${region}&ia=${ia}&ief=${ief}&etablissement=${etablissement}&typeSystemeEnseignement=${typeSystemeEnseignement}`,
+      `${environment.apiUrl}utilisateur/deconected/listAdvandedPage`,
+      { params },
     );
   }
 

@@ -803,6 +803,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       ia: [""],
       ief: [""],
       etablissement: [""],
+      typeSystemeEnseignement: [""],
       specialite: [""],
       matricule: [""],
       structure: [""],
@@ -814,6 +815,16 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       cni: [""],
       telephone: [""],
       email: [""],
+    });
+    this.searchForm = this.formBuilder.group({
+      matricule: [""],
+      prenom: [""],
+      nom: [""],
+      region: [""],
+      ia: [""],
+      ief: [""],
+      etablissement: [""],
+      typeSystemeEnseignement: [""],
     });
   }
 
@@ -843,8 +854,10 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   }
 
   onSearchUser() {
+    this.page = 0;
+    this.spinner.show();
     this.listUtilisateurDecoPage(
-      this.page,
+      0,
       this.pageSize,
       this.advancedSearchForm.value["region"],
       this.advancedSearchForm.value["ia"],
@@ -863,7 +876,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       this.advancedSearchForm.value["email"],
     );
 
-    this.isSearchUser = !this.isSearchUser;
+    this.isSearchUser = true;
 
     this.closeModal();
   }
@@ -940,12 +953,15 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
           this.collectionSize = data.metadata?.totalElements ?? 0;
           this.size = data.metadata?.size ?? 0;
         } else {
+          this.spinner.hide();
           this.alertService.showAlert({
             status: data?.status,
             message: data?.message,
             titre: "Utilisateurs",
           });
         }
+      }, () => {
+        this.spinner.hide();
       });
   }
 
@@ -1069,61 +1085,30 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   }
 
   downloadImportTemplate() {
+    // Uniquement les champs obligatoires côté backend pour l'import niveau
+    // déconcentré (cf. IMPORT_REQUIRED_FIELDS dans UtilisateurImpl). Les
+    // autres champs de l'entité (email, cni, corps, grade, structure...)
+    // restent optionnels et ont été retirés du modèle pour ne garder que ce
+    // qui doit obligatoirement être renseigné au chargement.
     const headers = [
-      "matricule",
-      "prenom",
-      "nom",
-      "email",
-      "telephone",
-      "adresse",
-      "sexe",
-      "situationMatrimoniale",
-      "nationalite",
-      "lieuDeNaissance",
-      "dateNaissance",
-      "cni",
-      "profil",
-      "corps",
-      "grade",
-      "fonction",
-      "specialite",
-      "structure",
-      "typePoste",
-      "typeMatricule",
-      "region",
-      "ia",
-      "ief",
-      "etablissement",
-      "typeSystemeEnseignement",
-      "nombreEnfants",
+      "MATRICULE",
+      "PRENOMS",
+      "NOM",
+      "SEXE",
+      "ETABLISSEMENT",
+      "TYPE SYSTEME ENSEIGNEMENT",
+      "IEF",
+      "IA",
     ];
     const exampleRow = [
-      "SN123456",
-      "Awa",
-      "Diop",
-      "awa.diop@example.sn",
-      "770000000",
-      "Dakar",
-      "F",
-      "Célibataire",
-      "Sénégalaise",
-      "Dakar",
-      "1990-01-15",
-      "1234567890123",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "IA Dakar",
-      "IEF Dakar Ville",
-      "Lycée Blaise Diagne",
-      "Secondaire Général",
-      "0",
+      "513098/H",
+      "Lamine",
+      "Niang",
+      "M",
+      "CFP Saint-Louis (EX CRETF)",
+      "Formation Professionnelle",
+      "IEF Saint-Louis Commune",
+      "IA Saint-Louis",
     ];
     const csvContent =
       headers.join(";") + "\n" + exampleRow.join(";") + "\n";

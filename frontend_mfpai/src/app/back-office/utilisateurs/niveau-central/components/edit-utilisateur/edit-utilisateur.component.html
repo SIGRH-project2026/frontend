@@ -98,7 +98,8 @@
 
                 <div class="col-sm-4" formGroupName="typeMatricule">
                     <label class="form-label">Type matricule<span style="color: red">*</span></label>
-                    <select class="form-select" #TypeMatValue formControlName="code">
+                    <select class="form-select" #TypeMatValue formControlName="code"
+                            (change)="onTypeMatriculeChange($any($event.target).value)">
                         <option value="">Sélectionner</option>
                         <option *ngFor="let typMat of typeMatricule" [value]="typMat?.code">{{typMat?.label}}</option>
                         <div style="color: red" *ngIf="f['typeMatricule'].touched && f['typeMatricule'].hasError('required')">Type matricule
@@ -113,7 +114,7 @@
                     <div class="col-sm-4">
                         <label class="form-label">Matricule <span style="color: red">*</span></label>
                         <div class="input-group ">
-                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeFonctionnaire" (ngModelChange)="onMatriculeChange($event)"  readonly />
+                        <input type="text" class="form-control" placeholder="Saisir" formControlName="matriculeFonctionnaire" (ngModelChange)="onMatriculeChange($event)" />
                             <span class="input-group-text fw-bold" id="basic-addon1" >{{ validationResult }}</span>
                         </div>
                         <div style="color: red" *ngIf="f['matriculeFonctionnaire'].touched && f['matriculeFonctionnaire'].hasError('invalidMatriculeFonctionnaire')">
@@ -204,28 +205,14 @@
                     </div>
                 </div>
 
-                <ng-container *ngIf="centralLevel?.firstLog; else trueFirstLog">
-                    <div class="col-sm-4">
-                        <label class="form-label">Email <span style="color: red">*</span></label>
-                        <input type="email" pattern=".+@.+\..+" class="form-control" placeholder="Saisir"
-                               formControlName="email"  />
-                        <div style="color: red" *ngIf="f['email'].touched && f['email'].hasError('required')">Email
-                            <strong>obligatoire!</strong>
-                        </div>
-
+                <div class="col-sm-4">
+                    <label class="form-label">Email <span style="color: red">*</span></label>
+                    <input type="email" pattern=".+@.+\..+" class="form-control" placeholder="Saisir"
+                           formControlName="email" />
+                    <div style="color: red" *ngIf="f['email'].touched && f['email'].hasError('required')">Email
+                        <strong>obligatoire!</strong>
                     </div>
-                </ng-container>
-                <ng-template #trueFirstLog>
-                    <div class="col-sm-4">
-                        <label class="form-label">Email <span style="color: red">*</span></label>
-                        <input type="email" pattern=".+@.+\..+" class="form-control" placeholder="Saisir"
-                               formControlName="email" readonly />
-                        <div style="color: red" *ngIf="f['email'].touched && f['email'].hasError('required')">Email
-                            <strong>obligatoire!</strong>
-                        </div>
-
-                    </div>
-                </ng-template>
+                </div>
 
                 <div class="col-sm-4">
                     <label class="form-label">Date de naissance</label>

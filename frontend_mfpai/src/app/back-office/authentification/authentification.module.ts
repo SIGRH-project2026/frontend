@@ -9,6 +9,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
+import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {MatButtonModule} from "@angular/material/button";
     LoginComponent,
     RegisterComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ActivateAccountComponent
   ],
     imports: [
         CommonModule,

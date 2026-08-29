@@ -19,7 +19,7 @@ declare var $: any;
 export class ListIndicateurComponent  implements OnInit, AfterViewInit {
 
   headers: string[] = ['N° Indicateur', 'Libelle','Date', 'Responsable Activité', 'Divisions impliqués','Statut','Action'];
-  page = 0;
+  page = 1;
   pageSize = 10;
   collectionSize = 0;
   indicateurs: ParametreResponse[] = [];
@@ -72,6 +72,7 @@ export class ListIndicateurComponent  implements OnInit, AfterViewInit {
 
 
   initFormFilterByStatut(){
+    this.page = 1;
     this.getAllParametres(0,this.pageSize,'','','','','',this.selectedType,'');
   }
 
@@ -158,7 +159,8 @@ export class ListIndicateurComponent  implements OnInit, AfterViewInit {
   }
 
   refreshData(event: any) {
-    this.getAllParametres(0, event, '','','','','','','')
+    this.page = 1;
+    this.getAllParametres(0, event, this.searchForm.value.searchQuery,'','','','',this.selectedType,'')
   }
   onSearchAll(): void {
     this.getAllParametres(0,this.pageSize,this.searchForm.value.searchQuery,'','','','','','');
@@ -171,11 +173,9 @@ export class ListIndicateurComponent  implements OnInit, AfterViewInit {
     });
   }
 
-  refreshData1(event: any) {
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»"){
-      this.getAllParametres(+event.target['text']-1, this.pageSize, this.searchForm.value.searchQuery,'','','','','','')
-
-    }
+  onPageChange(page: number) {
+    this.page = page;
+    this.getAllParametres(page - 1, this.pageSize, this.searchForm.value.searchQuery,'','','','',this.selectedType,'')
   }
 
   /**

@@ -20,9 +20,8 @@ export class ListBureauxComponent  implements OnInit {
   headers: string[] = ['Division', 'Bureaux',  'Statut',  'Action'];
 
   pageSize = 10;
-  page = 0;
-  totalPages = 0;
-  size = 10;
+  page = 1;
+  statut = '';
 
   dataList: Bureau[] =[];
   collectionSize = this.dataList.length;
@@ -58,7 +57,8 @@ export class ListBureauxComponent  implements OnInit {
   }
 
   refreshData() {
-    this.listBureauAdvanced(0, 10, "", "");
+    this.page = 1;
+    this.listBureauAdvanced(0, this.pageSize, "", this.statut);
   }
 
   onCreateDivisionBureaux() {
@@ -126,8 +126,6 @@ export class ListBureauxComponent  implements OnInit {
             this.dataList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -245,18 +243,14 @@ export class ListBureauxComponent  implements OnInit {
     })
 
   }
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listBureauAdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listBureauAdvanced(page - 1, this.pageSize, "", this.statut);
   }
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-
-    this.listBureauAdvanced(0, this.size, '', selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listBureauAdvanced(0, this.pageSize, '', this.statut);
   }
 
 

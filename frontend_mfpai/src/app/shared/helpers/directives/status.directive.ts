@@ -66,7 +66,7 @@ export class StatusDirective {
           color: Color.Orange,
           text:
               status === 'ENCOURS' ? 'En cours' :
-                  status === 'AMODIFIER' ? 'A modifier' : 'Non disponible',
+                  status === 'AMODIFIER' ? 'À modifier' : 'Non disponible',
         };
 
       case 'DISPONIBLE':

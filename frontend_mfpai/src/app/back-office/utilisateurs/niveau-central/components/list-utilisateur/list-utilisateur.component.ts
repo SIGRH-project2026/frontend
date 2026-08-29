@@ -663,18 +663,18 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
     }
 
     downloadImportTemplate() {
-        // En-têtes alignés sur le fichier réel des utilisateurs de niveau central.
-        // La colonne ETABLISSEMENT (aussi acceptée sous le nom SERVICE ou
-        // DIRECTION) représente la direction de rattachement de l'agent.
+        // Uniquement les champs obligatoires côté backend pour l'import niveau
+        // central (cf. IMPORT_REQUIRED_FIELDS_CL dans UtilisateurImpl) : au-delà
+        // du matricule/prénom/nom/sexe, seule la colonne DIRECTION (aussi
+        // acceptée sous les noms SERVICE ou ETABLISSEMENT) est exploitée — les
+        // autres colonnes (type système, IEF, IA) ne sont pas utilisées pour ce
+        // niveau et ont été retirées pour éviter toute confusion.
         const headers = [
             "MATRICULE",
             "PRENOMS",
             "NOM",
             "SEXE",
-            "ETABLISSEMENT",
-            "TYPE SYSTEME ENSEIGNEMENT",
-            "IEF",
-            "IA",
+            "DIRECTION",
         ];
         const exampleRow = [
             "609447/H",
@@ -682,9 +682,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
             "Seck",
             "M",
             "DIRECTION DE L'INSERTION",
-            "Structures Admin. MFPAA",
-            "Niveau Central",
-            "Niveau Central (15eme Région)",
         ];
         const csvContent =
             headers.join(";") + "\n" + exampleRow.join(";") + "\n";

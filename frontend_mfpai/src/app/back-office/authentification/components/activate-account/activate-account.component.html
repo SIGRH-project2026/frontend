@@ -1,0 +1,44 @@
+<div class="login-content">
+  <div class="login-form">
+    <h2 class="login-title">Activer mon compte</h2>
+    <p class="login-text">Renseignez votre matricule, le mot de passe initial fourni et choisissez votre mot de passe personnel.</p>
+    <br>
+    <form [formGroup]="activationForm" (ngSubmit)="activate()">
+      <div class="row g-3">
+        <div class="col-sm-12">
+          <label class="form-label" for="activation-matricule">Matricule</label>
+          <input id="activation-matricule" type="text" class="form-control" placeholder="Saisir votre matricule" formControlName="matricule" autocomplete="username">
+        </div>
+        <div class="col-sm-12">
+          <label class="form-label" for="default-password">Mot de passe par défaut</label>
+          <div class="input-group input-custom-group">
+            <input id="default-password" [type]="hideDefaultPassword ? 'password' : 'text'" class="form-control" formControlName="defaultPassword" autocomplete="current-password">
+            <button mat-icon-button type="button" (click)="hideDefaultPassword = !hideDefaultPassword"><i class="material-icons">{{hideDefaultPassword ? 'visibility_off' : 'visibility'}}</i></button>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <label class="form-label" for="new-password">Nouveau mot de passe</label>
+          <div class="input-group input-custom-group">
+            <input id="new-password" [type]="hideNewPassword ? 'password' : 'text'" class="form-control" formControlName="newPassword" autocomplete="new-password">
+            <button mat-icon-button type="button" (click)="hideNewPassword = !hideNewPassword"><i class="material-icons">{{hideNewPassword ? 'visibility_off' : 'visibility'}}</i></button>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <label class="form-label" for="password-confirmation">Confirmer le nouveau mot de passe</label>
+          <div class="input-group input-custom-group">
+            <input id="password-confirmation" [type]="hideConfirmation ? 'password' : 'text'" class="form-control" formControlName="passwordConfirmed" autocomplete="new-password">
+            <button mat-icon-button type="button" (click)="hideConfirmation = !hideConfirmation"><i class="material-icons">{{hideConfirmation ? 'visibility_off' : 'visibility'}}</i></button>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <button class="w-100" id="button-login" type="submit" [disabled]="activationForm.invalid || isLoading">
+            {{ isLoading ? 'Activation en cours...' : 'Activer mon compte' }}
+          </button>
+        </div>
+        <div class="col-md-12">
+          <button class="w-100" id="button-reset" type="button" [routerLink]="['/auth/login']">Annuler</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

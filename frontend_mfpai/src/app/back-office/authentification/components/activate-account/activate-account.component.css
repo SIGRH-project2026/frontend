@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.login-content {
+  min-height: auto;
+  padding: 16px 0 0;
+  justify-content: flex-start;
+}
+
+.login-text {
+  line-height: 1.45;
+}

@@ -32,28 +32,28 @@
                 <div class="col-sm-4">
                     <label class="form-label">Direction</label>
                     <select class="form-select" formControlName="directionCode"  (change)="onSelectedDirection()" [ngModel]="demandeStage.direction.code">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         <option *ngFor="let direction of directions" value="{{direction.code}}">{{ direction.label }}</option>
                     </select>
                 </div>
                 <div class="col-sm-4" *ngIf="!isOk && !initOk">
                     <label class="form-label">Division</label>
                     <select class="form-select" formControlName="divisionCode" (change)="onSelectedDivision()" >
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         <option *ngFor="let division of divisions" value="{{division.code}}">{{ division.label }}</option>
                     </select>
                 </div>
                 <div class="col-sm-4" *ngIf="!isOk && !initOk">
                     <label class="form-label">Bureau</label>
                     <select class="form-select" formControlName="bureauCode">
-                        <option value="">Selectionner</option>
+                        <option value="">Sélectionner</option>
                         <option *ngFor="let bureau of bureaux" value="{{bureau.code}}">{{ bureau.label }}</option>
                     </select>
                 </div>
 <!--                <div class="col-sm-4" *ngIf="isOk && !initOk">-->
 <!--                    <label class="form-label">Services</label>-->
 <!--                    <select class="form-select" formControlName="serviceCode">-->
-<!--                        <option value="">Selectionner</option>-->
+<!--                        <option value="">Sélectionner</option>-->
 <!--                        <option *ngFor="let service of services" value="{{service.code}}">{{ service.label }}</option>-->
 <!--                    </select>-->
 <!--                </div>-->

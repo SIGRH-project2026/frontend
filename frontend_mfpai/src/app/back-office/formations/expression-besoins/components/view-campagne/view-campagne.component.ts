@@ -20,8 +20,9 @@ export class ViewCampagneComponent implements OnInit {
   headers!: string[];
   // page   = 0;
   pageSize: number | undefined = 10;
-    page: number | undefined = 0;
+    page: number | undefined = 1;
   collectionSize: number | undefined ;
+  statut = '';
   text = '';
   closeResult = '';
   campagneId: string | null = '';
@@ -79,8 +80,9 @@ export class ViewCampagneComponent implements OnInit {
         return  false
     }
     onStatusChange(event: any) {
-        const selectedValue = event.target.value;
-        this.getExpressionDeBesoins(0,10,selectedValue,'','','','','')
+        this.statut = event.target.value;
+        this.page = 1;
+        this.getExpressionDeBesoins(0,this.pageSize!,this.statut,'','','','','')
         // You can perform additional actions based on the selected value here
     }
 
@@ -149,14 +151,14 @@ export class ViewCampagneComponent implements OnInit {
 		}
   }
   refreshData() {
-
+      this.page = 1;
       // this.getExpressionDeBesons(this.page,this.pageSize, "")
-      this.getExpressionDeBesoins(0,this.pageSize!,'', "",'','','','')
+      this.getExpressionDeBesoins(0,this.pageSize!,this.statut, "",'','','','')
   }
 
-    refreshData1(event: any){
-      if (event.target['text'] != undefined)
-        this.getExpressionDeBesoins(+event.target['text']-1,this.pageSize!,'', "",'','','','')
+    onPageChange(page: number){
+      this.page = page;
+      this.getExpressionDeBesoins(page - 1,this.pageSize!,this.statut, "",'','','','')
     }
 
 

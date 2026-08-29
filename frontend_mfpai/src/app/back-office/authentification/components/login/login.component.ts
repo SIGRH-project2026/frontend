@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
 
     const credentials: Credentials = {
         token: "",
-        login: this.loginForm.value.login,
+        login: this.loginForm.value.login.trim(),
       password: this.loginForm.value.password
     };
 
@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
         if (response.status === "WRONG_CREDENTIALS"){
           this.authService.showSwal('error', response.message);
         }
-        else if (resp["token"] !== undefined){
+        else if (resp?.token !== undefined){
         //  console.log(resp["token"]);
           this._credentialsService.setCredentials(resp["token"])
           this._credentialsService.setRefreshToken(resp["refreshToken"])
@@ -171,4 +171,3 @@ export class LoginComponent implements OnInit {
 
 
 }
-

@@ -22,9 +22,7 @@ export class ListMesFormationsComponent implements OnInit {
 
   headers: string[] = ['N° Référence', 'Type formation', 'Titre de la formation', 'Direction/Etablissement', 'Date Début', 'Date Fin', 'Action'];
   pageSize = 10;
-  page = 0;
-  totalPages = 0;
-  size = 10;
+  page = 1;
   collectionSize = DATA.length;
   formationList!: any;
   formations_filtrees: any[] = [];
@@ -69,7 +67,7 @@ export class ListMesFormationsComponent implements OnInit {
    // console.log(this.userInfos);
     this.getCurrentUser();
     //this.getCurrentUser();
-    this.getFormations(this.page, this.pageSize, "");
+    this.getFormations(this.page - 1, this.pageSize, "");
     this.refreshData();
     // this.getFormation();
  /*   this.checkIfUserIsInTopN(10).then(data => {
@@ -273,22 +271,13 @@ export class ListMesFormationsComponent implements OnInit {
     }
   }
   refreshData() {
-    this.getFormations(this.totalPages, this.size, "");
+    this.page = 1;
+    this.getFormations(this.page - 1, this.pageSize, "");
   }
 
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.getFormations(+event.target['text']-1, this.size!, "");
-    }
-
-  }
-
-
-  refreshData2() {
-
-      this.getFormations(this.totalPages, this.size, "");
+  onPageChange(page: number) {
+    this.page = page;
+    this.getFormations(page - 1, this.pageSize, "");
   }
 
 

@@ -94,7 +94,7 @@
         <div class="flex-row-between">
             <div class="d-flex align-items-center">
                 <span style="white-space: nowrap">Affichage par</span>
-                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="totalPages"
+                <select class="form-select form-select-sm mx-2 form-select-filter" [(ngModel)]="pageSize"
                     (ngModelChange)="refreshData()">
                     <option [ngValue]="10">10</option>
                     <option [ngValue]="20">20</option>
@@ -102,8 +102,8 @@
                 </select>
                 <span style="white-space: nowrap">entrées</span>
             </div>
-            <ngb-pagination [collectionSize]="collectionSize" [(page)]="totalPages" [pageSize]="size"
-                (click)="refreshData1($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
+            <ngb-pagination [collectionSize]="collectionSize" [page]="page" [pageSize]="pageSize"
+                (pageChange)="onPageChange($event)" [maxSize]="2" [rotate]="true" [boundaryLinks]="true">
             </ngb-pagination>
         </div>
     </div>

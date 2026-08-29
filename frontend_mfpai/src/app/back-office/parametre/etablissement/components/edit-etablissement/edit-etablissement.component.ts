@@ -272,7 +272,7 @@ export class EditEtablissementComponent implements OnInit {
       next: response => {
         Swal.fire({
           icon: 'success',
-          html: 'Etablissement enregistré avec succès.',
+          html: 'Établissement enregistré avec succès.',
           showConfirmButton: false,
           timer: 2000
         }).then(() => {
@@ -305,7 +305,7 @@ export class EditEtablissementComponent implements OnInit {
       next: response => {
         Swal.fire({
           icon: 'success',
-          html: 'Etablissement modifié avec succès.',
+          html: 'Établissement modifié avec succès.',
           showConfirmButton: false,
           timer: 2000
         }).then(() => {

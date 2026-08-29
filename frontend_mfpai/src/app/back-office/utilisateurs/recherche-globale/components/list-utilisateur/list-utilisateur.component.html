@@ -40,9 +40,14 @@
         <div class="panel-list-header">
             <div class="panel-list-text">
                 <h3>Résultat de recherche</h3> 
-                <button class="button button-primary" type="button" (click)="onChangeProfil()" >
-                    changer le statut
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="button button-primary" type="button" (click)="onEditUser()">
+                        Modifier les informations
+                    </button>
+                    <button class="button button-outline-primary" type="button" (click)="onChangeProfil()">
+                        Changer le profil
+                    </button>
+                </div>
             </div>
         </div>
         <div class="panel-list-body">
@@ -214,7 +219,7 @@
                         <div class="col-lg-4 col-sm-6">
                             <div class="details-item">
                                 <span> Profil</span>
-                                <span>{{ profile.label }}</span>
+                                <span>{{ profile?.label || 'Non attribué' }}</span>
                             </div>
                         </div>
                         <ng-container *ngIf="userResultDec?.quantumHoraire">
@@ -430,7 +435,7 @@
                         <div class="col-lg-4 col-sm-6">
                             <div class="details-item">
                                 <span> Profil</span>
-                                <span>{{ profile.label }}</span>
+                                <span>{{ profile?.label || 'Non attribué' }}</span>
                             </div>
                         </div>
 

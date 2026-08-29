@@ -10,7 +10,7 @@ const routes: Routes = [
     path: "",
     component: MainComponent,
     data: {
-      breadcrumb: "Etablissement",
+      breadcrumb: "Établissement",
     },
     children: [
       // Routing list expression

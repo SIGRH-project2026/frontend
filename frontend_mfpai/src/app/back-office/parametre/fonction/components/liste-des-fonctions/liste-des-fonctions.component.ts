@@ -18,11 +18,9 @@ export class ListeDesFonctionsComponent  implements OnInit {
 
 
   headers: string[] = [ 'Fonction',  'Statut',  'Action'];
-  // page = 1;
+  page = 1;
   pageSize = 10;
-  page = 0;
-  totalPages = 0;
-  size = 10;
+  statut = '';
 
   dataList: Fonction[] =[];
 
@@ -58,7 +56,8 @@ export class ListeDesFonctionsComponent  implements OnInit {
   }
 
   refreshData() {
-    this.listFonctionAdvanced(this.totalPages, this.size, "", "");
+    this.page = 1;
+    this.listFonctionAdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
   onCreateRecrutement() {
@@ -112,8 +111,6 @@ export class ListeDesFonctionsComponent  implements OnInit {
             this.dataList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -229,18 +226,14 @@ export class ListeDesFonctionsComponent  implements OnInit {
     })
 
   }
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-    // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listFonctionAdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listFonctionAdvanced(page - 1, this.pageSize, "", this.statut);
   }
   onStatusChange(event: any) {
-    const selectedValue = event.target.value;
-
-    this.listFonctionAdvanced(0, this.size, '', selectedValue);
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listFonctionAdvanced(0, this.pageSize, '', this.statut);
   }
 
 

@@ -18,9 +18,7 @@ import { ResponseApi } from 'src/app/models/response-api';
 export class ListCorpsGradeComponent implements OnInit {
 
   headers: string[] = ['Date', 'Corps', 'Grade', 'Statut', 'Action'];
-  page = 0;
-  totalPages = 0;
-  size = 10;
+  page = 1;
   pageSize = 10;
 
   dataList: ParametreCorpsGrade[] = [];
@@ -45,7 +43,8 @@ export class ListCorpsGradeComponent implements OnInit {
   }
 
   refreshData() {
-    this.listParamAdvanced(this.totalPages, this.size, "", "", "", "");
+    this.page = 1;
+    this.listParamAdvanced(0, this.pageSize, "", "", "", "");
   }
 
   onCreateCorps() {
@@ -113,8 +112,6 @@ export class ListCorpsGradeComponent implements OnInit {
 
 
           this.collectionSize = data.metadata?.totalElements ?? 0
-          this.size = data.metadata?.size ?? 0
-
 
         }
       });
@@ -122,14 +119,9 @@ export class ListCorpsGradeComponent implements OnInit {
   }
 
 
-  refreshData1(event: any) {
-
-
-    this.totalPages = +event.target['text'] - 1;
-    if (event.target['text'] != undefined && event.target['text'] != "««" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "»»") {
-      this.listParamAdvanced(this.totalPages, this.size, "", "", "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listParamAdvanced(page - 1, this.pageSize, "", "", "", "");
   }
 
 }

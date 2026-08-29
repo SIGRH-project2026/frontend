@@ -252,15 +252,19 @@ export class EditUtilisateurComponent implements OnInit{
 
                         console.log(this.deconectedDTO)
 
-                        this.profile = this.deconectedDTO.profils[0];
+                        this.profile = this.deconectedDTO.profils?.[0];
                         this.iaDB = this.deconectedDTO.ia?.code;
 
-                        this.getStruct(this.deconectedDTO?.structure?.code);
+                        if (this.deconectedDTO?.structure?.code) {
+                            this.getStruct(this.deconectedDTO.structure.code);
+                        }
 
                         if(this.deconectedDTO?.structure?.code === 'IA') {
                             //this.getStruct(this.deconectedDTO?.structure?.code);
 
-                            this.getListIA(this.deconectedDTO?.region?.code);
+                            if (this.deconectedDTO?.region?.code) {
+                                this.getListIA(this.deconectedDTO.region.code);
+                            }
 
 
                             if(this.deconectedDTO?.ief){
@@ -275,7 +279,9 @@ export class EditUtilisateurComponent implements OnInit{
 
                         }
 
-                        this.getGradeFromCorps(this.deconectedDTO?.corpsGrade?.code)
+                        if (this.deconectedDTO?.corpsGrade?.code) {
+                            this.getGradeFromCorps(this.deconectedDTO.corpsGrade.code)
+                        }
 
                         if( this.deconectedDTO?.matriculeContratuel) {
                             this.validationResult =  this.deconectedDTO?.matriculeContratuel.split("/")[1];
@@ -283,8 +289,10 @@ export class EditUtilisateurComponent implements OnInit{
                             this.validationResult =  this.deconectedDTO?.matriculeFonctionnaire.split("/")[1];
                         }else if( this.deconectedDTO?.matriculeVacataire) {
                             this.validationResult =   this.deconectedDTO?.matriculeVacataire.split("/")[1];
-                        }else {
-                            this.validationResult =  this.deconectedDTO?.matriculeDecisionnaire.split("/")[1];
+                        }else if (this.deconectedDTO?.matriculeDecisionnaire) {
+                            this.validationResult = this.deconectedDTO.matriculeDecisionnaire.split("/")[1] || '';
+                        } else {
+                            this.validationResult = this.deconectedDTO?.matricule?.split("/")[1] || '';
                         }
 
                         this.deconectedForm.patchValue({
@@ -297,7 +305,7 @@ export class EditUtilisateurComponent implements OnInit{
                             sexe:  this.deconectedDTO.sexe,
                             situationMatrimoniale:  this.deconectedDTO.situationMatrimoniale,
                             profils: this.deconectedForm.controls['profils'].patchValue({
-                                code: this.deconectedDTO.profils[0].code
+                                code: this.profile?.code
                             }),
                             corpsGrade: this.deconectedForm.controls['corpsGrade'].patchValue({
                                 code: this.deconectedDTO?.corpsGrade?.code
@@ -335,7 +343,7 @@ export class EditUtilisateurComponent implements OnInit{
                             matriculeContratuel: this.deconectedDTO?.matriculeContratuel !== undefined ? this.deconectedDTO?.matriculeContratuel.split("/")[0] : this.deconectedDTO?.matriculeContratuel,
                             matriculeFonctionnaire: this.deconectedDTO?.matriculeFonctionnaire !== undefined ?  this.deconectedDTO?.matriculeFonctionnaire.split("/")[0] : this.deconectedDTO?.matriculeFonctionnaire,
                             matriculeVacataire: this.deconectedDTO?.matriculeVacataire !== undefined ? this.deconectedDTO?.matriculeVacataire.split("/")[0] : this.deconectedDTO?.matriculeVacataire,
-                            matriculeDecisionnaire: this.deconectedDTO?.matriculeDecisionnaire !== this.deconectedDTO?.matriculeDecisionnaire ? this.deconectedDTO?.matriculeDecisionnaire.split("/")[0] : this.deconectedDTO?.matriculeDecisionnaire,
+                            matriculeDecisionnaire: this.splitValueMatricule(this.deconectedDTO?.matriculeDecisionnaire),
 
                             nationalite: this.deconectedDTO?.nationalite,
                             nombreEnfants: this.deconectedDTO?.nombreEnfants,
@@ -366,6 +374,10 @@ export class EditUtilisateurComponent implements OnInit{
                             }),
 
                         })
+
+                        if (this.deconectedDTO?.typeMatricule?.code) {
+                            this.onTypeMatriculeChange(this.deconectedDTO.typeMatricule.code);
+                        }
                     }
                 }
             });
@@ -618,9 +630,9 @@ export class EditUtilisateurComponent implements OnInit{
             diplomePED: this.deconectedForm.controls['diplomePED'] !== null ?  this.deconectedForm.controls['diplomePED'].value :   null,
             diplomePROF: this.deconectedForm.controls['diplomePROF'] !== null ?  this.deconectedForm.controls['diplomePROF'].value :   null,
 
-            matriculeContratuel: this.deconectedForm.controls['matriculeContratuel'].value !== ''  ? this.deconectedForm.controls['matriculeContratuel'].value + "/" + this.validationResult : '',
-            matriculeFonctionnaire:  this.deconectedForm.controls['matriculeFonctionnaire'].value !== ''  ? this.deconectedForm.controls['matriculeFonctionnaire'].value + "/" + this.validationResult : '',
-            matriculeVacataire: this.deconectedForm.controls['matriculeVacataire'].value !== ''  ? this.deconectedForm.controls['matriculeVacataire'].value + "/" + this.validationResult : '',
+            matriculeContratuel: this.addValueMatricule(this.deconectedForm.controls['matriculeContratuel'].value, this.validationResult),
+            matriculeFonctionnaire: this.addValueMatricule(this.deconectedForm.controls['matriculeFonctionnaire'].value, this.validationResult),
+            matriculeVacataire: this.addValueMatricule(this.deconectedForm.controls['matriculeVacataire'].value, this.validationResult),
            // matriculeDecisionnaire: this.deconectedForm.controls['matriculeDecisionnaire'].value !== ''  ? this.deconectedForm.controls['matriculeDecisionnaire'].value + "/" + this.validationResult : '',
              matriculeDecisionnaire: this.addValueMatricule(this.deconectedForm.controls['matriculeDecisionnaire'].value, this.validationResult) , //this.centralForm.controls['matriculeFonctionnaire'].value !== ''  ? this.centralForm.controls['matriculeFonctionnaire'].value + "/" + this.validationResult : '',
 
@@ -653,13 +665,13 @@ export class EditUtilisateurComponent implements OnInit{
         });
     }
 
-    splitValueMatricule(matricule: string): string {
-        return   matricule !== undefined ? matricule.split("/")[0] :  matricule;
+    splitValueMatricule(matricule: string | null | undefined): string {
+        return matricule ? matricule.split("/")[0] : '';
     }
 
 
-    addValueMatricule(newMatricule: string, validationResult: string): string {
-        return  newMatricule !== ''  ? newMatricule + "/" + validationResult : ''  ;
+    addValueMatricule(newMatricule: string | null | undefined, validationResult: string): string {
+        return newMatricule ? newMatricule + (validationResult ? "/" + validationResult : '') : '';
     }
     onUpdateUser(): void {
        // const dto =  this.deconnectedLevelForm();
@@ -671,8 +683,18 @@ export class EditUtilisateurComponent implements OnInit{
 
             this.checkConstraintsValidation();
 
-            console.log(this.deconectedRegionForm)
-            console.log(this.deconectedForm)
+            Swal.fire({
+                icon: 'warning',
+                title: 'Formulaire incomplet',
+                html: 'Veuillez renseigner ou corriger les champs obligatoires signalés en rouge.',
+                confirmButtonColor: 'rgba(29, 74, 123, 1)'
+            }).then(() => {
+                const firstInvalidControl = document.querySelector(
+                    'form .ng-invalid:not(form)'
+                ) as HTMLElement | null;
+                firstInvalidControl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidControl?.focus();
+            });
 
         }else {
             const dto =  this.deconnectedLevelForm();
@@ -689,22 +711,22 @@ export class EditUtilisateurComponent implements OnInit{
                 confirmButtonText: 'Oui',
                 cancelButtonText: 'Non'
             }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
                 this.spinner.show()
                 this.userService.updateUserDeconected(this.userId, dto).subscribe({
                     next: (response: ResponseApi) => {
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                icon: 'success',
-                                // title: 'Modification de compte',
-                                html: 'L\'utilisateur a été modifié(e) avec succès.',
-                                showConfirmButton: false,
-                                timer: 2000
-                            }).then(() => {
-                                this.router.navigate(['utilisateurs/niveau-deconcentre']);
-                            }).finally(() => {
-                                this.spinner.hide()
-                            })
-                        }
+                        Swal.fire({
+                            icon: 'success',
+                            html: 'L\'utilisateur a été modifié(e) avec succès.',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            this.router.navigate(['utilisateurs/niveau-deconcentre']);
+                        }).finally(() => {
+                            this.spinner.hide()
+                        })
 
                     },complete: () => {
                         this.spinner.hide()
@@ -764,6 +786,35 @@ export class EditUtilisateurComponent implements OnInit{
         if(newMatricule)
              this.validationResult = this.calculateLetterFromMatricule(newMatricule);
         //  console.log(`La lettre correspondant à la différence des sommes des chiffres impairs et pairs de ${newMatricule} est ${this.validationResult}`);
+    }
+
+    onTypeMatriculeChange(typeCode: string): void {
+        const controlByType: { [key: string]: string } = {
+            MATFONC: 'matriculeFonctionnaire',
+            MATCON: 'matriculeContratuel',
+            MATVAC: 'matriculeVacataire',
+            MATDEE: 'matriculeDecisionnaire'
+        };
+        const controlName = controlByType[typeCode];
+        if (!controlName) {
+            return;
+        }
+
+        const control = this.deconectedForm.get(controlName);
+        const source = (this.deconectedDTO as any)?.[controlName]
+            || this.deconectedDTO?.matricule
+            || this.deconectedDTO?.matriculeFonctionnaire
+            || this.deconectedDTO?.matriculeContratuel
+            || this.deconectedDTO?.matriculeVacataire
+            || this.deconectedDTO?.matriculeDecisionnaire;
+
+        if (!control?.value && source) {
+            control?.setValue(this.splitValueMatricule(source), { emitEvent: false });
+        }
+
+        const completeMatricule = source || control?.value;
+        const savedLetter = completeMatricule?.includes('/') ? completeMatricule.split('/')[1] : '';
+        this.validationResult = savedLetter || this.calculateLetterFromMatricule(control?.value || '');
     }
 
 }

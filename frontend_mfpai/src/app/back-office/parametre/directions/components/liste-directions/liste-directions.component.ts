@@ -17,17 +17,15 @@ import {CredentialsService} from "../../../../../services/credentials.service";
 export class ListeDirectionsComponent implements OnInit {
 
   headers: string[] = [ 'Service',  'Statut',  'Action'];
- // page = 1;
+  page = 1;
   pageSize = 10;
-  page = 0;
-  totalPages = 0;
-  size = 10;
+  statut = '';
   region: Region[]=[];
   dataList: Direction[] =[];
 
 
   //directionaliteList: any;
-  collectionSize = this.dataList.length;
+  collectionSize = 0;
   text = '';
   closeResult = '';
   directionForm!: FormGroup;
@@ -53,14 +51,14 @@ export class ListeDirectionsComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.listDirectionAdvanced(0, 10, "", "");
     this.refreshData();
 
     this.initForm();
   }
 
   refreshData() {
-    this.listDirectionAdvanced(this.totalPages, this.size, "", "");
+    this.page = 1;
+    this.listDirectionAdvanced(this.page - 1, this.pageSize, "", this.statut);
   }
 
   onCreateRecrutement() {
@@ -134,8 +132,6 @@ export class ListeDirectionsComponent implements OnInit {
             this.dataList = data?.payload;
 
             this.collectionSize = data.metadata?.totalElements ?? 0
-            this.size = data.metadata?.size ?? 0
-
 
           }
         });
@@ -251,18 +247,15 @@ export class ListeDirectionsComponent implements OnInit {
     })
 
   }
-  refreshData1(event: any) {
-    this.totalPages = +event.target['text'] - 1;
-   // if (event.target['text'] != undefined && event.target['text'] != "« «" && event.target['text'] != "«" && event.target['text'] != "»" && event.target['text'] != "» »") {
-    if (event.target['text'] != undefined ) {
-      this.listDirectionAdvanced(+event.target['text']-1, this.size!, "", "");
-    }
-
+  onPageChange(page: number) {
+    this.page = page;
+    this.listDirectionAdvanced(page - 1, this.pageSize, "", this.statut);
   }
-  onStatusChange(event: any) {
-    const selectedValue = event.target.value;
 
-    this.listDirectionAdvanced(0, this.size, '', selectedValue);
+  onStatusChange(event: any) {
+    this.statut = event.target.value;
+    this.page = 1;
+    this.listDirectionAdvanced(0, this.pageSize, '', this.statut);
   }
 
 }
