@@ -346,36 +346,35 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Changement du nombre d'entrées par page. Rejoue la recherche en cours
+   * (le tableau n'est affiché qu'après une recherche, cf. `isSearchUser`)
+   * avec les critères actuels du formulaire au lieu de repartir sur une
+   * liste vide : sans cela, changer la taille de page faisait perdre le
+   * résultat de la recherche.
+   */
   refreshData() {
-    //  this.listUtilisateurAdvancedSearch(this.pageOptions, this.searchData);
-    //this.listUtilisateurAdvancedProfile(this.pageOptions?.totalPages, this.size, this.filterValue, '', this.searchData?.matricule, this.searchData?.prenom, this.searchData?.nom, this.searchData?.region, this.searchData?.ia, this.searchData?.ief,this.searchData?.etablissement);
-    this.listUtilisateursAdvanced(
-      this.pageOptions?.totalPages,
-      this.size,
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
+    this.page = 0;
+    this.spinner.show();
+    this.listUtilisateurDecoPage(
+      this.page,
+      this.pageSize,
+      this.advancedSearchForm.value["region"],
+      this.advancedSearchForm.value["ia"],
+      this.advancedSearchForm.value["ief"],
+      this.advancedSearchForm.value["etablissement"],
+      this.advancedSearchForm.value["typeSystemeEnseignement"],
+      this.advancedSearchForm.value["specialite"],
+      this.advancedSearchForm.value["corps"],
+      this.advancedSearchForm.value["grade"],
+      this.advancedSearchForm.value["matricule"],
+      this.advancedSearchForm.value["prenom"],
+      this.advancedSearchForm.value["nom"],
+      this.advancedSearchForm.value["dateNaissance"],
+      this.advancedSearchForm.value["cni"],
+      this.advancedSearchForm.value["telephone"],
+      this.advancedSearchForm.value["email"],
     );
-
-    /*  const  matricule  = this.searchData?.matricule !== undefined ? this.searchData?.matricule : '';
-          const   prenom =  this.searchData?.prenom !== undefined ? this.searchData?.prenom : '';
-          const   nom =  this.searchData?.nom !== undefined ? this.searchData?.nom : '';
-          const    region =   this.searchData?.region !== undefined ? this.searchData?.region : '';
-          const    ia =   this.searchData?.ia !== undefined ? this.searchData?.ia : '';
-          const    ief =   this.searchData?.ief !== undefined ? this.searchData?.ief : '';
-          const    etablissement =   this.searchData?.etablissement !== undefined ? this.searchData?.etablissement : '';
-          const    profile =   this.searchData?.profile !== undefined ? this.searchData?.profile : '';
-    
-          this.listUtilisateurAdvancedProfile(this.pageOptions?.totalPages, this.pageOptions?.size, '', profile, matricule, prenom, nom, region, ia, ief, etablissement);
-    
-    
-         */
   }
 
   onCreateUser() {
@@ -965,50 +964,34 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       });
   }
 
-  listUtilisateurDecoPaging() {
-    this.spinner.show();
-
-    this.userService
-      .getAllDecoUser(
-        this.page,
-        this.pageSize,
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-      )
-      .subscribe((data) => {
-        if (data?.status === "OK") {
-          // console.log(data);
-          this.userList = data?.payload;
-
-          this.spinner.hide();
-
-          this.collectionSize = data.metadata?.totalElements ?? 0;
-          this.size = data.metadata?.size ?? 0;
-        } else {
-          this.alertService.showAlert({
-            status: data?.status,
-            message: data?.message,
-            titre: "Utilisateurs",
-          });
-        }
-      });
-  }
-
+  /**
+   * Changement de page dans la pagination des résultats de recherche.
+   * Rejoue la recherche avec les critères actuels du formulaire au lieu
+   * d'appeler listUtilisateurDecoPaging() (qui interroge la liste complète
+   * sans filtre) : c'est ce qui faisait perdre le résultat de la recherche
+   * en paginant.
+   */
   refreshData2() {
-    this.listUtilisateurDecoPaging();
+    this.spinner.show();
+    this.listUtilisateurDecoPage(
+      this.page,
+      this.pageSize,
+      this.advancedSearchForm.value["region"],
+      this.advancedSearchForm.value["ia"],
+      this.advancedSearchForm.value["ief"],
+      this.advancedSearchForm.value["etablissement"],
+      this.advancedSearchForm.value["typeSystemeEnseignement"],
+      this.advancedSearchForm.value["specialite"],
+      this.advancedSearchForm.value["corps"],
+      this.advancedSearchForm.value["grade"],
+      this.advancedSearchForm.value["matricule"],
+      this.advancedSearchForm.value["prenom"],
+      this.advancedSearchForm.value["nom"],
+      this.advancedSearchForm.value["dateNaissance"],
+      this.advancedSearchForm.value["cni"],
+      this.advancedSearchForm.value["telephone"],
+      this.advancedSearchForm.value["email"],
+    );
   }
 
   // ==========================================================================

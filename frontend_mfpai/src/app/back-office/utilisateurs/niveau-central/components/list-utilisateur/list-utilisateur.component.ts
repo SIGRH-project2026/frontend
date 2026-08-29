@@ -310,17 +310,33 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
 		}
 	}
 
+  /**
+   * Changement du nombre d'entrées par page. Rejoue la recherche en cours
+   * (le tableau n'est affiché qu'après une recherche, cf. `isSearchUser`)
+   * avec les critères actuels du formulaire au lieu de repartir sur une
+   * liste vide : sans cela, changer la taille de page faisait perdre le
+   * résultat de la recherche.
+   */
   refreshData() {
-      // this.listUtilisateurAdvanced(this.pageOptions, this.searchData);
-      const  matricule  = this.searchData?.matricule !== undefined ? this.searchData?.matricule : '';
-      const   prenom =  this.searchData?.prenom !== undefined ? this.searchData?.prenom : '';
-      const   nom =  this.searchData?.nom !== undefined ? this.searchData?.nom : '';
-      const    direction =   this.searchData?.direction !== undefined ? this.searchData?.direction : '';
-      const    profile =   this.searchData?.profile !== undefined ? this.searchData?.profile : '';
-      this.listUtilisateurAdvanced(this.totalPages, this.size, "", profile, matricule, prenom, nom, direction);
-
-    // this.listUtilisateurAdvanced( this.totalPages, this.size, "", this.profile,  this.searchData.matricule, this.searchData.prenom, this.searchData.nom, this.searchData.direction);
-
+    this.page = 0;
+    this.listUtilisateurCenPage(
+      this.page,
+      this.pageSize,
+      this.advancedSearchForm.value['region'],
+      this.advancedSearchForm.value['direction'],
+      this.advancedSearchForm.value['division'],
+      this.advancedSearchForm.value['bureau'],
+      this.advancedSearchForm.value['specialite'],
+      this.advancedSearchForm.value['corps'],
+      this.advancedSearchForm.value['grade'],
+      this.advancedSearchForm.value['matricule'],
+      this.advancedSearchForm.value['prenom'],
+      this.advancedSearchForm.value['nom'],
+      this.advancedSearchForm.value['dateNaissance'],
+      this.advancedSearchForm.value['cni'],
+      this.advancedSearchForm.value['telephone'],
+      this.advancedSearchForm.value['email'],
+    );
   }
 
 
@@ -450,8 +466,32 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
     }
 
 
+    /**
+     * Changement de page dans la pagination des résultats de recherche.
+     * Rejoue la recherche avec les critères actuels du formulaire au lieu
+     * d'appeler listUtilisateurCenPagening() (qui interroge la liste
+     * complète sans filtre) : c'est ce qui faisait perdre le résultat de
+     * la recherche en paginant.
+     */
     refreshData2() {
-      this.listUtilisateurCenPagening();
+      this.listUtilisateurCenPage(
+        this.page,
+        this.pageSize,
+        this.advancedSearchForm.value['region'],
+        this.advancedSearchForm.value['direction'],
+        this.advancedSearchForm.value['division'],
+        this.advancedSearchForm.value['bureau'],
+        this.advancedSearchForm.value['specialite'],
+        this.advancedSearchForm.value['corps'],
+        this.advancedSearchForm.value['grade'],
+        this.advancedSearchForm.value['matricule'],
+        this.advancedSearchForm.value['prenom'],
+        this.advancedSearchForm.value['nom'],
+        this.advancedSearchForm.value['dateNaissance'],
+        this.advancedSearchForm.value['cni'],
+        this.advancedSearchForm.value['telephone'],
+        this.advancedSearchForm.value['email'],
+      );
     }
 
     refreshData1(event: any) {
@@ -507,24 +547,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
                        this.alertService.showAlert({status: data?.status, message: data?.message, titre: 'Utilisateurs'});
                    }
                });
-
-    }
-
-    listUtilisateurCenPagening(){
-      this.spinner.show();
-        this.userService.getAllCentralUser(this.page,  this.pageSize,  "",  "",  "",
-            "","", "",  "",  "",  "", "",  "",  "",  "",  "")
-            .subscribe(data => {
-                if (data?.status === 'OK') {
-                    //  console.log(data?.payload);
-                    this.userList = data?.payload;
-                    this.spinner.hide();
-                    this.collectionSize = data.metadata?.totalElements ?? 0
-                    this.size = data.metadata?.size ?? 0
-                } else {
-                    this.alertService.showAlert({status: data?.status, message: data?.message, titre: 'Utilisateurs'});
-                }
-            });
 
     }
 

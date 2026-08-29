@@ -732,7 +732,7 @@ export class EditUtilisateurComponent implements OnInit{
                         this.spinner.hide()
                     },
                     error: (error) => {
-                        this.userService.showSwal("error", error?.error?.message || error);
+                        this.userService.showSwal("error", this.getBackendErrorMessage(error));
                         this.spinner.hide()
                     }
                 });
@@ -786,6 +786,17 @@ export class EditUtilisateurComponent implements OnInit{
         if(newMatricule)
              this.validationResult = this.calculateLetterFromMatricule(newMatricule);
         //  console.log(`La lettre correspondant à la différence des sommes des chiffres impairs et pairs de ${newMatricule} est ${this.validationResult}`);
+    }
+
+    private getBackendErrorMessage(error: any): string {
+        const details = error?.error?.errors;
+        if (typeof details === 'string' && details.trim()) {
+            return details;
+        }
+        if (Array.isArray(details) && details.length) {
+            return details.map(item => item?.message || item).join('<br>');
+        }
+        return error?.error?.message || 'La modification a échoué. Consultez les journaux du backend.';
     }
 
     onTypeMatriculeChange(typeCode: string): void {

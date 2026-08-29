@@ -48,6 +48,16 @@ export class AddImputationBulletinComponent implements OnInit {
           //this.Imputation = data.data
           this.utilisateur = data.data.utilisateur
           console.log("add imputation part ==== >",this.utilisateur);
+        },
+        error : (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Agent introuvable',
+            text: error?.error?.message ?? "Impossible de retrouver les informations de l'agent pour le matricule saisi.",
+            showConfirmButton: true,
+          }).then(() => {
+            this.router.navigate(['carrieres/inputation-bulletin']);
+          })
         }
       })
   

@@ -70,7 +70,7 @@
                             <label class="form-label">Type de demande</label>
                             <select class="form-select" formControlName="typeDemande" required>
                                 <option value="" selected>Sélectionner</option>
-                                <option value="Imputation budgétaire" *ngIf="utilisateur.typeMatricule.code=='MATFONC' || utilisateur.typeMatricule.code=='MATDEE'" >Imputation budgétaire</option>
+                                <option value="Imputation budgétaire" *ngIf="utilisateur?.typeMatricule?.code=='MATFONC' || utilisateur?.typeMatricule?.code=='MATDEE'" >Imputation budgétaire</option>
                                 <option value="Bulletin de visite" >Bulletin de visite</option>
                             </select>
                         </div>

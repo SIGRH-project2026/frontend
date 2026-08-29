@@ -172,9 +172,33 @@ export class UtilisateurService {
     telephone: string,
     email: string,
   ): Observable<ResponseApiData> {
-    // console.log(`${environment.apiUrl}utilisateur/central/listCenPage?page=${page}&size=${size}&region=${region}&direction=${direction}&division=${division}&bureau=${bureau}&specialite=${specialite}&corps=${corps}&grade=${grade}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&dateNaissance=${dateNaissance}&cni=${cni}&telephone=${telephone}&email=${email}`)
+    // Les valeurs du formulaire de recherche avancée peuvent valoir `null`
+    // (ex. après un <button type="reset">, qui réinitialise un FormGroup
+    // Angular à `null` et non à la valeur initiale ''). Les params sont donc
+    // passés via HttpParams avec un repli `?? ""`, comme getAllDecoUser :
+    // l'ancienne interpolation de template littérale envoyait la valeur
+    // `null` telle quelle, ce qui produisait le paramètre `dateNaissance=null`
+    // (texte "null"), rejeté par le backend lors du parsing de la date.
+    const params = new HttpParams()
+      .set("page", Math.max(0, page ?? 0))
+      .set("size", size ?? 10)
+      .set("region", (region ?? "").trim())
+      .set("direction", (direction ?? "").trim())
+      .set("division", (division ?? "").trim())
+      .set("bureau", (bureau ?? "").trim())
+      .set("specialite", (specialite ?? "").trim())
+      .set("corps", (corps ?? "").trim())
+      .set("grade", (grade ?? "").trim())
+      .set("matricule", (matricule ?? "").trim())
+      .set("prenom", (prenom ?? "").trim())
+      .set("nom", (nom ?? "").trim())
+      .set("dateNaissance", (dateNaissance ?? "").trim())
+      .set("cni", (cni ?? "").trim())
+      .set("telephone", (telephone ?? "").trim())
+      .set("email", (email ?? "").trim());
     return this._http.get<ResponseApiData>(
-      `${environment.apiUrl}utilisateur/central/listCenPage?page=${page}&size=${size}&region=${region}&direction=${direction}&division=${division}&bureau=${bureau}&specialite=${specialite}&corps=${corps}&grade=${grade}&matricule=${matricule}&prenom=${prenom}&nom=${nom}&dateNaissance=${dateNaissance}&cni=${cni}&telephone=${telephone}&email=${email}`,
+      `${environment.apiUrl}utilisateur/central/listCenPage`,
+      { params },
     );
   }
 
