@@ -7,6 +7,7 @@ import { UserDTOs } from 'src/app/models/UserDTOs';
 import { ResponseApi2 } from 'src/app/shared/models/ResponseApi';
 import { environment } from 'src/environments/environment';
 import { FileService } from 'src/app/shared/services/files/file.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-view-demande-recus',
@@ -21,6 +22,10 @@ export class ViewDemandeRecusComponent {
   fileUrl = environment.apiUrl + "file/download"
   uploadurl="C:/Users/hthiam/Desktop/Gainde2000/SIGRH_MFPAI/docs/files/";
   fileContent: any;
+  previewUrl: string | null = null;
+  previewSafeUrl: SafeResourceUrl | null = null;
+  previewName = '';
+  previewType = '';
 
   
   constructor(
@@ -29,6 +34,7 @@ export class ViewDemandeRecusComponent {
     private readonly activatedRoute: ActivatedRoute,
     private readonly acteService: ActeService,
     private readonly fileService:FileService,
+    private readonly sanitizer: DomSanitizer,
     ) { 
       this.actId = this.activatedRoute.snapshot.paramMap.get('demandeId')
     }
@@ -86,9 +92,44 @@ visualiser(fileName: string): void {
 }
 
 
-visualiser2(fileName: string): void {
-  this.fileService.openPdfInNewTab(fileName)
-  };
+visualiser2(file: any): void {
+  const fileName = typeof file === 'string' ? file : file?.generatedName;
+  if (!fileName) return;
+
+  this.closePreview();
+  this.fileService.getFile(fileName).subscribe({
+    next: (blob: Blob) => {
+      this.previewUrl = URL.createObjectURL(blob);
+      this.previewSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+      this.previewName = file?.originalName || fileName;
+      this.previewType = blob.type || file?.fileType || '';
+    },
+    error: () => this.fileService.showSwal('error', 'Impossible d’ouvrir ce document.')
+  });
+}
+
+closePreview(): void {
+  if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+  this.previewUrl = null;
+  this.previewSafeUrl = null;
+  this.previewName = '';
+  this.previewType = '';
+}
+
+isImagePreview(): boolean { return this.previewType.startsWith('image/'); }
+
+isPreviewSupported(): boolean {
+  return this.isImagePreview() || this.previewType === 'application/pdf' || this.previewType.startsWith('text/');
+}
+
+getFileExtension(file: any): string {
+  const name = file?.originalName || file?.generatedName || file || '';
+  return (name.includes('.') ? name.split('.').pop() : 'DOC').toUpperCase();
+}
+
+formatFileSize(size?: number | null): string {
+  return size ? `${size} Ko` : '';
+}
 
 
 

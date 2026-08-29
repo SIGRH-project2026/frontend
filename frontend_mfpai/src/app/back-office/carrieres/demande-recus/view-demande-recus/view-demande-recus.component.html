@@ -1,34 +1,34 @@
 <div class="panel-form">
     <div class="panel-form-header">
         <div class="panel-form-text">
-            <h3>Détails Acte N° {{acte?.referenceActe}}</h3>
+            <h3>Détails de la demande d'acte N° {{ acte?.referenceActe }}</h3>
               <ul class="panel-infos">
                   <li>
                       <span>N° Référence : </span>
                       <span>{{acte?.referenceActe}}</span>
                   </li>
                   <li>
-                      <span>Matricule : </span>
-                      <span>{{acte?.agent?.matricule}}</span>
+                      <span>Date de demande : </span>
+                      <span>{{ acte?.dateDemandeActe | date:'dd/MM/yyyy' }}</span>
                   </li>
                   <li>
                       <span>Statut : </span>
-                      <span>{{acte?.statutActe?.libelle}}</span>
+                      <span [appStatus]="acte?.statutActe?.code || ''" class="status-badge">{{acte?.statutActe?.libelle}}</span>
                   </li>
               </ul>
 
               <!--######## Motif du rejet ########-->
                 
-              <ng-container *ngIf="acte?.statutActe?.code === 'INVALIDE'">
-                <div id="motif-rejet">
+              <ng-container *ngIf="acte?.motifRejetDemande">
+                <div id="motif-rejet" class="request-message">
                     <h6 class="title-motif">Motif du rejet</h6>
                     <p>{{acte?.motifRejetDemande}}</p>
                 </div>
               </ng-container>
                 
                 <!--######## Motif de modification ########-->
-                <ng-container *ngIf="acte?.statutActe?.code === 'AMODIFIER'">
-                    <div id="motif-modification">
+                <ng-container *ngIf="acte?.motifModification">
+                    <div id="motif-modification" class="request-message">
                         <h6 class="title-motif">Motif de modification</h6>
                         <p>
                             {{acte?.motifModification}}
@@ -39,6 +39,8 @@
     </div>
     <div class="panel-list-body">
         <form>
+            <section class="detail-section">
+            <h5>Informations sur l'acte</h5>
             <div class="row g-3">
              <!--    <div class="col-sm-4">
                     <label class="form-label">Acte</label>
@@ -50,6 +52,10 @@
                     <label class="form-label">Acte</label>
                     <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.typeActe?.libelleActe" disabled />
                 </div> -->
+                <div class="col-sm-4">
+                    <label class="form-label">Catégorie d'acte</label>
+                    <input type="text" class="form-control" [value]="acte?.typeActe?.libelleActe || ''" disabled />
+                </div>
                 <ng-container *ngIf="acte?.typeActe?.codeActe==='aa'">
                     <div class="col-sm-4">
                         <label class="form-label">Type d'acte</label>
@@ -66,6 +72,18 @@
 
                 </ng-container>
 
+                <ng-container *ngIf="acte?.dateDebut">
+                    <div class="col-sm-4"><label class="form-label">Date de début</label><input type="text" class="form-control" [value]="acte?.dateDebut | date:'dd/MM/yyyy'" disabled /></div>
+                </ng-container>
+                <ng-container *ngIf="acte?.dateFin">
+                    <div class="col-sm-4"><label class="form-label">Date de fin</label><input type="text" class="form-control" [value]="acte?.dateFin | date:'dd/MM/yyyy'" disabled /></div>
+                </ng-container>
+            </div>
+            </section>
+
+            <section class="detail-section">
+            <h5>Informations sur l'agent</h5>
+            <div class="row g-3">
                 <div class="col-sm-4">
                     <label class="form-label">Matricule</label>
                     <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.matricule" disabled />
@@ -128,66 +146,25 @@
                     <label class="form-label">Téléphone</label>
                     <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.agent?.telephone" disabled />
                 </div>
-                <div *ngIf="acte?.typeAG?.typeSortie==='STEM' || acte?.typeAA?.typeSortie==='STEM'" class="posDate">
-                    <ng-container *ngIf="acte?.dateDebut">
-                        <div class="col-sm-4">
-                            <label class="form-label">Date de Début</label>
-                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.dateDebut" disabled />
-                        </div>
-                    </ng-container>
-                    <ng-container *ngIf="acte?.dateFin">
-                        <div class="col-sm-4">
-                            <label class="form-label">Date de Fin</label>
-                            <input type="text" class="form-control" placeholder="Saisir" [value]="acte?.dateFin" disabled />
-                        </div>
-                    </ng-container>
-                </div>
             </div>
+            </section>
 
-            <div class="row mt-3">
-<!--                 <div class="col-sm-12">
- -->                <label class="form-label">Pièces Justificatives</label>
-                <div class="row gx-3 gy-1 doc-files">
-                    <div class="col-sm-4" *ngFor="let item of acte?.pieceJointes">
-                        <div class="doc-file-item">
-                            <div class="text-icon">
-                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-                                <div class="text">
-                                    <p>{{item.originalName}}</p>
-                                    <span>{{item.fileSize}}Ko</span>
-                                </div>
-                            </div>
-                            <button class="fab-button" type="button" (click)="telecharger(item.generatedName)">
-                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                            </button>
-
-                             <button class="fab-button" type="button" (click)="visualiser2(item.generatedName)">
-                                <i class="fas fa-eye" title="Visualiser"></i> 
-                              </button> 
-                        </div>
-                    </div>
-                </div>
+            <section class="detail-section">
+            <div class="documents-heading"><div><span>Pièces jointes</span><h3>Documents associés</h3></div><span class="count-badge">{{ (acte?.pieceJointes?.length || 0) + (acte?.currentBordereau?.fileName ? 1 : 0) }}</span></div>
+            <div *ngIf="acte?.pieceJointes?.length || acte?.currentBordereau?.fileName; else noDocuments" class="document-grid">
+                <article *ngFor="let item of acte?.pieceJointes" class="document-card">
+                    <div class="file-type extension">{{ getFileExtension(item) }}</div>
+                    <div class="file-details"><span class="document-kind">Justificatif</span><strong>{{ item.originalName || 'Pièce jointe' }}</strong><small>{{ formatFileSize(item.fileSize) }}</small></div>
+                    <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser2(item)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="telecharger(item.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
+                </article>
+                <article *ngIf="acte?.currentBordereau?.fileName" class="document-card generated">
+                    <div class="file-type"><i class="fas fa-file-signature"></i></div>
+                    <div class="file-details"><span class="document-kind">Bordereau</span><strong>{{ acte.currentBordereau.fileName }}</strong></div>
+                    <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser2(acte.currentBordereau.fileName)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="telecharger(acte.currentBordereau.fileName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
+                </article>
             </div>
-             <div *ngIf="acte?.statutActe?.code !=='SOUMIS' || !acte.statutActe?.code?.includes('valide')" class="col-sm-3">
-                <label class="form-label">Bordereau</label>
-                <div  class="row gx-3 gy-1 doc-files">
-                        <div  class="doc-file-item">
-                            <div class="text-icon">
-                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-                                <div class="text">
-                                    <p>{{acte?.currentBordereau?.fileName}}</p>
-<!--                                     <span>{{item?.fileSize}}Ko</span>
- -->                                </div>
-                            </div>
-                            <button class="fab-button" type="button" (click)="telecharger(acte.currentBordereau.fileName)">
-                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                            </button>
-                            <button class="fab-button" type="button" (click)="visualiser2(acte.currentBordereau.fileName)">
-                                <i class="fas fa-eye" title="Visualiser"></i> 
-                              </button> 
-                         </div>
-                        </div>
-            </div> 
+            <ng-template #noDocuments><div class="empty-documents"><i class="far fa-folder-open"></i><strong>Aucun document disponible</strong><span>Les justificatifs et le bordereau apparaîtront ici.</span></div></ng-template>
+            </section>
 
             <!-- <div class="row mt-3">
                 
@@ -196,14 +173,15 @@
 
             
 
+            <section class="detail-section">
+            <h5>Commentaire</h5>
             <div class="row mt-3">
                 <div class="col-sm-12">
                     <label class="form-label">Commentaire</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" [value]="acte?.commentaire"
-                        rows="3">
-                    </textarea>
+                    <textarea class="form-control" [value]="acte?.commentaire || ''" rows="3" readonly></textarea>
                 </div>
             </div>
+            </section>
 
         </form>
 
@@ -211,4 +189,11 @@
             <i class="fa fa-arrow-left"></i>
             Retour</button>
     </div>
+</div>
+
+<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()">
+    <section class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header>
+        <div class="preview-body"><img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName"><iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe><div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file-circle-exclamation"></i><h4>Aperçu non disponible</h4><p>Téléchargez ce document pour l'ouvrir avec l'application adaptée.</p></div></div>
+    </section>
 </div>
