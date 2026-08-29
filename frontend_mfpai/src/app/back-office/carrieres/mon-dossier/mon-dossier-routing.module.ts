@@ -7,9 +7,6 @@ const routes: Routes = [
   {
     path: '',
     component: MainComponent,
-    data: {
-      breadcrumb: 'Mon Dossier / Details'
-    },
     children: [
       {
         path: '',

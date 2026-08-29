@@ -21,6 +21,7 @@ const routes: Routes = [
           role: [
               'Chef-division-dgcaa',
               'Chef-bureau-dgcaa',
+              'Agent-bureau-dgcaa',
               'ADMIN-DRH',
               'Directeur-DRH',
               'Assistant-DRH'],
@@ -30,7 +31,15 @@ const routes: Routes = [
       {
         path: 'create-dossier-agent/:matricule',
         component : AddDossierAgentComponent,
+        canActivate: [IsRoleGuard],
         data: {
+          role: [
+            'Chef-division-dgcaa',
+            'Chef-bureau-dgcaa',
+            'Agent-bureau-dgcaa',
+            'ADMIN-DRH',
+            'Directeur-DRH'
+          ],
           breadcrumb : 'Formulaire de création'
         }
       },

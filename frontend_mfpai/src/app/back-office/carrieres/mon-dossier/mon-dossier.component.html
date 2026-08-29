@@ -1,237 +1,105 @@
-<!-- Loader -->
-<div *ngIf="isLoading" class="text-center p-5">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Chargement...</span>
+<div *ngIf="isLoading" class="dossier-state"><div class="spinner-border text-primary"></div><p>Chargement du dossier...</p></div>
+<div *ngIf="!isLoading && error" class="alert alert-danger m-3"><i class="fas fa-exclamation-triangle me-2"></i>{{ message }}</div>
+<div *ngIf="!isLoading && !hasDossier && !error" class="dossier-state empty-state">
+  <i class="fas fa-folder-open"></i><h4>Votre dossier n'est pas encore disponible</h4>
+  <p>Les informations et pièces jointes seront visibles ici dès leur ajout par la Division des Carrières.</p>
+</div>
+
+<main *ngIf="!isLoading && hasDossier" class="dossier-page">
+  <div *ngIf="!isPersonalDossier" class="context-toolbar">
+    <button type="button" class="back-button" (click)="retourListeDossiers()"><i class="fas fa-arrow-left"></i><span>Retour à la liste des dossiers</span></button>
+    <div class="context-path"><span>Dossiers agents</span><i class="fas fa-chevron-right"></i><strong>Détail du dossier</strong></div>
+  </div>
+  <header class="dossier-hero">
+    <div class="agent-avatar">{{ utilisateur?.prenom?.charAt(0) }}{{ utilisateur?.nom?.charAt(0) }}</div>
+    <div class="hero-copy">
+      <span class="eyebrow">{{ isPersonalDossier ? 'Espace personnel' : 'Consultation administrative' }}</span>
+      <h2>{{ isPersonalDossier ? 'Mon dossier agent' : 'Dossier de ' + viewedAgentName }}</h2>
+      <div class="agent-meta">
+        <span><i class="fas fa-id-badge"></i>{{ utilisateur?.matricule || 'Non renseigné' }}</span>
+        <span><i class="fas fa-user"></i>{{ utilisateur?.prenom }} {{ utilisateur?.nom }}</span>
+        <span><i class="fas fa-folder"></i>Dossier N° {{ dossier?.id }}</span>
+      </div>
     </div>
-    <p class="mt-2">Chargement de votre dossier...</p>
-</div>
+    <div class="document-count"><strong>{{ EtatCivilList.length + situationList.length + diplomeList.length }}</strong><span>document(s)</span></div>
+  </header>
 
-<!-- Message d'erreur -->
-<div *ngIf="!isLoading && error" class="alert alert-danger m-3">
-    <i class="fas fa-exclamation-triangle"></i>
-    {{ message }}
-</div>
-
-<!-- Message si pas de dossier -->
-<div *ngIf="!isLoading && !hasDossier && !error" class="alert alert-warning text-center p-4 m-3">
-    <i class="fas fa-folder-open fa-3x mb-2"></i>
-    <h5>Vous n'avez pas encore de dossier</h5>
-    <p>Vos pièces jointes ne sont pas encore chargées.</p>
-    <hr>
-    <small class="text-muted">
-        <i class="fas fa-info-circle"></i>
-        Pour toute question relative à votre dossier, veuillez contacter la Division des Carrières :
-        <br>
-        <i class="fas fa-phone"></i> 33 123 45 67 | 
-        <i class="fas fa-envelope"></i> carriere@gainde2000.sn
-    </small>
-</div>
-
-<!-- Afficher le dossier seulement s'il existe -->
-<div *ngIf="!isLoading && hasDossier" class="panel-form">
-    <div class="panel-form-header">
-        <div class="panel-form-text flex-column align-items-start w-100">
-            <!-- <h3>Dossier N° {{dossier?.id}}</h3> -->
-             <!-- Titre différent selon que c'est le dossier personnel ou non -->
-        <h3 *ngIf="isPersonalDossier">Mon Dossier N° {{dossier?.id}}</h3>
-        <h3 *ngIf="!isPersonalDossier">
-            Dossier de {{ viewedAgentName || (utilisateur?.prenom + ' ' + utilisateur?.nom) }}
-            <small class="text-muted d-block">Matricule: {{ utilisateur?.matricule }}</small>
-        </h3>
-            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-                <mat-tab label="Etat Civil">
-                    <div class="row details g-3 py-3">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Matricule</span>
-                                <span>{{ utilisateur?.matricule }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Prénoms</span>
-                                <span>{{ utilisateur?.prenom }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Nom</span>
-                                <span>{{ utilisateur?.nom }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Téléphone</span>
-                                <span>{{ utilisateur?.telephone }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Email</span>
-                                <span>{{ utilisateur?.email }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Adresse</span>
-                                <span>{{ utilisateur?.adresse }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Sexe</span>
-                                <span>{{ utilisateur?.sexe }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Situation matrimoniale</span>
-                                <span>{{ utilisateur?.situationMatrimoniale }}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <h3 class="title-section-infos mt-3">Fichiers</h3>
-                        </div>
-                        <!-- Table -->
-                        <div class="table-responsive">
-                            <table class="table table-custom table-striped">
-                                <thead>
-                                    <tr class="table-light">
-                                        <th scope="col" *ngFor="let head of headersEtatCivile">{{ head }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <ng-container *ngIf="EtatCivilList.length > 0;else listEmptyEtatCivil;">
-                                        <tr *ngFor="let data of EtatCivilList">
-                                            <td>{{ data?.nomFichier }}</td>
-                                            <td>
-                                                <div class="doc-file-item">
-                                                    <div class="text-icon">
-                                                        <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-                                                    </div>
-                                                    <button class="fab-button" type="button" (click)="Telecharger(data.piecejointes.generatedName)">
-                                                        <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </ng-container>
-                                    <ng-template #listEmptyEtatCivil>
-                                        <tr>
-                                            <td [attr.colspan]="headersEtatCivile.length">
-                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
-                                            </td>
-                                        </tr>
-                                    </ng-template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </mat-tab>
-                
-                <mat-tab label="Situations administratives">
-                    <div class="py-3">
-                        <div class="panel-list-search">
-                            <div class="search">
-                                <div class="search-box">
-                                    <input class="search-input" type="text" placeholder="Rechercher">
-                                    <button class="search-btn"><i class="fas fa-search"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-custom table-striped">
-                                <thead>
-                                    <tr class="table-light">
-                                        <th scope="col" *ngFor="let head of headersSituation">{{ head }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <ng-container *ngIf="situationList.length > 0 ; else listEmptySituation;">
-                                        <tr *ngFor="let sit of situationList">
-                                            <td>{{ sit?.numeroActe }}</td>
-                                            <td>{{ sit?.dateActe }}</td>
-                                            <td>{{ sit.typeActe?.libelleActe}}</td>
-                                            <td>{{ sit.acteAA?.libelle }}{{ sit.acteAG?.libelle }}</td>
-                                            <td>
-                                                <div class="doc-file-item">
-                                                    <div class="text-icon">
-                                                        <img src="assets/icons/pdf.png" width="25px" alt="PDF">
-                                                        <div class="text">
-                                                            <button class="fab-button" type="button" (click)="Telecharger(sit.pieceJointes.generatedName)">
-                                                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </ng-container>
-                                    <ng-template #listEmptySituation>
-                                        <tr>
-                                            <td [attr.colspan]="headersSituation.length">
-                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
-                                            </td>
-                                        </tr>
-                                    </ng-template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </mat-tab>
-                
-                <mat-tab label="Diplômes">
-                    <div class="py-3">
-                        <div class="panel-list-search">
-                            <div class="search">
-                                <div class="search-box">
-                                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="searchTextDiplome">
-                                    <button class="search-btn"><i class="fas fa-search"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-custom table-striped">
-                                <thead>
-                                    <tr class="table-light">
-                                        <th scope="col" *ngFor="let head of headersDiplome">{{ head }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <ng-container *ngIf="diplomeList && diplomeList.length > 0;else listEmptyDiplome;">
-                                        <tr *ngFor="let data of diplomeList | search2Pipe :searchTextDiplome">
-                                            <td>{{ data?.dipDateObtention }}</td>
-                                            <td>{{ data?.dipNom }}</td>
-                                            <td>
-                                                <div class="doc-file-item">
-                                                    <div class="text-icon">
-                                                        <img src="assets/icons/pdf.png" width="25px" alt="PDF">
-                                                        <div class="text">
-                                                            <p>{{ data?.pieceJointes?.originalName }}</p>
-                                                            <button class="fab-button" type="button" (click)="Telecharger(data.pieceJointes.generatedName)">
-                                                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </ng-container>
-                                    <ng-template #listEmptyDiplome>
-                                        <tr>
-                                            <td [attr.colspan]="headersDiplome.length">
-                                                <p class="text-black-50 text-center m-0">Aucune donnée disponible</p>
-                                            </td>
-                                        </tr>
-                                    </ng-template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </mat-tab>
-            </mat-tab-group>
+  <section class="dossier-content">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="200ms">
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-address-card tab-icon"></i>État civil</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><div><span>Informations personnelles</span><h3>Identité et coordonnées</h3></div></div>
+          <div class="info-grid">
+            <div class="info-card"><i class="fas fa-id-card"></i><div><small>Matricule</small><strong>{{ utilisateur?.matricule || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-user"></i><div><small>Prénoms et nom</small><strong>{{ utilisateur?.prenom }} {{ utilisateur?.nom }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-phone"></i><div><small>Téléphone</small><strong>{{ utilisateur?.telephone || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-envelope"></i><div><small>Email</small><strong>{{ utilisateur?.email || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-location-dot"></i><div><small>Adresse</small><strong>{{ utilisateur?.adresse || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-venus-mars"></i><div><small>Sexe</small><strong>{{ utilisateur?.sexe || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-people-roof"></i><div><small>Situation matrimoniale</small><strong>{{ utilisateur?.situationMatrimoniale || '—' }}</strong></div></div>
+          </div>
+          <div class="section-heading documents-heading"><div><span>Pièces jointes</span><h3>Documents d'état civil</h3></div><span class="count-badge">{{ EtatCivilList.length }}</span></div>
+          <div *ngIf="EtatCivilList.length; else noEtatCivil" class="document-grid">
+            <article *ngFor="let data of EtatCivilList" class="document-card">
+              <div class="file-type">{{ getFileExtension(data?.piecejointes) }}</div>
+              <div class="file-details"><strong>{{ data?.nomFichier || data?.piecejointes?.originalName || 'Document' }}</strong><span>{{ data?.piecejointes?.originalName || 'Pièce jointe' }}</span><small>{{ formatFileSize(data?.piecejointes?.fileSize) }}</small></div>
+              <div *ngIf="data?.piecejointes; else missingFile" class="file-actions">
+                <button type="button" class="action-button view" (click)="visualiser(data.piecejointes)"><i class="fas fa-eye"></i><span>Visualiser</span></button>
+                <button type="button" class="action-button" (click)="Telecharger(data.piecejointes.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button>
+              </div>
+            </article>
+          </div>
+          <ng-template #noEtatCivil><div class="empty-documents"><i class="far fa-folder-open"></i>Aucun document d'état civil disponible.</div></ng-template>
         </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-briefcase tab-icon"></i>Situations administratives</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><div><span>Parcours administratif</span><h3>Actes et situations</h3></div><span class="count-badge">{{ situationList.length }}</span></div>
+          <div *ngIf="situationList.length; else noSituation" class="records-list">
+            <article *ngFor="let sit of situationList" class="record-card">
+              <div class="record-date"><i class="far fa-calendar"></i><span>{{ sit?.dateActe || 'Date non renseignée' }}</span></div>
+              <div class="record-main"><span class="record-kicker">{{ sit?.typeActe?.libelleActe || 'Acte administratif' }}</span><h4>{{ sit?.acteAA?.libelle || sit?.acteAG?.libelle || 'Situation administrative' }}</h4><small>Acte N° {{ sit?.numeroActe || '—' }}</small></div>
+              <div *ngIf="sit?.pieceJointes; else missingFile" class="attached-file">
+                <div class="mini-file"><span>{{ getFileExtension(sit.pieceJointes) }}</span><div><strong>{{ sit.pieceJointes.originalName || 'Pièce jointe' }}</strong><small>{{ formatFileSize(sit.pieceJointes.fileSize) }}</small></div></div>
+                <div class="file-actions compact"><button type="button" class="action-button view" (click)="visualiser(sit.pieceJointes)" aria-label="Visualiser"><i class="fas fa-eye"></i></button><button type="button" class="action-button" (click)="Telecharger(sit.pieceJointes.generatedName)" aria-label="Télécharger"><i class="fas fa-download"></i></button></div>
+              </div>
+            </article>
+          </div>
+          <ng-template #noSituation><div class="empty-documents"><i class="far fa-folder-open"></i>Aucune situation administrative disponible.</div></ng-template>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-graduation-cap tab-icon"></i>Diplômes</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><div><span>Formation</span><h3>Diplômes et certifications</h3></div><span class="count-badge">{{ diplomeList.length }}</span></div>
+          <div class="document-toolbar"><div class="document-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un diplôme" [(ngModel)]="searchTextDiplome"></div></div>
+          <div *ngIf="diplomeList.length; else noDiplome" class="document-grid">
+            <article *ngFor="let data of diplomeList | search2Pipe:searchTextDiplome" class="document-card diploma-card">
+              <div class="file-type diploma"><i class="fas fa-graduation-cap"></i></div>
+              <div class="file-details"><strong>{{ data?.dipNom || 'Diplôme' }}</strong><span>Obtenu le {{ data?.dipDateObtention || '—' }}</span><small>{{ data?.pieceJointes?.originalName || 'Aucune pièce jointe' }}</small></div>
+              <div *ngIf="data?.pieceJointes; else missingFile" class="file-actions"><button type="button" class="action-button view" (click)="visualiser(data.pieceJointes)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="Telecharger(data.pieceJointes.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
+            </article>
+          </div>
+          <ng-template #noDiplome><div class="empty-documents"><i class="far fa-folder-open"></i>Aucun diplôme disponible.</div></ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</main>
+
+<ng-template #missingFile><span class="missing-file"><i class="fas fa-link-slash"></i>Fichier indisponible</span></ng-template>
+
+<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()">
+  <section class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header>
+    <div class="preview-body">
+      <img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName">
+      <iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe>
+      <div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file-circle-exclamation"></i><h4>Aperçu non disponible pour ce format</h4><p>Téléchargez le document pour l'ouvrir avec l'application adaptée.</p></div>
     </div>
+  </section>
 </div>

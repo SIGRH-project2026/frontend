@@ -8,6 +8,7 @@ import { EtatCivil } from '../models/dossier-agent/etatCivil';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ActivatedRoute, Router } from '@angular/router';
 import { CredentialsService } from "../../../services/credentials.service";
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-mon-dossier',
@@ -47,6 +48,10 @@ export class MonDossierComponent implements OnInit {
    // Nouvelle propriété pour savoir si c'est le dossier personnel ou un autre
   isPersonalDossier = true;  // true = "Mon dossier", false = "Dossier d'un autre agent"
   viewedAgentName = '';
+  previewUrl: string | null = null;
+  previewSafeUrl: SafeResourceUrl | null = null;
+  previewName = '';
+  previewType = '';
 
   constructor(
     private dossierAgentService: DossierAgentService,
@@ -55,6 +60,7 @@ export class MonDossierComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private spinner: NgxSpinnerService,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -188,8 +194,8 @@ export class MonDossierComponent implements OnInit {
         console.log("✅ Réponse dossier personnel:", response);
         const data = response.data;
         
-        this.hasDossier = data?.hasDossier || false;
-        this.canCreateDossier = data?.canCreateDossier || false;
+        this.hasDossier = Boolean(data?.id && data.id !== 0);
+        this.canCreateDossier = !this.hasDossier;
         this.message = response.message || '';
         
         if (this.hasDossier && data) {
@@ -302,6 +308,70 @@ export class MonDossierComponent implements OnInit {
       },
       (error) => console.error(error)
     );
+  }
+
+  visualiser(pieceJointe: any): void {
+    const filename = pieceJointe?.generatedName;
+    if (!filename) {
+      return;
+    }
+
+    this.closePreview();
+    this._httpClient.get(`${this.apiUrl}file/download/${filename}`, {
+      headers: {
+        accept: '*/*',
+        Authorization: `Bearer ${localStorage.getItem('Token')}`
+      },
+      responseType: 'blob'
+    }).subscribe({
+      next: (response: Blob) => {
+        this.previewUrl = URL.createObjectURL(response);
+        this.previewSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+        this.previewName = pieceJointe.originalName || filename;
+        this.previewType = response.type || pieceJointe.fileType || '';
+      },
+      error: (err) => {
+        console.error(err);
+        this.dossierAgentService.showSwal('error', 'Impossible d’ouvrir ce document.');
+      }
+    });
+  }
+
+  closePreview(): void {
+    if (this.previewUrl) {
+      URL.revokeObjectURL(this.previewUrl);
+    }
+    this.previewUrl = null;
+    this.previewSafeUrl = null;
+    this.previewName = '';
+    this.previewType = '';
+  }
+
+  isImagePreview(): boolean {
+    return this.previewType.startsWith('image/');
+  }
+
+  isPreviewSupported(): boolean {
+    return this.isImagePreview()
+      || this.previewType === 'application/pdf'
+      || this.previewType.startsWith('text/');
+  }
+
+  getFileExtension(pieceJointe: any): string {
+    const name = pieceJointe?.originalName || pieceJointe?.generatedName || '';
+    const extension = name.includes('.') ? name.split('.').pop() : 'DOC';
+    return (extension || 'DOC').toUpperCase();
+  }
+
+  formatFileSize(size?: number | null): string {
+    if (!size) return '';
+    if (size < 1024) return `${size} o`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} Ko`;
+    return `${(size / (1024 * 1024)).toFixed(1)} Mo`;
+  }
+
+  retourListeDossiers(): void {
+    this.router.navigate(['/carrieres/dossier-agents']);
   }
 
   refreshData() {

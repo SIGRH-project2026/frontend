@@ -6,12 +6,14 @@ const routes: Routes = [
    // path: 'mon-dossier/:idDossier',
     path: 'mon-dossier',
     loadChildren: () => import('./mon-dossier/mon-dossier.module').then(mod => mod.MonDossierModule),
+    data: { breadcrumb: 'Mon dossier' },
     //data: {role: ['Agent-bureau','Agent-bureau']}
   },
 
   {
     path: 'mon-dossier/:idDossier',
-    loadChildren: () => import('./mon-dossier/mon-dossier.module').then(m => m.MonDossierModule)
+    loadChildren: () => import('./mon-dossier/mon-dossier.module').then(m => m.MonDossierModule),
+    data: { breadcrumb: 'Dossiers agents / Détail du dossier' }
   },
   {
     path: 'dossier-agents',

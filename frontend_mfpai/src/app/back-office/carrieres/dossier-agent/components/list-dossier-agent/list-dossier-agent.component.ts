@@ -8,6 +8,7 @@ import { DossierAgent } from '../../../models/dossier-agent/dossier-agent';
 import { DossierAgentService } from '../../../services/dossier-agent/dossier-agent.service';
 import { SearchPipe } from '../../../Pipes/Search.pipe';
 import Swal from 'sweetalert2';
+import { CredentialsService } from 'src/app/services/credentials.service';
 
 @Component({
     selector: 'app-list-dossier-agent',
@@ -15,6 +16,14 @@ import Swal from 'sweetalert2';
     styleUrls: ['./list-dossier-agent.component.css']
 })
 export class ListDossierAgentComponent implements OnInit{
+  private readonly dossierManagerProfiles = new Set([
+    'ADMIN-DRH',
+    'Directeur-DRH',
+    'Chef-division-dgcaa',
+    'Chef-bureau-dgcaa',
+    'Agent-bureau-dgcaa'
+  ]);
+
   headers!: string[];
   page = 1;
 	pageSize = 10;
@@ -43,7 +52,13 @@ export class ListDossierAgentComponent implements OnInit{
     private dossierDossierAgentService: DossierAgentService,
     private readonly _dossierAgentService : DossierAgentService,  
     private _formBuilder: FormBuilder,
+    private credentialsService: CredentialsService,
    ) { }
+
+  get canManageDossiers(): boolean {
+    const profiles = this.credentialsService.getUserInfos()?.profil ?? [];
+    return profiles.some((profile: any) => this.dossierManagerProfiles.has(profile.code));
+  }
 
    searchData = {
     nom: '',
@@ -136,6 +151,14 @@ private getDismissReason(reason: any): string {
     // Utiliser la route avec paramètre
     this.router.navigate(['/carrieres/mon-dossier', dossierId]);
 }
+
+  redirectEdit(matricule: string): void {
+    if (!this.canManageDossiers || !matricule) {
+      return;
+    }
+
+    this.router.navigate(['create-dossier-agent', matricule], { relativeTo: this.route.parent });
+  }
 
   listDossierAgent() {
     //console.log("helloooooooo");

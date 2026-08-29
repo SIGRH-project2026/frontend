@@ -2,7 +2,7 @@
     <div class="panel-list-header">
         <div class="panel-list-text d-flex align-items-center justify-content-between">
             <h3>Liste des dossiers agents</h3>
-            <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)">
+            <button *ngIf="canManageDossiers" class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)">
                 <i class="fa fa-add"></i>
                 Créer un dossier
             </button>
@@ -66,6 +66,13 @@
                                             <a class="dropdown-item" href="javascript:(0)" (click)="redirectDetail(dossier.id)">
                                                 <i class="fa fa-eye me-2"></i>
                                                 <span>Voir détails</span>
+                                            </a>
+                                        </li>
+                                        <li *ngIf="canManageDossiers">
+                                            <a class="dropdown-item" href="javascript:(0)"
+                                                (click)="redirectEdit(dossier.utilisateur?.matricule)">
+                                                <i class="fa fa-edit me-2"></i>
+                                                <span>Modifier le dossier</span>
                                             </a>
                                         </li>
 

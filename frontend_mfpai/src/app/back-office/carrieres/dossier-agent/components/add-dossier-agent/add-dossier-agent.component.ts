@@ -337,9 +337,11 @@ export class AddDossierAgentComponent  implements OnInit{
                         })
                     }
 
-                    error: () => {
-                        this.dossierDossierAgentService.showSwal('error', 'Une erreur est survenue.  Vérifier vos informations.');
-                    }
+                },
+                error: (error: HttpErrorResponse) => {
+                    const message = error.error?.message
+                        ?? 'Une erreur est survenue. Vérifiez vos informations.';
+                    this.dossierDossierAgentService.showSwal('error', message);
                 }
             })
     }
@@ -593,4 +595,3 @@ export class AddDossierAgentComponent  implements OnInit{
     }
 
 }
-
