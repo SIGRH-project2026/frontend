@@ -2,18 +2,19 @@
     <div class="panel-form-header mb-0 border-bottom-0 pb-0">
         <div class="panel-form-text flex-column align-items-start w-100">
 
-            <h3>Détails demande de permutation {{permutation?.id}}</h3>
+            <span class="header-eyebrow">Détail de la demande</span>
+            <h3>Permutation N° {{permutation?.id}}</h3>
             <ul class="panel-infos">
                 <li>
-                    <span>N° Demande : </span>
+                    <span>N° demande</span>
                     <span>{{permutation?.id}}</span>
                 </li>
                 <li>
-                    <span>Date demande : </span>
+                    <span>Date de demande</span>
                     <span>{{permutation?.datePermutation | date : 'dd/MM/yyyy'}}</span>
                 </li>
                 <li>
-                    <span>Status : </span>
+                    <span>Statut</span>
                     <span>{{permutation?.traitementPermutation?.statut?.libelle}}</span>
                 </li>
             </ul>
@@ -40,7 +41,8 @@
                     </div>
                     <div class="card-user-body">
                         <div class="card-info-user">
-                            <h6>{{permutation?.utilisateur1?.prenom+" "+permutation.utilisateur1?.nom}}</h6>
+                            <span class="participant-label">Premier agent</span>
+                            <h6>{{permutation?.utilisateur1?.prenom}} {{permutation?.utilisateur1?.nom}}</h6>
                             <p>{{permutation?.utilisateur1?.matricule}}</p>
                         </div>
                         <hr class="h-divider">
@@ -78,7 +80,7 @@
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Région</span>
-                                        <span>{{permutation?.utilisateur1?.region?.label}}</span>
+                                        <span>{{permutation?.utilisateur2?.region?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -87,7 +89,7 @@
                                         <span>{{permutation?.utilisateur1?.ia?.label}}</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-6" *ngIf="permutation?.utilisateur1?.ief">
+                                <div class="col-lg-6" *ngIf="permutation?.utilisateur2?.ief">
                                     <div class="details-item">
                                         <span>IEF</span>
                                         <span>{{permutation?.utilisateur1?.ief?.label}}</span>
@@ -118,7 +120,8 @@
                     </div>
                     <div class="card-user-body">
                         <div class="card-info-user">
-                            <h6>{{permutation?.utilisateur2?.prenom+" "+permutation?.utilisateur2?.nom}}</h6>
+                            <span class="participant-label">Second agent</span>
+                            <h6>{{permutation?.utilisateur2?.prenom}} {{permutation?.utilisateur2?.nom}}</h6>
                             <p>{{permutation?.utilisateur2?.matricule}}</p>
                         </div>
                         <hr class="h-divider">

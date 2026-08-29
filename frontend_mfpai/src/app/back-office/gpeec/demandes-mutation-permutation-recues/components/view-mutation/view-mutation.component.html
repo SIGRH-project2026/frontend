@@ -1,30 +1,31 @@
 <div class="panel-form">
     <div class="panel-form-header mb-0 border-bottom-0 pb-0">
         <div class="panel-form-text flex-column align-items-start w-100">
-        <h3>Détails demande de mutation N° {{mutation.numeroRef}}</h3>
+        <span class="header-eyebrow">Détail de la demande</span>
+        <h3>Mutation N° {{mutation?.numeroRef}}</h3>
             <ul class="panel-infos">
                 <li>
-                    <span>N° Demande : </span>
+                    <span>N° demande</span>
                     <span>{{mutation.numeroRef}}</span>
                 </li>
                 <li>
-                    <span>Date demande : </span>
-                    <span>{{mutation.dateDemande}}</span>
+                    <span>Date de demande</span>
+                    <span>{{mutation?.dateDemande | date:'dd/MM/yyyy'}}</span>
                 </li>
                 <li>
-                    <span>Status : </span>
-                <span>{{mutation.traitementMutation.statut.libelle}}</span>
+                    <span>Statut</span>
+                <span>{{mutation?.traitementMutation?.statut?.libelle}}</span>
                 </li>
             </ul>
 
-            <div *ngIf="mutation.traitementMutation.statut.code ==='REJETER'" id="motif-rejet">
+            <div *ngIf="mutation?.traitementMutation?.statut?.code ==='REJETER'" id="motif-rejet">
                 <h6 class="title-motif">Motif du rejet</h6>
-                <p>{{mutation.traitementMutation.motif}}</p>
+                <p>{{mutation?.traitementMutation?.motif}}</p>
             </div>
 
-            <div *ngIf="mutation.traitementMutation.statut.code ==='AMODIFIER'" id="motif-modification">
+            <div *ngIf="mutation?.traitementMutation?.statut?.code ==='AMODIFIER'" id="motif-modification">
                 <h6 class="title-motif">Motif de modification</h6>
-                <p>{{mutation.traitementMutation.motif}}</p>
+                <p>{{mutation?.traitementMutation?.motif}}</p>
             </div>
         </div>
     </div>
@@ -160,4 +161,3 @@
             <i class="fa fa-arrow-left"></i>
             Retour</button>
     </div>
-

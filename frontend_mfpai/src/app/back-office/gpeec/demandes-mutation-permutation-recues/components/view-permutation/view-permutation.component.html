@@ -2,36 +2,31 @@
     <div class="panel-form-header mb-0 border-bottom-0 pb-0">
         <div class="panel-form-text flex-column align-items-start w-100">
 
-            <h3>Détails demande de permutation N° 1001</h3>
+            <span class="header-eyebrow">Détail de la demande</span>
+            <h3>Permutation N° {{permutation?.id}}</h3>
             <ul class="panel-infos">
                 <li>
-                    <span>N° Demande : </span>
-                    <span>Lorem ipsum</span>
+                    <span>N° demande</span>
+                    <span>{{permutation?.id}}</span>
                 </li>
                 <li>
-                    <span>Date demande : </span>
-                    <span>Lorem ipsum</span>
+                    <span>Date de demande</span>
+                    <span>{{permutation?.datePermutation | date : 'dd/MM/yyyy'}}</span>
                 </li>
                 <li>
-                    <span>Status : </span>
-                    <span>Lorem ipsum</span>
+                    <span>Statut</span>
+                    <span>{{permutation?.traitementPermutation?.statut?.libelle}}</span>
                 </li>
             </ul>
 
-            <div id="motif-rejet">
+            <div id="motif-rejet" *ngIf="permutation?.traitementPermutation?.statut?.code=='REJETER'">
                 <h6 class="title-motif">Motif du rejet</h6>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel dolorem voluptates sapiente magnam,
-                    nobis
-                    voluptatibus aperiam expedita iste tempore, velit hic minima non vitae et nulla illo omnis quam
-                    possimus!</p>
+                <p>{{permutation?.traitementPermutation?.motif}}</p>
             </div>
 
-            <div id="motif-modification">
+            <div id="motif-modification" *ngIf="permutation?.traitementPermutation?.statut?.code=='AMODIFIER'">
                 <h6 class="title-motif">Motif de modification</h6>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel dolorem voluptates sapiente magnam,
-                    nobis
-                    voluptatibus aperiam expedita iste tempore, velit hic minima non vitae et nulla illo omnis quam
-                    possimus!</p>
+                <p>{{permutation?.traitementPermutation?.motif}}</p>
             </div>
 
         </div>
@@ -46,34 +41,35 @@
                     </div>
                     <div class="card-user-body">
                         <div class="card-info-user">
-                            <h6>Lamine DIEME</h6>
-                            <p>mat001</p>
+                            <span class="participant-label">Premier agent</span>
+                            <h6>{{permutation?.utilisateur1?.prenom}} {{permutation?.utilisateur1?.nom}}</h6>
+                            <p>{{permutation?.utilisateur1?.matricule}}</p>
                         </div>
                         <hr class="h-divider">
                         <div class="card-info-details">
                             <div class="row details g-3">
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>Date de naissance</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Corps</span>
+                                        <span>{{permutation?.utilisateur1?.corpsGrade?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>Lieu de naissance</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Grade</span>
+                                        <span>{{permutation?.utilisateur1?.grade?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Adresse</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur1?.adresse}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Email</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur1?.email}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -84,25 +80,31 @@
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Région</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur2?.region?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>IA</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur1?.ia?.label}}</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-6" *ngIf="permutation?.utilisateur2?.ief">
                                     <div class="details-item">
                                         <span>IEF</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur1?.ief?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>CFP</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Etablissement</span>
+                                        <span>{{permutation?.utilisateur1?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{permutation?.utilisateur1?.speciality?.label}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -118,34 +120,35 @@
                     </div>
                     <div class="card-user-body">
                         <div class="card-info-user">
-                            <h6>Libasse YADE</h6>
-                            <p>mat002</p>
+                            <span class="participant-label">Second agent</span>
+                            <h6>{{permutation?.utilisateur2?.prenom}} {{permutation?.utilisateur2?.nom}}</h6>
+                            <p>{{permutation?.utilisateur2?.matricule}}</p>
                         </div>
                         <hr class="h-divider">
                         <div class="card-info-details">
                             <div class="row details g-3">
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>Date de naissance</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Corps</span>
+                                        <span>{{permutation?.utilisateur2?.corpsGrade?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>Lieu de naissance</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Grade</span>
+                                        <span>{{permutation?.utilisateur2?.grade?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Adresse</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur2?.adresse}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Email</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur2?.email}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -156,25 +159,31 @@
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>Région</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur1?.region?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
                                         <span>IA</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur2?.ia?.label}}</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-6" *ngIf="permutation?.utilisateur1?.ief">
                                     <div class="details-item">
                                         <span>IEF</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>{{permutation?.utilisateur2?.ief?.label}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="details-item">
-                                        <span>CFP</span>
-                                        <span>Lorem ipsum</span>
+                                        <span>Etablissement</span>
+                                        <span>{{permutation?.utilisateur2?.etablissement?.label}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="details-item">
+                                        <span>Spécialité</span>
+                                        <span>{{permutation?.utilisateur2?.speciality?.label}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -185,15 +194,11 @@
 
 
 
-            <div class="row details mt-4">
+            <div class="row details mt-4" *ngIf="permutation?.motifPermutation">
                 <div class="col-lg-12">
                     <div class="details-item">
                         <span>Motif</span>
-                        <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti, ipsam ipsum vel ipsa,
-                            non iste
-                            perspiciatis esse quidem deserunt corporis blanditiis, amet ex perferendis at. Et ratione
-                            deleniti deserunt
-                            sequi.</span>
+                        <span>{{permutation?.motifPermutation}}</span>
                     </div>
                 </div>
             </div>

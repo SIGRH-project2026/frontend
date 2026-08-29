@@ -335,7 +335,10 @@ export class ListMutationPermutationComponent implements OnInit {
   genererOSMutation(allMutation : boolean, idMutation : number){
     this.mutationService.genererOS(allMutation, idMutation).subscribe({
       next : (data: any) => {
-
+        if (!data?.payload) {
+          this.showOsError('Le fichier de l’ordre de service n’a pas été retourné.');
+          return;
+        }
         this.Telecharger(data.payload)
         Swal.fire({
           icon: 'success',
@@ -345,13 +348,20 @@ export class ListMutationPermutationComponent implements OnInit {
         }).then(() => {
           window.location.reload()
         })
-      }})
+      },
+      error: () => this.showOsError('La génération de l’ordre de service a échoué.')
+    })
   }
   genererOS(){
     this.permutationService.generateAllPermutation().subscribe({
       next : (data: any) => {
       //  console.log(data.data.payload);
-        this.Telecharger(data.data.payload)
+        const fileName = data?.data?.payload;
+        if (!fileName) {
+          this.showOsError('Le fichier de l’ordre de service n’a pas été retourné.');
+          return;
+        }
+        this.Telecharger(fileName)
         Swal.fire({
           icon: 'success',
           html: `<strong> Ordre de service généré avec succès </strong>`,
@@ -360,7 +370,9 @@ export class ListMutationPermutationComponent implements OnInit {
         }).then(() => {
           //window.location.reload()
         })
-      }})
+      },
+      error: () => this.showOsError('La génération des ordres de service a échoué.')
+    })
   }
 
   generate(id:number){
@@ -387,10 +399,15 @@ export class ListMutationPermutationComponent implements OnInit {
             timer: 2000
           })
         }
-      }
+      },
+      error: () => this.showOsError('La génération de l’ordre de service a échoué.')
     })
   }
   Telecharger(filename:string){
+    if (!filename) {
+      this.showOsError('Aucun ordre de service disponible au téléchargement.');
+      return;
+    }
  // this.spinner.show()
     this._httpClient.get(`${this.apiUrl}file/download/${filename}`, {
       headers: {
@@ -420,8 +437,17 @@ export class ListMutationPermutationComponent implements OnInit {
           URL.revokeObjectURL(blobUrl);
           //this.spinner.hide()
         },
-        (error) => console.log(error)
+        () => this.showOsError('Le téléchargement de l’ordre de service a échoué.')
     );
+  }
+
+  private showOsError(message: string): void {
+    this.spinner.hide();
+    Swal.fire({
+      icon: 'error',
+      text: message,
+      confirmButtonColor: '#225486'
+    });
   }
 
 
@@ -569,6 +595,10 @@ export class ListMutationPermutationComponent implements OnInit {
   }
 
   UploadPermutationOS(){
+    if (!this.piecesJointesFilesPermutationOs.length) {
+      this.showOsError('Veuillez sélectionner l’ordre de service signé.');
+      return;
+    }
     this.spinner.show()
     this.permutationService.uploadPermuatationOS(this.idPermutation, this.userInfos.id, this.piecesJointesFilesPermutationOs[0]).subscribe({
       next: (data : ResponseApi2) => {
@@ -591,11 +621,16 @@ export class ListMutationPermutationComponent implements OnInit {
               window.location.reload()
             })
           }
-      } 
+      },
+      error: () => this.showOsError('Le chargement de l’ordre de service signé a échoué.')
     })
   }
 
   onSaveDemandeOS() {
+    if (!this.piecesJointesFiles.length) {
+      this.showOsError('Veuillez sélectionner l’ordre de service signé.');
+      return;
+    }
     this.spinner.show()
     //  this.showSpinnerWithDelay(3000)
     this.mutationService.TraitementValider(this.idMutation, this.userInfos.id, this.piecesJointesFiles[0])
@@ -618,7 +653,7 @@ export class ListMutationPermutationComponent implements OnInit {
               window.location.reload()
             })
           }
-        })
+        }, () => this.showOsError('Le chargement de l’ordre de service signé a échoué.'))
   }
 
 

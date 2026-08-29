@@ -1,0 +1,184 @@
+.panel-form,
+.panel-list {
+  overflow: hidden;
+  border: 1px solid #e5eaf1;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(30, 53, 78, .06);
+}
+.panel-form-header {
+  padding: 1.5rem !important;
+  color: #fff;
+  background: linear-gradient(125deg, #194b78, #225486 58%, #286793);
+}
+.panel-form-header h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.panel-form-header .panel-form-text {
+  align-items: flex-start !important;
+}
+.header-eyebrow {
+  display: block;
+  margin-bottom: .25rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: #d7e8f6 !important;
+}
+.panel-form-header .panel-infos li {
+  gap: .45rem;
+  padding: .48rem .7rem;
+  border: 1px solid rgba(255, 255, 255, .18) !important;
+  border-radius: 9px;
+  color: #fff !important;
+  background: rgba(255, 255, 255, .1);
+}
+.panel-form-header .panel-infos li::before,
+.panel-form-header .panel-infos li::after {
+  display: none !important;
+}
+.panel-form-header .panel-infos li span {
+  color: #fff !important;
+}
+.panel-form-header .panel-infos li span:first-child {
+  font-size: .72rem;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: #d7e8f6 !important;
+}
+.card-user > .card-user-icon {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  float: none !important;
+  margin: 1.2rem auto .65rem !important;
+}
+.card-info-user {
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.participant-label {
+  display: block;
+  margin-bottom: .2rem;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #225486;
+}
+.card-info-user h6 {
+  width: 100%;
+  margin: 0 0 .25rem;
+  padding: 0 .5rem;
+  line-height: 1.35;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.card-info-user p {
+  margin-bottom: 0;
+}
+
+.panel-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem 1.2rem;
+  margin: .8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.panel-infos li {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: #e4eef7;
+}
+.panel-infos li span:first-child {
+  font-weight: 600;
+}
+#motif-rejet,
+#motif-modification {
+  width: 100%;
+  margin-top: 1rem;
+  padding: .85rem 1rem;
+  border-radius: 11px;
+  color: #344054;
+  background: #fff;
+}
+#motif-rejet { border-left: 4px solid #dc3545; }
+#motif-modification { border-left: 4px solid #f0ad4e; }
+.title-motif { margin-bottom: .3rem; }
+#motif-rejet p,
+#motif-modification p { margin: 0; white-space: pre-wrap; }
+.panel-list-body { padding: 1.25rem !important; }
+.details-item {
+  height: 100%;
+  min-height: 72px;
+  padding: .9rem 1rem;
+  border: 1px solid #e8edf3;
+  border-radius: 13px;
+  background: #fbfcfe;
+}
+.details-item > span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.details-item > span:first-child {
+  margin-bottom: .25rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #7b8798;
+}
+.details-item > span:last-child {
+  font-size: .88rem;
+  font-weight: 600;
+  color: #26364d;
+}
+.card-user {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #e4e9f0;
+  border-radius: 16px;
+  background: #fff;
+  transition: .2s;
+}
+.card-user:hover {
+  transform: translateY(-2px);
+  border-color: #b9ccdc;
+  box-shadow: 0 8px 20px rgba(28, 76, 111, .08);
+}
+.card-user-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin: 1.2rem auto .7rem;
+  border-radius: 15px;
+  font-size: 1.45rem;
+  color: #225486;
+  background: #e7f0f6;
+}
+.card-user-body { padding: 0 1rem 1rem; }
+.card-info-user { text-align: center; }
+.card-info-user h6 { margin-bottom: .2rem; font-size: 1rem; color: #1e293b; }
+.card-info-user p { color: #718096; }
+.h-divider { border-color: #e5eaf1; opacity: 1; }
+.button-return {
+  margin-top: 1.25rem;
+}
+::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .panel-form-header { padding: 1.1rem !important; }
+  .panel-list-body { padding: .85rem !important; }
+  .panel-infos { flex-direction: column; gap: .35rem; }
+}
