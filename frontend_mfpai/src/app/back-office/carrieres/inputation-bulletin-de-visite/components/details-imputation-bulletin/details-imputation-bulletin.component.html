@@ -1,170 +1,91 @@
-<div class="panel-form">
-    <div class="panel-form-header">
-        <div class="panel-form-text flex-column align-items-start w-100">
-            <div class="flex-row-between">
-                <h3>Détails {{imputation.typeDemande}} N° {{imputation.id}}</h3>
-                <button class="button button-secondary" type="button" (click)="generate(imputation.id)" *ngIf="!isDRH">
-                    <i class="fa fa-sync-alt me-2"></i>
-                    <span *ngIf="imputation.typeDemande == 'Imputation budgétaire'">Générer imputation</span>
-                    <span *ngIf="imputation.typeDemande == 'Bulletin de visite'">Générer bulletin de visite</span>
-                </button>
-            </div>
-            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-                <mat-tab label="Information demandeur">
-                    <div class="row details g-3 py-3">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Matricule</span>
-                                <span>{{imputation?.utilisateur?.matricule}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Prénoms</span>
-                                <span>{{imputation?.utilisateur?.prenom}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Nom</span>
-                                <span>{{imputation?.utilisateur?.nom}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Fonction</span>
-                                <span>{{imputation?.utilisateur?.fonction?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='CEN'">
-                            <div class="details-item">
-                                <span>Direction</span>
-                                <span>{{imputation?.utilisateur?.direction?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='CEN'">
-                            <div class="details-item">
-                                <span>Service</span>
-                                <span>{{imputation?.utilisateur?.service?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Région</span>
-                                <span>{{imputation?.utilisateur?.region?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.utilisateur.typeUser=='DEC'">
-                            <div class="details-item">
-                                <span>IA</span>
-                                <span>{{imputation?.utilisateur?.ia?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='DEC'">
-                            <div class="details-item">
-                                <span>IEF</span>
-                                <span>{{imputation?.utilisateur?.ief?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation?.utilisateur?.typeUser=='DEC'">
-                            <div class="details-item">
-                                <span>CFP</span>
-                                <span>{{imputation?.utilisateur?.cfp?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Adresse</span>
-                                <span>{{imputation?.utilisateur?.adresse}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </mat-tab>
-                <mat-tab label="Informations Béneficiaires">
-                    <div class="row details g-3 py-3">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Type de demande</span>
-                                <span>{{imputation?.typeDemande}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Numéro demande</span>
-                                <span>{{imputation.numeroDemande}} / {{fullYear}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Date demande</span>
-                                <span>{{imputation?.dateImputation | date : 'dd/MM/yyyy'}}</span>
-                            </div>
-                        </div>
+<div *ngIf="isLoading" class="detail-state"><div class="spinner-border text-primary"></div><p>Chargement du détail...</p></div>
 
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Statut bénéficiaire</span>
-                                <span>{{imputation?.statusBeneficiere}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.prenomBeneficiere.length>0; else prenomTemplte">
-                            <div class="details-item">
-                                <span>Prénom Bénéficiaire </span>
-                                <span>{{imputation?.prenomBeneficiere}}</span>
-                            </div>
-                        </div>
-                        <ng-template #prenomTemplte>
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>Prénom Bénéficiaire </span>
-                                    <span>{{imputation?.utilisateur?.prenom}}</span>
-                                </div>
-                            </div>
-                        </ng-template>
-                        <div class="col-lg-4 col-sm-6" *ngIf="imputation.nomBeneficiere.length>0; else nomTemplte">
-                            <div class="details-item">
-                                <span>Nom bénéficiaire</span>
-                                <span>{{imputation?.nomBeneficiere}}</span>
-                            </div>
-                        </div>
-                        <ng-template #nomTemplte>
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>Nom Bénéficiaire </span>
-                                    <span>{{imputation.utilisateur.nom}}</span>
-                                </div>
-                            </div>
-                        </ng-template>
+<main *ngIf="!isLoading && imputation" class="detail-page">
+  <div class="context-toolbar">
+    <button type="button" class="back-button" (click)="goBack()"><i class="fas fa-arrow-left"></i><span>Retour à la liste</span></button>
+    <div class="context-path"><span>Imputations et bulletins</span><i class="fas fa-chevron-right"></i><strong>Détail</strong></div>
+  </div>
 
-                        <div class="row mt-4" *ngIf="justificatifs.length>0">
-                            <label class="form-label"> Justificatifs</label>
-                            <div class="row gx-3 gy-1 doc-files">
-                                <div class="col-sm-4" *ngFor="let file of justificatifs">
-                                    <div class="doc-file-item" >
-                                        <div class="text-icon">
-                                            <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-                                            <div class="text">
-                                                <p>{{file.originalName}}</p>
-                                                <span>{{file.fileSize}} octets</span>
-                                            </div>
-                                        </div>
-                                        <button class="fab-button" type="button" (click)="Telecharger(file.generatedName)">
-                                            <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </mat-tab>
-
-            </mat-tab-group>
-            <button class="button-return" type="button" (click)="goBack()">
-                <i class="fa fa-arrow-left"></i>
-                Retour
-            </button>
-        </div>
+  <header class="detail-hero">
+    <div class="hero-icon"><i [class]="imputation.typeDemande === 'Bulletin de visite' ? 'fas fa-notes-medical' : 'fas fa-file-invoice-dollar'"></i></div>
+    <div class="hero-copy">
+      <span class="eyebrow">Détail de la demande</span>
+      <h2>{{ imputation.typeDemande }}</h2>
+      <div class="hero-meta">
+        <span><i class="fas fa-hashtag"></i>{{ imputation.numeroDemande }} / {{ fullYear }}</span>
+        <span><i class="far fa-calendar"></i>{{ imputation.dateImputation | date:'dd/MM/yyyy' }}</span>
+        <span><i class="fas fa-id-badge"></i>{{ imputation.utilisateur?.matricule }}</span>
+      </div>
     </div>
+    <button *ngIf="!isDRH" type="button" class="generate-button" (click)="generate(imputation.id)">
+      <i class="fas fa-wand-magic-sparkles"></i>
+      <span>{{ imputation.typeDemande === 'Bulletin de visite' ? 'Générer le bulletin' : 'Générer l’imputation' }}</span>
+    </button>
+  </header>
 
+  <section class="detail-content">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="200ms">
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-user tab-icon"></i>Demandeur</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><span>Informations du demandeur</span><h3>Identité et affectation</h3></div>
+          <div class="info-grid">
+            <div class="info-card"><i class="fas fa-id-card"></i><div><small>Matricule</small><strong>{{ imputation.utilisateur?.matricule || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-user"></i><div><small>Prénoms et nom</small><strong>{{ imputation.utilisateur?.prenom }} {{ imputation.utilisateur?.nom }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-briefcase"></i><div><small>Fonction</small><strong>{{ imputation.utilisateur?.fonction?.label || '—' }}</strong></div></div>
+            <div *ngIf="imputation.utilisateur?.typeUser === 'CEN'" class="info-card"><i class="fas fa-building"></i><div><small>Direction</small><strong>{{ imputation.utilisateur?.direction?.label || '—' }}</strong></div></div>
+            <div *ngIf="imputation.utilisateur?.typeUser === 'CEN'" class="info-card"><i class="fas fa-sitemap"></i><div><small>Service</small><strong>{{ imputation.utilisateur?.service?.label || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-location-dot"></i><div><small>Région</small><strong>{{ imputation.utilisateur?.region?.label || '—' }}</strong></div></div>
+            <div *ngIf="imputation.utilisateur?.typeUser === 'DEC'" class="info-card"><i class="fas fa-building-columns"></i><div><small>IA</small><strong>{{ imputation.utilisateur?.ia?.label || '—' }}</strong></div></div>
+            <div *ngIf="imputation.utilisateur?.typeUser === 'DEC'" class="info-card"><i class="fas fa-school"></i><div><small>IEF</small><strong>{{ imputation.utilisateur?.ief?.label || '—' }}</strong></div></div>
+            <div *ngIf="imputation.utilisateur?.typeUser === 'DEC'" class="info-card"><i class="fas fa-landmark"></i><div><small>CFP</small><strong>{{ imputation.utilisateur?.cfp?.label || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-map-marker-alt"></i><div><small>Adresse</small><strong>{{ imputation.utilisateur?.adresse || '—' }}</strong></div></div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-user-shield tab-icon"></i>Bénéficiaire</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><span>Informations de la demande</span><h3>Bénéficiaire et référence</h3></div>
+          <div class="summary-grid">
+            <div><small>Type de demande</small><strong>{{ imputation.typeDemande }}</strong></div>
+            <div><small>Numéro de demande</small><strong>{{ imputation.numeroDemande }} / {{ fullYear }}</strong></div>
+            <div><small>Date de demande</small><strong>{{ imputation.dateImputation | date:'dd/MM/yyyy' }}</strong></div>
+            <div><small>Statut bénéficiaire</small><strong>{{ imputation.statusBeneficiere || '—' }}</strong></div>
+          </div>
+          <div class="beneficiary-card">
+            <div class="beneficiary-avatar"><i class="fas fa-user"></i></div>
+            <div><small>Bénéficiaire</small><h3>{{ imputation.prenomBeneficiere || imputation.utilisateur?.prenom }} {{ imputation.nomBeneficiere || imputation.utilisateur?.nom }}</h3><span>{{ imputation.statusBeneficiere || 'Bénéficiaire de la demande' }}</span></div>
+          </div>
+
+          <div class="documents-heading"><div><span>Pièces jointes</span><h3>Documents associés</h3></div><span class="count-badge">{{ (justificatifs?.length || 0) + (imputationGeneree ? 1 : 0) }}</span></div>
+          <div *ngIf="imputationGeneree || justificatifs?.length; else noDocuments" class="document-grid">
+            <article *ngIf="imputationGeneree" class="document-card generated">
+              <div class="file-type"><i class="fas fa-file-signature"></i></div>
+              <div class="file-details"><span class="document-kind">Document généré</span><strong>{{ imputationGeneree.originalName || imputation.typeDemande }}</strong><small>{{ formatFileSize(imputationGeneree.fileSize) }}</small></div>
+              <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser(imputationGeneree)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="Telecharger(imputationGeneree.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
+            </article>
+            <article *ngFor="let file of justificatifs" class="document-card">
+              <div class="file-type extension">{{ getFileExtension(file) }}</div>
+              <div class="file-details"><span class="document-kind">Justificatif</span><strong>{{ file.originalName || 'Pièce jointe' }}</strong><small>{{ formatFileSize(file.fileSize) }}</small></div>
+              <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser(file)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="Telecharger(file.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
+            </article>
+          </div>
+          <ng-template #noDocuments><div class="empty-documents"><i class="far fa-folder-open"></i><strong>Aucun document disponible</strong><span>Les justificatifs et le document généré apparaîtront ici.</span></div></ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</main>
+
+<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()">
+  <section class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header>
+    <div class="preview-body">
+      <img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName">
+      <iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe>
+      <div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file-circle-exclamation"></i><h4>Aperçu non disponible</h4><p>Téléchargez ce document pour l'ouvrir avec l'application adaptée.</p></div>
+    </div>
+  </section>
 </div>

@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { PieceJointes } from '../../../models/dossier-agent/pieceJointes';
 import { CredentialsService } from 'src/app/services/credentials.service';
 import { ImputationDTO } from '../../../models/dossier-agent/imputation';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-details-imputation-bulletin',
@@ -30,6 +31,11 @@ export class DetailsImputationBulletinComponent implements OnInit {
     profilConnecte : any
     profile : any
     isDRH: boolean =false;
+    isLoading = true;
+    previewUrl: string | null = null;
+    previewSafeUrl: SafeResourceUrl | null = null;
+    previewName = '';
+    previewType = '';
 
     constructor  (
         private  location : Location,
@@ -37,7 +43,8 @@ export class DetailsImputationBulletinComponent implements OnInit {
         private router: Router,
         private imputationOuBulletinService : ImputationOuBulletinService,
         private _httpClient: HttpClient,
-        private _credentialService: CredentialsService
+        private _credentialService: CredentialsService,
+        private sanitizer: DomSanitizer
 
     ) {
         this.userInfos = this._credentialService.getUserInfos();
@@ -64,10 +71,10 @@ export class DetailsImputationBulletinComponent implements OnInit {
                             console.log("entrer dans le if ",data.data.imputationGeneree)
                             this.getFile(data.data.imputationGeneree)
                         }
-
+                        this.isLoading = false
                     }
-
-                }
+                },
+                error: () => this.isLoading = false
             })
 
     }
@@ -150,8 +157,54 @@ export class DetailsImputationBulletinComponent implements OnInit {
             (error) => console.log(error)
         );
     }
+
+    visualiser(file: any): void {
+        const filename = typeof file === 'string' ? file : file?.generatedName;
+        if (!filename) return;
+
+        this.closePreview();
+        this._httpClient.get(`${this.apiUrl}file/download/${filename}`, {
+            headers: {
+                accept: '*/*',
+                Authorization: `Bearer ${localStorage.getItem('Token')}`
+            },
+            responseType: 'blob'
+        }).subscribe({
+            next: (response: Blob) => {
+                this.previewUrl = URL.createObjectURL(response);
+                this.previewSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+                this.previewName = file?.originalName || filename;
+                this.previewType = response.type || file?.fileType || '';
+            },
+            error: () => Swal.fire({ icon: 'error', text: 'Impossible d’ouvrir ce document.' })
+        });
+    }
+
+    closePreview(): void {
+        if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+        this.previewUrl = null;
+        this.previewSafeUrl = null;
+        this.previewName = '';
+        this.previewType = '';
+    }
+
+    isImagePreview(): boolean { return this.previewType.startsWith('image/'); }
+    isPreviewSupported(): boolean {
+        return this.isImagePreview() || this.previewType === 'application/pdf' || this.previewType.startsWith('text/');
+    }
+
+    getFileExtension(file: any): string {
+        const name = file?.originalName || file?.generatedName || file || '';
+        return (name.includes('.') ? name.split('.').pop() : 'DOC').toUpperCase();
+    }
+
+    formatFileSize(size?: number | null): string {
+        if (!size) return '';
+        if (size < 1024) return `${size} o`;
+        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} Ko`;
+        return `${(size / (1024 * 1024)).toFixed(1)} Mo`;
+    }
     goBack() {
         this.location.back()
     }
 }
-
