@@ -1,83 +1,43 @@
-<div class="panel-form">
-  <div class="panel-form-header">
-    <div class="panel-form-text">
-      <h3>Détails de la demande d'acte N° {{ acte?.referenceActe }}</h3>
-      <ul class="panel-infos">
-        <li><span>N° référence :</span><span>{{ acte?.referenceActe }}</span></li>
-        <li><span>Date de demande :</span><span>{{ acte?.dateDemandeActe | date:'dd/MM/yyyy' }}</span></li>
-        <li><span>Statut :</span><span [appStatus]="acte?.statutActe?.code || ''" class="status-badge">{{ acte?.statutActe?.libelle }}</span></li>
-      </ul>
-      <div *ngIf="acte?.motifRejetDemande" id="motif-rejet" class="request-message">
-        <h6 class="title-motif">Motif du rejet</h6><p>{{ acte?.motifRejetDemande }}</p>
-      </div>
-      <div *ngIf="acte?.motifModification" id="motif-modification" class="request-message">
-        <h6 class="title-motif">Motif de modification</h6><p>{{ acte?.motifModification }}</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-list-body">
-    <form>
-      <section class="detail-section">
-        <h5>Informations sur l'acte</h5>
-        <div class="row g-3">
-          <div class="col-sm-6 col-lg-4"><label class="form-label">Catégorie d'acte</label><input type="text" class="form-control" [value]="acte?.typeActe?.libelleActe || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4" *ngIf="acte?.typeActe?.codeActe === 'aa'"><label class="form-label">Type d'acte</label><input type="text" class="form-control" [value]="acte?.typeAA?.libelle || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4" *ngIf="acte?.typeActe?.codeActe === 'ag'"><label class="form-label">Type d'acte</label><input type="text" class="form-control" [value]="acte?.typeAG?.libelle || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4" *ngIf="acte?.dateDebut"><label class="form-label">Date de début</label><input type="text" class="form-control" [value]="acte?.dateDebut | date:'dd/MM/yyyy'" disabled></div>
-          <div class="col-sm-6 col-lg-4" *ngIf="acte?.dateFin"><label class="form-label">Date de fin</label><input type="text" class="form-control" [value]="acte?.dateFin | date:'dd/MM/yyyy'" disabled></div>
-        </div>
-      </section>
-
-      <section class="detail-section">
-        <h5>Informations sur l'agent</h5>
-        <div class="row g-3">
-          <div class="col-sm-6 col-lg-4"><label class="form-label">Matricule</label><input type="text" class="form-control" [value]="acte?.agent?.matricule || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4"><label class="form-label">Prénom</label><input type="text" class="form-control" [value]="acte?.agent?.prenom || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4"><label class="form-label">Nom</label><input type="text" class="form-control" [value]="acte?.agent?.nom || ''" disabled></div>
-          <div class="col-sm-6 col-lg-4"><label class="form-label">Téléphone</label><input type="text" class="form-control" [value]="acte?.agent?.telephone || ''" disabled></div>
-          <ng-container *ngIf="acte?.agent?.typeUser === 'CEN'">
-            <div class="col-sm-6 col-lg-4"><label class="form-label">Direction</label><input type="text" class="form-control" [value]="acte?.agent?.direction?.label || ''" disabled></div>
-            <ng-container *ngIf="acte?.agent?.direction?.code === 'DRH'">
-              <div class="col-sm-6 col-lg-4"><label class="form-label">Division</label><input type="text" class="form-control" [value]="acte?.agent?.division?.label || ''" disabled></div>
-              <div class="col-sm-6 col-lg-4"><label class="form-label">Bureau</label><input type="text" class="form-control" [value]="acte?.agent?.bureau?.label || ''" disabled></div>
-            </ng-container>
-            <div class="col-sm-6 col-lg-4" *ngIf="acte?.agent?.direction?.code === 'AUD'"><label class="form-label">Service</label><input type="text" class="form-control" [value]="acte?.agent?.service?.label || ''" disabled></div>
-          </ng-container>
-          <ng-container *ngIf="acte?.agent?.typeUser === 'DEC'">
-            <div class="col-sm-6 col-lg-4"><label class="form-label">IA</label><input type="text" class="form-control" [value]="acte?.agent?.ia?.label || ''" disabled></div>
-            <div class="col-sm-6 col-lg-4" *ngIf="acte?.agent?.ief"><label class="form-label">IEF</label><input type="text" class="form-control" [value]="acte?.agent?.ief?.label || ''" disabled></div>
-            <div class="col-sm-6 col-lg-4" *ngIf="acte?.agent?.etablissement"><label class="form-label">Établissement / CFP / EFF</label><input type="text" class="form-control" [value]="acte?.agent?.etablissement?.label || ''" disabled></div>
-          </ng-container>
-        </div>
-      </section>
-
-      <section class="detail-section">
-        <div class="documents-heading"><div><span>Pièces jointes</span><h3>Documents associés</h3></div><span class="count-badge">{{ (acte?.pieceJointes?.length || 0) + (acte?.currentBordereau?.fileName ? 1 : 0) }}</span></div>
-        <div *ngIf="acte?.pieceJointes?.length || acte?.currentBordereau?.fileName; else noDocuments" class="document-grid">
-          <article *ngFor="let item of acte?.pieceJointes" class="document-card">
-            <div class="file-type extension">{{ getFileExtension(item) }}</div>
-            <div class="file-details"><span class="document-kind">Justificatif</span><strong>{{ item.originalName || 'Pièce jointe' }}</strong><small>{{ formatFileSize(item.fileSize) }}</small></div>
-            <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser(item)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="telecharger(item.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
-          </article>
-          <article *ngIf="acte?.currentBordereau?.fileName" class="document-card generated">
-            <div class="file-type"><i class="fas fa-file-signature"></i></div>
-            <div class="file-details"><span class="document-kind">Bordereau</span><strong>{{ acte.currentBordereau.fileName }}</strong></div>
-            <div class="file-actions"><button type="button" class="action-button view" (click)="visualiser(acte.currentBordereau.fileName)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="action-button" (click)="telecharger(acte.currentBordereau.fileName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div>
-          </article>
-        </div>
-        <ng-template #noDocuments><div class="empty-documents"><i class="far fa-folder-open"></i><strong>Aucun document disponible</strong><span>Les justificatifs et le bordereau apparaîtront ici.</span></div></ng-template>
-      </section>
-
-      <section class="detail-section"><h5>Commentaire</h5><textarea class="form-control" [value]="acte?.commentaire || ''" rows="3" readonly></textarea></section>
-    </form>
-    <button type="button" (click)="goBack()" class="button-return"><i class="fa fa-arrow-left"></i> Retour</button>
-  </div>
-</div>
-
-<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()">
-  <section class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-    <header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header>
-    <div class="preview-body"><img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName"><iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe><div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file-circle-exclamation"></i><h4>Aperçu non disponible</h4><p>Téléchargez ce document pour l'ouvrir avec l'application adaptée.</p></div></div>
+<div *ngIf="isLoading" class="detail-state"><div class="spinner-border text-primary" role="status"></div><span>Chargement de la demande...</span></div>
+<main *ngIf="!isLoading && acte" class="detail-page">
+  <div class="context-toolbar"><button type="button" class="back-button" (click)="goBack()"><i class="fas fa-arrow-left"></i><span>Retour</span></button><div class="context-path"><span>Mes demandes d'actes</span><i class="fas fa-chevron-right"></i><strong>Détail</strong></div></div>
+  <section class="detail-hero">
+    <div class="hero-icon"><i class="fas fa-file-signature"></i></div>
+    <div class="hero-copy"><span class="eyebrow">Carrière administrative</span><h2>Demande d'acte</h2><div class="hero-meta"><span><i class="fas fa-hashtag"></i>{{ acte.referenceActe || 'Non renseignée' }}</span><span><i class="far fa-calendar-alt"></i>{{ acte.dateDemandeActe | date:'dd/MM/yyyy' }}</span><span><i class="fas fa-tag"></i>{{ acte.typeActe?.libelleActe || 'Type non renseigné' }}</span></div></div>
+    <span class="status-badge" [ngClass]="statusClass">{{ acte.statutActe?.libelle || 'Statut indisponible' }}</span>
   </section>
-</div>
+  <section class="detail-content">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-file-alt tab-icon"></i>Demande</ng-template>
+        <div class="tab-content">
+          <div class="section-heading"><span>Contenu de la demande</span><h3>Informations sur l'acte</h3></div>
+          <div class="summary-grid"><div><small>Référence</small><strong>{{ acte.referenceActe || '—' }}</strong></div><div><small>Catégorie d'acte</small><strong>{{ acte.typeActe?.libelleActe || '—' }}</strong></div><div><small>Type d'acte</small><strong>{{ acte.typeAA?.libelle || acte.typeAG?.libelle || '—' }}</strong></div></div>
+          <div *ngIf="acte.dateDebut || acte.dateFin" class="summary-grid date-summary"><div *ngIf="acte.dateDebut"><small>Date de début</small><strong>{{ acte.dateDebut | date:'dd/MM/yyyy' }}</strong></div><div *ngIf="acte.dateFin"><small>Date de fin</small><strong>{{ acte.dateFin | date:'dd/MM/yyyy' }}</strong></div></div>
+          <div class="request-object"><i class="fas fa-align-left"></i><div><small>Commentaire</small><p>{{ acte.commentaire || 'Aucun commentaire renseigné.' }}</p></div></div>
+          <div *ngIf="acte.motifModification" class="reason-card warning"><i class="fas fa-pen"></i><div><small>Motif de modification</small><p>{{ acte.motifModification }}</p></div></div>
+          <div *ngIf="acte.motifRejetDemande" class="reason-card danger"><i class="fas fa-times-circle"></i><div><small>Motif du rejet</small><p>{{ acte.motifRejetDemande }}</p></div></div>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-user tab-icon"></i>Agent</ng-template>
+        <div class="tab-content"><div class="section-heading"><span>Identité et affectation</span><h3>Informations sur l'agent</h3></div><div class="info-grid">
+          <div class="info-card"><i class="fas fa-id-card"></i><div><small>Matricule</small><strong>{{ acte.agent?.matricule || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-user"></i><div><small>Prénom</small><strong>{{ acte.agent?.prenom || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-user"></i><div><small>Nom</small><strong>{{ acte.agent?.nom || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-phone"></i><div><small>Téléphone</small><strong>{{ acte.agent?.telephone || '—' }}</strong></div></div>
+          <ng-container *ngIf="acte.agent?.typeUser === 'CEN'"><div class="info-card"><i class="fas fa-building"></i><div><small>Direction</small><strong>{{ acte.agent?.direction?.label || '—' }}</strong></div></div><div *ngIf="acte.agent?.direction?.code === 'DRH'" class="info-card"><i class="fas fa-sitemap"></i><div><small>Division</small><strong>{{ acte.agent?.division?.label || '—' }}</strong></div></div><div *ngIf="acte.agent?.direction?.code === 'DRH'" class="info-card"><i class="fas fa-door-open"></i><div><small>Bureau</small><strong>{{ acte.agent?.bureau?.label || '—' }}</strong></div></div><div *ngIf="acte.agent?.direction?.code === 'AUD'" class="info-card"><i class="fas fa-sitemap"></i><div><small>Service</small><strong>{{ acte.agent?.service?.label || '—' }}</strong></div></div></ng-container>
+          <ng-container *ngIf="acte.agent?.typeUser === 'DEC'"><div class="info-card"><i class="fas fa-landmark"></i><div><small>IA</small><strong>{{ acte.agent?.ia?.label || '—' }}</strong></div></div><div *ngIf="acte.agent?.ief" class="info-card"><i class="fas fa-school"></i><div><small>IEF</small><strong>{{ acte.agent?.ief?.label || '—' }}</strong></div></div><div *ngIf="acte.agent?.etablissement" class="info-card"><i class="fas fa-graduation-cap"></i><div><small>Établissement / CFP / EFF</small><strong>{{ acte.agent?.etablissement?.label || '—' }}</strong></div></div></ng-container>
+        </div></div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label><i class="fas fa-paperclip tab-icon"></i>Documents</ng-template>
+        <div class="tab-content"><div class="documents-heading"><div><span>Documents</span><h3>Pièces jointes et bordereau</h3></div><span class="count-badge">{{ (acte.pieceJointes?.length || 0) + (acte.currentBordereau?.fileName ? 1 : 0) }}</span></div>
+          <div *ngIf="acte.pieceJointes?.length || acte.currentBordereau?.fileName; else noDocuments" class="document-grid">
+            <article *ngFor="let item of acte.pieceJointes" class="document-card"><div class="file-type extension">{{ getFileExtension(item) }}</div><div class="file-details"><span>Justificatif</span><strong>{{ item.originalName || 'Pièce jointe' }}</strong><small>{{ formatFileSize(item.fileSize) }}</small></div><div class="file-actions"><button type="button" class="document-action view" (click)="visualiser(item)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="document-action" (click)="telecharger(item.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div></article>
+            <article *ngIf="acte.currentBordereau?.fileName" class="document-card generated"><div class="file-type"><i class="fas fa-file-signature"></i></div><div class="file-details"><span>Bordereau</span><strong>{{ acte.currentBordereau.fileName }}</strong></div><div class="file-actions"><button type="button" class="document-action view" (click)="visualiser(acte.currentBordereau.fileName)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="document-action" (click)="telecharger(acte.currentBordereau.fileName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div></article>
+          </div><ng-template #noDocuments><div class="empty-documents"><i class="far fa-folder-open"></i><strong>Aucun document disponible</strong><span>Les justificatifs et le bordereau apparaîtront ici.</span></div></ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</main>
+<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()"><section class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()"><header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header><div class="preview-body"><img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName"><iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe><div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file"></i><p>L’aperçu de ce format n’est pas disponible.</p></div></div></section></div>
+<div *ngIf="!isLoading && !acte" class="detail-state"><i class="fas fa-exclamation-circle"></i><strong>Demande introuvable</strong><button type="button" class="back-button" (click)="goBack()">Retour</button></div>

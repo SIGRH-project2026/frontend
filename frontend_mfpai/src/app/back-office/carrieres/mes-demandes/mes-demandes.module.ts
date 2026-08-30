@@ -24,6 +24,7 @@ import { EditActeComponent } from './components/edit-acte/edit-acte.component';
     CommonModule,
     MesDemandesRoutingModule,
     SharedModule,
+    MaterialUiModule,
     NgxDropzoneModule
   ]
 })

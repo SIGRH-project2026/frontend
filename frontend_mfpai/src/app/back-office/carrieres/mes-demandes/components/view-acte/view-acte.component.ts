@@ -18,8 +18,9 @@ export class ViewActeComponent implements OnInit{
 
   actId: any;
   idNumber!:number;
-  acte : ActeDTO = new ActeDTO();
+  acte!: ActeDTO;
   agent!:UserDTOs;
+  isLoading = true;
   previewUrl: string | null = null;
   previewSafeUrl: SafeResourceUrl | null = null;
   previewName = '';
@@ -47,10 +48,16 @@ export class ViewActeComponent implements OnInit{
           next : (data : ResponseApi2) => {
             if(data.status?.includes("OK")){
               this.acte = data.payload;
-              console.log({acte:this.acte});
             }
-          }
+            this.isLoading = false;
+          },
+          error: () => this.isLoading = false
         });
+}
+
+get statusClass(): string {
+  const code = this.acte?.statutActe?.code?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'default';
+  return `status-${code}`;
 }
 
 telecharger(fileName:string){
