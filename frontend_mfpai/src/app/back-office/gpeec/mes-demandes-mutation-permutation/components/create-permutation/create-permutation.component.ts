@@ -38,14 +38,13 @@ export class CreatePermutationComponent implements OnInit{
     this.getCurrentUser();
     this.getUser2(this.matriculeUtilisateur2);
     this.initForm();
-    this.checkPossiblePermutation()
-    console.log("checking == ",this.permutationPossible);
   }
 
 checkPossiblePermutation(){
   console.log("checking == ",this.permutationPossible);
-  if(this.currentUser?.speciality?.id == this.user2?.speciality?.id && 
-    this.currentUser?.corpsGrade?.id == this.user2?.corpsGrade?.id)
+  if(this.currentUser?.speciality?.id == this.user2?.speciality?.id &&
+    this.currentUser?.corpsGrade?.id == this.user2?.corpsGrade?.id &&
+    this.currentUser?.etablissement?.id != this.user2?.etablissement?.id)
     {    
       this.permutationPossible = true  
     }
@@ -62,8 +61,11 @@ checkPossiblePermutation(){
     this.permutationService.getCurrentUser().subscribe(
       (data) =>{
         this.currentUser = data.data;
-        console.log("Current user == ",this.currentUser);
+        this.checkPossiblePermutation();
         this.spinner.hide();
+      }, () => {
+        this.spinner.hide();
+        Swal.fire({ icon: 'error', text: 'Impossible de charger les informations de l’agent connecté.' });
       })
   }
   getUser2(matriculeUtilisateur2: string){
@@ -71,13 +73,25 @@ checkPossiblePermutation(){
     this.permutationService.getUser2(matriculeUtilisateur2).subscribe({
       next: (data) => {
         this.user2 = data.data;
-        console.log("user2 === ",this.user2);
+        this.checkPossiblePermutation();
         this.spinner.hide();
-    }
+      },
+      error: () => {
+        this.spinner.hide();
+        Swal.fire({ icon: 'error', text: 'Le second agent est introuvable ou indisponible.' });
+      }
   })
   }
   onSaveDemande() {
-    console.log(this.permutationForm.value.motifPermutation);
+    if (this.permutationForm.invalid) {
+      this.permutationForm.markAllAsTouched();
+      Swal.fire({ icon: 'warning', text: 'Veuillez renseigner le motif de la permutation.' });
+      return;
+    }
+    if (!this.permutationPossible || !this.currentUser || !this.user2) {
+      Swal.fire({ icon: 'warning', text: 'Ces deux agents ne remplissent pas les conditions de permutation.' });
+      return;
+    }
     this.spinner.show()
     let permutation :Permutation = new Permutation()
     permutation.motifPermutation = this.permutationForm.value.motifPermutation

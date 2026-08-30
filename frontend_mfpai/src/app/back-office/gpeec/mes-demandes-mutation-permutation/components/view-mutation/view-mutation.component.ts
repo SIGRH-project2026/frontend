@@ -15,6 +15,7 @@ export class ViewMutationComponent {
 
     idMutation : any
     mutation: MutationDTO = new MutationDTO;
+    isLoading = true;
     constructor(
         private location: Location,
         private readonly mutationService : MutationService,
@@ -36,8 +37,15 @@ export class ViewMutationComponent {
                 next : (data : ResponseApi2) =>{
                     if(data.status?.includes("OK"))
                         this.mutation = data.payload
-                }
+                    this.isLoading = false
+                },
+                error: () => this.isLoading = false
             })
+    }
+
+    get statusClass(): string {
+        const code = this.mutation?.traitementMutation?.statut?.code?.toLowerCase() || 'default';
+        return `status-${code}`;
     }
 
     changerGenre(data : string) : string{

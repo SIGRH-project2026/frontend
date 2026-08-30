@@ -1,262 +1,60 @@
-<div class="panel-form">
-    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
-        <div class="panel-form-text flex-column align-items-start w-100">
-            
-            <ng-container *ngIf="typeView === 'Traiter'">
-                <h3>Traitement demande N° {{demande?.numeroDemande}}</h3>
+<div *ngIf="isLoading" class="detail-state"><div class="spinner-border text-primary" role="status"></div><span>Chargement de la demande...</span></div>
+
+<main *ngIf="!isLoading && demande" class="detail-page">
+  <div class="context-toolbar">
+    <button type="button" class="back-button" (click)="goBack()"><i class="fas fa-arrow-left"></i><span>Retour</span></button>
+    <div class="context-path"><span>Demandes reçues</span><i class="fas fa-chevron-right"></i><strong>{{ typeView === 'Traiter' ? 'Traitement' : 'Détail' }}</strong></div>
+  </div>
+  <section class="detail-hero">
+    <div class="hero-icon"><i class="fas fa-hand-holding-heart"></i></div>
+    <div class="hero-copy"><span class="eyebrow">{{ typeView === 'Traiter' ? 'Traitement de la demande' : 'Affaires sociales' }}</span><h2>Demande de prise en charge</h2>
+      <div class="hero-meta"><span><i class="fas fa-hashtag"></i>{{ demande.numeroDemande || 'Non renseigné' }}</span><span><i class="far fa-calendar-alt"></i>{{ demande.dateDemande | date:'dd/MM/yyyy' }}</span><span><i class="fas fa-tag"></i>{{ demande.typeDemandePeec?.libelle || 'Non renseigné' }}</span></div>
+    </div>
+    <span class="status-badge" [ngClass]="statusClass">{{ demande.statutPriseEnCharge?.libelle || 'Statut indisponible' }}</span>
+  </section>
+
+  <section class="detail-content">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+      <mat-tab><ng-template mat-tab-label><i class="fas fa-user tab-icon"></i>Demandeur</ng-template>
+        <div class="tab-content"><div class="section-heading"><span>Identité et affectation</span><h3>Informations du demandeur</h3></div>
+          <div class="info-grid">
+            <div class="info-card"><i class="fas fa-id-card"></i><div><small>Matricule</small><strong>{{ demande.utilisateur?.matricule || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-user"></i><div><small>Prénom</small><strong>{{ demande.utilisateur?.prenom || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-user"></i><div><small>Nom</small><strong>{{ demande.utilisateur?.nom || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-briefcase"></i><div><small>Fonction</small><strong>{{ demande.utilisateur?.fonction?.label || '—' }}</strong></div></div>
+            <div class="info-card"><i class="fas fa-map-marker-alt"></i><div><small>Région</small><strong>{{ demande.utilisateur?.region?.label || '—' }}</strong></div></div>
+            <ng-container *ngIf="demande.utilisateur?.typeUser === 'CEN'">
+              <div class="info-card"><i class="fas fa-building"></i><div><small>Direction</small><strong>{{ demande.utilisateur?.direction?.label || '—' }}</strong></div></div>
+              <div *ngIf="demande.utilisateur?.direction?.code === 'AUD'" class="info-card"><i class="fas fa-sitemap"></i><div><small>Service</small><strong>{{ demande.utilisateur?.service?.label || '—' }}</strong></div></div>
+              <ng-container *ngIf="demande.utilisateur?.direction?.code === 'DRH'"><div class="info-card"><i class="fas fa-sitemap"></i><div><small>Division</small><strong>{{ demande.utilisateur?.division?.label || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-door-open"></i><div><small>Bureau</small><strong>{{ demande.utilisateur?.bureau?.label || '—' }}</strong></div></div></ng-container>
             </ng-container>
-
-            <ng-container *ngIf="typeView === 'Visualiser'">
-                <h3>Détails demande N°{{demande?.numeroDemande}}</h3>
-            </ng-container>
-
-            <ul class="panel-infos">
-                <li>
-                    <span>N° Demande : </span>
-                    <span>{{demande?.numeroDemande}}</span>
-                </li>
-                <li>
-                    <span>Type de demande : </span>
-                    <span>{{demande?.typeDemandePeec?.libelle}}</span>
-                </li>
-                <li>
-                    <span>Date demande : </span>
-                    <span>{{demande?.dateDemande}}</span>
-                </li>
-                <li>
-                    <span>Status : </span>
-                    <span>{{demande?.statutPriseEnCharge?.libelle}}</span>
-                </li>
-            </ul>
+            <ng-container *ngIf="demande.utilisateur?.typeUser === 'DEC'"><div class="info-card"><i class="fas fa-landmark"></i><div><small>IA</small><strong>{{ demande.utilisateur?.ia?.label || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-school"></i><div><small>IEF</small><strong>{{ demande.utilisateur?.ief?.label || '—' }}</strong></div></div><div class="info-card"><i class="fas fa-graduation-cap"></i><div><small>CFP</small><strong>{{ demande.utilisateur?.cfp?.label || '—' }}</strong></div></div></ng-container>
+          </div>
         </div>
-    </div>
-    <div class="panel-list-body py-0">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Informations personnelles">
-                <div class="py-3">
-                    <div class="row details g-3">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Matricule</span>
-                                <span>{{demande?.utilisateur?.matricule}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Prénom</span>
-                                <span>{{demande?.utilisateur?.prenom}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Nom</span>
-                                <span>{{demande?.utilisateur?.nom}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Fonction</span>
-                                <span>{{demande?.utilisateur?.fonction?.label}}</span>
-                            </div>
-                        </div>
-
-                        <ng-container  *ngIf="demande?.utilisateur?.typeUser==='CEN'">
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>Direction</span>
-                                    <span>{{demande?.utilisateur?.direction?.label}}</span>
-                                </div>
-                            </div>
-
-                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='DRH'">
-                                <div  class="col-lg-4 col-sm-6">
-                                    <label class="form-label">Division</label>
-                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.division?.label" disabled />
-                                </div>
-                                <div  class="col-lg-4 col-sm-6">
-                                    <label class="form-label">Bureau</label>
-                                    <input type="text" class="form-control" [value]="demande?.utilisateur?.bureau?.label" disabled />
-                                </div>
-                            </ng-container>
-
-                            <ng-container *ngIf="demande?.utilisateur?.direction?.code==='AUD'">
-                                <div  class="col-lg-4 col-sm-6">
-                                    <div class="details-item">
-                                        <span>Service</span>
-                                        <span>{{demande?.utilisateur?.service?.label}}</span>
-                                    </div>
-                                </div>
-                            </ng-container>
-                        </ng-container>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>Région</span>
-                                <span>{{demande?.utilisateur?.region?.label}}</span>
-                            </div>
-                        </div>
-                        <ng-container *ngIf="demande?.utilisateur?.typeUser==='DEC'">
-
-                            <div  class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>IA</span>
-                                    <span>{{demande?.utilisateur?.ia?.label}}</span>
-                                </div>
-                            </div>
-                            <div  class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>IEF</span>
-                                    <span>{{demande?.utilisateur?.ief?.label}}</span>
-                                </div>
-                            </div>
-                            <div  class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>CFP</span>
-                                    <span>{{demande?.utilisateur?.cfp?.label}}</span>
-                                </div>
-                            </div>
-                        </ng-container>
-
-
-                    </div>
-                </div>
-            </mat-tab>
-           <mat-tab label="Informations de la demande">
-    <div class="py-3">
-        <div class="row details g-3">
-            <div class="col-lg-4 col-sm-6">
-                <div class="details-item">
-                    <span>Type de demande</span>
-                    <span>{{demande?.typeDemandePeec?.libelle}}</span>
-                </div>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <div class="details-item">
-                    <span>Date demande</span>
-                    <span>{{demande?.dateDemande}}</span>
-                </div>
-            </div>
-
-            <div class="col-lg-12">
-                <div class="details-item">
-                    <span>Objet de la demande</span>
-                    <span>{{demande?.objetDemande}}</span>
-                </div>
- 
-                <div *ngIf="demande?.statutPriseEnCharge?.code==='AMODIFIER'">
-                    <div class="details-item">
-                        <span>Motif Modification </span>
-                        <span>{{demande?.motifModification}}</span>
-                    </div>
-                </div>
-
-                <div *ngIf="demande?.statutPriseEnCharge?.code==='REJETEE'">
-                    <div class="details-item">
-                        <span>Motif Rejet </span>
-                        <span>{{demande?.motifRejetDemande}}</span>
-                    </div>
-                </div>
-
-
-               <!--  <div *ngIf="demande?.statutPriseEnCharge?.code==='AMODIFIER' || demande?.statutPriseEnCharge?.code==='REJETEE'" class="col-lg-6 col-sm-6">
-                    <div class="details-item">
-                       <label class="form-label">{{ demande?.statutPriseEnCharge?.code === 'AMODIFIER' ? 'Motif modification' : 'Motif' }}</label>
-                         <input type="text" class="form-control" [value]="demande?.statutPriseEnCharge?.code === 'AMODIFIER' ? demande?.motifModification : demande?.motifRejetDemande" />
-                    </div>
-                </div> -->
-            </div>
-
-            <div class="col-lg-12 mt-3">
-                <hr class="h-divider">
-                <label class="form-label">Pièces jointes</label>
-                <div class="row gx-3 gy-1 doc-files">
-                    <div class="col-sm-4" *ngFor="let item of demande?.pieceJointes">
-                        <div class="doc-file-item">
-                            <div class="text-icon">
-                                <img src="assets/icons/pdf.png" width="32px" alt="PDF">
-                                <div class="text">
-                                    <p>{{item?.originalName}}</p>
-                                    <span>{{item?.fileSize}}Ko</span>
-                                </div>
-                            </div>
-                            <button class="fab-button" type="button" (click)="telecharger(item.generatedName)">
-                                <img src="assets/icons/download.svg" alt="Télécharger" title="Télécharger">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </mat-tab>
+      <mat-tab><ng-template mat-tab-label><i class="fas fa-file-medical tab-icon"></i>Demande</ng-template>
+        <div class="tab-content"><div class="section-heading"><span>Contenu de la demande</span><h3>Informations de prise en charge</h3></div>
+          <div class="summary-grid"><div><small>Numéro</small><strong>{{ demande.numeroDemande || '—' }}</strong></div><div><small>Type</small><strong>{{ demande.typeDemandePeec?.libelle || '—' }}</strong></div><div><small>Date</small><strong>{{ demande.dateDemande | date:'dd/MM/yyyy' }}</strong></div></div>
+          <div class="request-object"><i class="fas fa-align-left"></i><div><small>Objet de la demande</small><p>{{ demande.objetDemande || 'Aucun objet renseigné.' }}</p></div></div>
+          <div *ngIf="demande.statutPriseEnCharge?.code === 'AMODIFIER'" class="reason-card warning"><i class="fas fa-pen"></i><div><small>Motif de modification</small><p>{{ demande.motifModification || '—' }}</p></div></div>
+          <div *ngIf="demande.statutPriseEnCharge?.code === 'REJETEE'" class="reason-card danger"><i class="fas fa-times-circle"></i><div><small>Motif du rejet</small><p>{{ demande.motifRejetDemande || '—' }}</p></div></div>
+          <div class="documents-heading"><div><span>Documents</span><h3>Pièces jointes</h3></div><span class="count-badge">{{ demande.pieceJointes?.length || 0 }}</span></div>
+          <div *ngIf="demande.pieceJointes?.length; else noDocuments" class="document-grid"><div class="document-card" *ngFor="let item of demande.pieceJointes"><div class="file-type"><i class="fas fa-file-pdf"></i></div><div class="file-details"><span>Pièce justificative</span><strong>{{ item.originalName }}</strong><small>{{ item.fileSize }} Ko</small></div><div class="file-actions"><button type="button" class="document-action view" (click)="visualiser(item)"><i class="fas fa-eye"></i><span>Visualiser</span></button><button type="button" class="document-action" (click)="telecharger(item.generatedName)"><i class="fas fa-download"></i><span>Télécharger</span></button></div></div></div>
+          <ng-template #noDocuments><div class="empty-documents"><i class="far fa-folder-open"></i><strong>Aucune pièce jointe</strong><span>Cette demande ne contient aucun document.</span></div></ng-template>
         </div>
-    </div>
-</mat-tab>
+      </mat-tab>
+    </mat-tab-group>
+    <div *ngIf="typeView === 'Traiter'" class="treatment-actions"><div><span>Décision</span><strong>Choisissez le traitement à appliquer à cette demande</strong></div><div class="action-buttons"><button type="button" class="decision-button cancel" (click)="onReset()"><i class="fas fa-times"></i>Annuler</button><button type="button" class="decision-button approve" (click)="onValid()"><i class="fas fa-check"></i>Valider</button><button type="button" class="decision-button revise" (click)="onModifier()"><i class="fas fa-pen"></i>À modifier</button><button type="button" class="decision-button reject" (click)="onRejet()"><i class="fas fa-ban"></i>Rejeter</button></div></div>
+  </section>
+</main>
 
-        </mat-tab-group>
+<div *ngIf="previewUrl" class="preview-backdrop" (click)="closePreview()">
+  <section class="preview-dialog" (click)="$event.stopPropagation()"><header><div><span>Aperçu du document</span><h3>{{ previewName }}</h3></div><button type="button" (click)="closePreview()" aria-label="Fermer"><i class="fas fa-times"></i></button></header>
+    <div class="preview-body"><img *ngIf="isImagePreview()" [src]="previewUrl" [alt]="previewName"><iframe *ngIf="!isImagePreview() && isPreviewSupported()" [src]="previewSafeUrl" [title]="previewName"></iframe><div *ngIf="!isPreviewSupported()" class="unsupported-preview"><i class="fas fa-file"></i><p>L’aperçu de ce format n’est pas disponible.</p></div></div>
+  </section>
+</div>
 
-      <ng-container *ngIf="typeView === 'Traiter'">
-        <div class="action-steps-start">
-            <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
-            <button type="button" class="button button-primary text-white" (click)="onValid()">Valider</button>
-            <button type="button" class="button button-yellow text-white" (click)="onModifier()">A
-                modifier</button>
-            <button type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
-        </div>
-      </ng-container>
+<div *ngIf="!isLoading && !demande" class="detail-state"><i class="fas fa-exclamation-circle"></i><strong>Demande introuvable</strong><button type="button" class="back-button" (click)="goBack()">Retour</button></div>
 
-      <ng-container *ngIf="typeView === 'Visualiser'">
-        <button type="button" (click)="goBack()" class="button-return">
-            <i class="fa fa-arrow-left"></i>
-            Retour</button>
-      </ng-container>
-    </div>
-
-
-        <!-- Modal Rejeter -->
-
-        <ng-template #rejetModal let-modal>
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du rejet</h1>
-            </div>
-            <form [formGroup]="modifRejetForm">
-            <div class="modal-body py-md-3">
-                
-                    <div class="row g-3">
-                        <div class="col-sm-12">
-                            <label class="form-label">Motif du rejet</label>
-                            <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifRejetDemande"></textarea>
-                        </div>
-        
-                    </div>
-            </div>
-        
-            <div class="modal-footer">
-                <button type="button" class="button button-secondary w-100" (click)="onSaveRejet()">Enregistrer</button>
-                <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
-                    Annuler
-                </button>
-            </div>
-            </form>
-        </ng-template>
-        
-        <!-- Modal À modifier -->
-        <ng-template #amodifierModal let-modal>
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du renvoie de modification</h1>
-            </div>
-            <form [formGroup]="modifModiForm">
-            <div class="modal-body py-md-3">
-                    <div class="row g-3">
-                        <div class="col-sm-12">
-                            <label class="form-label">Motif</label>
-                            <textarea cols="30" rows="4" class="form-control" placeholder="Saisir" formControlName="motifModification"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="button button-secondary w-100" (click)="onSaveModifier()">Enregistrer</button>
-                        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
-                            Annuler
-                        </button>
-                    </div>
-                
-            </div>
-        </form>
-        </ng-template>
+<ng-template #rejetModal let-modal><div class="modal-header"><div><span class="modal-eyebrow">Décision</span><h1 class="modal-title fs-5">Motif du rejet</h1></div><button type="button" class="btn-close" aria-label="Fermer" (click)="modal.dismiss()"></button></div><form [formGroup]="modifRejetForm"><div class="modal-body"><label class="form-label">Motif du rejet</label><textarea rows="5" class="form-control" placeholder="Saisir le motif du rejet" formControlName="motifRejetDemande"></textarea></div><div class="modal-footer"><button type="button" class="button button-outline-primary" (click)="modal.close()">Annuler</button><button type="button" class="button button-secondary" [disabled]="modifRejetForm.invalid" (click)="onSaveRejet()">Enregistrer</button></div></form></ng-template>
+<ng-template #amodifierModal let-modal><div class="modal-header"><div><span class="modal-eyebrow">Retour en correction</span><h1 class="modal-title fs-5">Motif de la modification</h1></div><button type="button" class="btn-close" aria-label="Fermer" (click)="modal.dismiss()"></button></div><form [formGroup]="modifModiForm"><div class="modal-body"><label class="form-label">Motif</label><textarea rows="5" class="form-control" placeholder="Saisir les modifications attendues" formControlName="motifModification"></textarea></div><div class="modal-footer"><button type="button" class="button button-outline-primary" (click)="modal.close()">Annuler</button><button type="button" class="button button-secondary" (click)="onSaveModifier()">Enregistrer</button></div></form></ng-template>

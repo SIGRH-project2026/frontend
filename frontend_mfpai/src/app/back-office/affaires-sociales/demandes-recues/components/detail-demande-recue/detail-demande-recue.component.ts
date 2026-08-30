@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CredentialsService } from 'src/app/services/credentials.service';
@@ -16,7 +17,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './detail-demande-recue.component.html',
   styleUrls: ['./detail-demande-recue.component.css']
 })
-export class DetailDemandeRecueComponent implements OnInit {
+export class DetailDemandeRecueComponent implements OnInit, OnDestroy {
 
   @Input() typeView: "Visualiser" | "Traiter" = "Visualiser";
   
@@ -31,6 +32,11 @@ export class DetailDemandeRecueComponent implements OnInit {
   modifModiForm!:FormGroup;
   modifRejetForm!:FormGroup;
   demande!:DemandePecDTO;
+  isLoading = true;
+  previewUrl: string | null = null;
+  previewSafeUrl: SafeResourceUrl | null = null;
+  previewName = '';
+  previewType = '';
   userInfos: any;
   userId:any;
 
@@ -44,7 +50,8 @@ export class DetailDemandeRecueComponent implements OnInit {
     private readonly credentialService: CredentialsService,
     private readonly userService:UtilisateurService,
     private readonly fileService:FileService,
-    private readonly demandeService:DemandePecService
+    private readonly demandeService:DemandePecService,
+    private readonly sanitizer: DomSanitizer
   ) {
     this.demandeId = this.activatedRoute.snapshot.paramMap.get('dataId')
     this.userInfos = this.credentialService.getUserInfos();
@@ -80,16 +87,48 @@ export class DetailDemandeRecueComponent implements OnInit {
           next : (data : ResponseApi2) => {
             if(data.status?.includes("OK")){
               this.demande = data.payload;
-             // console.log({acte:this.demande});
             }
-          }
+            this.isLoading = false;
+          },
+          error: () => this.isLoading = false
         });
       }
+
+  get statusClass(): string {
+    const code = this.demande?.statutPriseEnCharge?.code?.toLowerCase() || 'default';
+    return `status-${code}`;
+  }
 
 telecharger(item:string){
  // console.log(item);
   this.fileService.telecharger(item)
 }
+
+  visualiser(file: any): void {
+    if (!file?.generatedName) return;
+    this.closePreview();
+    this.fileService.getFile(file.generatedName).subscribe({
+      next: (blob: Blob) => {
+        this.previewUrl = URL.createObjectURL(blob);
+        this.previewSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+        this.previewName = file.originalName || file.generatedName;
+        this.previewType = blob.type || file.fileType || '';
+      },
+      error: () => Swal.fire({ icon: 'error', text: 'Impossible d’ouvrir ce document.' })
+    });
+  }
+
+  closePreview(): void {
+    if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+    this.previewUrl = null;
+    this.previewSafeUrl = null;
+    this.previewName = '';
+    this.previewType = '';
+  }
+
+  isImagePreview(): boolean { return this.previewType.startsWith('image/'); }
+  isPreviewSupported(): boolean { return this.isImagePreview() || this.previewType === 'application/pdf' || this.previewType.startsWith('text/'); }
+  ngOnDestroy(): void { this.closePreview(); }
 
   openModal(content: TemplateRef<any>) {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', size: '520px', centered: true }).result.then(
@@ -256,5 +295,3 @@ telecharger(item:string){
     this.location.back()
   }
 }
-
-

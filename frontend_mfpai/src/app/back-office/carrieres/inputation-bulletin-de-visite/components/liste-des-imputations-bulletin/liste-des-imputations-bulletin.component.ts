@@ -43,6 +43,8 @@ export class ListeDesImputationsBulletinComponent implements OnInit {
   profilConnecte : any
   profile : any
   isDRH: boolean =false;
+  hasGlobalAccess: boolean = false;
+  canViewActions: boolean = false;
 
   typeDemande !: string
   fromDashboard : boolean = false
@@ -62,9 +64,19 @@ export class ListeDesImputationsBulletinComponent implements OnInit {
 
    ) {
     this.userInfos = this._credentialService.getUserInfos();
-    this.profilConnecte = this.userInfos.profil
-    this.profile = this.profilConnecte[0].code
-    if(this.profile === 'Assistant-DRH' || this.profile === 'Directeur-DRH'){
+    this.profilConnecte = this.userInfos.profil || []
+    this.profile = this.profilConnecte[0]?.code
+    const globalProfiles = ['ADMIN-DRH', 'Admin-General', 'Directeur-DRH'];
+    const actionProfiles = [
+      ...globalProfiles,
+      'Assistant-DRH',
+      'Representant-IA',
+      'Chef-division-das',
+      'Représentant-IEF'
+    ];
+    this.hasGlobalAccess = this.profilConnecte.some((profil: any) => globalProfiles.includes(profil.code));
+    this.canViewActions = this.profilConnecte.some((profil: any) => actionProfiles.includes(profil.code));
+    if(this.profile === 'Assistant-DRH' || this.hasGlobalAccess){
       this.isDRH = true
     }
     if(this.router.url?.includes("dash-inputation-bulletin") || !this.isDRH)

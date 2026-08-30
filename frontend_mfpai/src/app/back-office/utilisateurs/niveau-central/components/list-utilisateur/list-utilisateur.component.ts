@@ -687,8 +687,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
     downloadImportTemplate() {
         // Uniquement les champs obligatoires côté backend pour l'import niveau
         // central (cf. IMPORT_REQUIRED_FIELDS_CL dans UtilisateurImpl) : au-delà
-        // du matricule/prénom/nom/sexe, seule la colonne DIRECTION (aussi
-        // acceptée sous les noms SERVICE ou ETABLISSEMENT) est exploitée — les
+        // du matricule/prénom/nom/sexe, seule la colonne DIRECTION est exploitée — les
         // autres colonnes (type système, IEF, IA) ne sont pas utilisées pour ce
         // niveau et ont été retirées pour éviter toute confusion.
         const headers = [

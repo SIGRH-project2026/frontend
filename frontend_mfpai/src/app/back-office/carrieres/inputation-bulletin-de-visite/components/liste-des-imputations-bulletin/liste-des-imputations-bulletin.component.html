@@ -2,7 +2,7 @@
     <div class="panel-list-header">
         <div class="panel-list-text" *ngIf="!fromDashboard">
             <h3>Liste des imputations budgetaire/bulletin de visite</h3>
-            <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)" *ngIf="!isDRH">
+            <button class="button button-primary" type="button" (click)="openModalAddAgent(Add_dossier)" *ngIf="!isDRH || hasGlobalAccess">
                 <i class="fa fa-add"></i>
                 Enregistrer Imputation/bulletin
             </button>
@@ -76,11 +76,7 @@
                         </td>
                         <td>
                             <!--                             <div class="dropdown" *ngIf="!fromDashboard">
-                             -->                            <div class="dropdown" *ngIf="profile === 'Assistant-DRH' ||
-                                                         profile === 'Directeur-DRH' ||
-                                                         profile === 'Representant-IA' ||
-                                                         profile === 'Chef-division-das' ||
-                                                         profile === 'Représentant-IEF'">
+                             -->                            <div class="dropdown" *ngIf="canViewActions">
                             <button class="fab-button" type="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                 <i class="fa fa-ellipsis-v"></i>
@@ -92,7 +88,7 @@
                                         <span>Voir détails</span>
                                     </a>
                                 </li>
-                                <li *ngIf="!isDRH">
+                                <li *ngIf="!isDRH || hasGlobalAccess">
                                     <a class="dropdown-item" (click)="generate(imputation?.id)">
                                         <i class="fa fa-sync-alt me-2"></i>
                                         <span *ngIf="imputation.typeDemande == 'Imputation budgétaire'">Générer imputation</span>

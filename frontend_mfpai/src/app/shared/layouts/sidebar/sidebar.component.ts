@@ -9,6 +9,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { WebSocketService } from '../../services/notification/web-socket.service';
 import { AlertService } from '../../commons/alert.service';
 import { log } from 'node:console';
+import { UtilisateurService } from '../../../services/utilisateur.service';
 
 
 interface Menu {
@@ -69,6 +70,7 @@ export class SidebarComponent implements OnInit {
               private readonly webSocketService : WebSocketService,
               private readonly notificationService : NotificationService,
               private alertService: AlertService,
+              private readonly utilisateurService: UtilisateurService,
     
   ) { 
     this.userInfos = this.credentialsService.getUserInfos();
@@ -94,8 +96,7 @@ export class SidebarComponent implements OnInit {
     });
 
     this.userInfos = this.credentialsService.getUserInfos();
-    const menuProfileItems= this.userInfos;
-    this.getMenus()
+    this.refreshCurrentProfile();
     this.getAllNotification()
     this.notificationService.listenNotify().subscribe(() => {
       this.notificationsLength = this.notificationService.nbrDeNotification()
@@ -108,8 +109,57 @@ export class SidebarComponent implements OnInit {
     this.referenceService.getMenus(this.profileId)
          .subscribe((data : any) =>{
           console.log("data", data)
-          this.menuItems = this.sortMenus(this.normalizeMenus(data))
+          const normalizedMenus = this.normalizeMenus(data);
+          this.menuItems = this.sortMenus(this.hideCareerImputationMenu(normalizedMenus));
          })
+  }
+
+  /**
+   * Le profil contenu dans le JWT reflète la situation au moment de la
+   * connexion. On recharge donc l'utilisateur en base afin qu'une attribution
+   * faite par l'administrateur soit visible au prochain affichage de
+   * l'interface, sans attendre l'expiration du jeton.
+   */
+  private refreshCurrentProfile(): void {
+    if (!this.idUser) {
+      this.getMenus();
+      return;
+    }
+
+    this.utilisateurService.getUser(this.idUser).subscribe({
+      next: (response: any) => {
+        const currentProfiles = response?.data?.profils ?? [];
+        if (currentProfiles.length > 0) {
+          this.profilConnecte = currentProfiles;
+          this.profileId = currentProfiles[0].id;
+        }
+        this.getMenus();
+      },
+      error: () => this.getMenus()
+    });
+  }
+
+  /**
+   * Imputation/Bulletin relève des Affaires sociales. La même route est aussi
+   * rattachée en base au menu Gestion Carrières (menId 108) : on la masque
+   * uniquement sous ce parent, sans supprimer l'accès depuis Affaires sociales.
+   */
+  private hideCareerImputationMenu(menus: Menu[]): Menu[] {
+    return menus.map((menu: any) => {
+      const isCareerMenu = menu.menId === 108 ||
+        this.repairMojibake(menu.menTitle).toLowerCase() === 'gestion carrières';
+
+      if (!isCareerMenu || !menu.children?.length) {
+        return menu;
+      }
+
+      return {
+        ...menu,
+        children: menu.children.filter(
+          (child: Menu) => child.menPath !== '/carrieres/inputation-bulletin'
+        )
+      };
+    });
   }
 
   /**
@@ -519,12 +569,6 @@ const MENUITEMS: Menu[] = [
         menPath: '/carrieres/sortie-definitive',
         menType: 'link',
         role: ['ADMIN-DRH', 'Admin-General', 'Chef-division-dgcaa', 'Chef-bureau-dgcaa'],
-      },
-      {
-        menTitle: 'Imputation/Bulletin',
-        menPath: '/carrieres/inputation-bulletin',
-        menType: 'link',
-        role: [ 'ADMIN-DRH', 'Admin-General', 'Chef-division-dgcaa', 'Chef-bureau-dgcaa', 'Agent-bureau-dgcaa', 'Agent-bureau-dgpeec', 'Representant-IA', 'Représentant-IEF'],
       },
     ],
   },

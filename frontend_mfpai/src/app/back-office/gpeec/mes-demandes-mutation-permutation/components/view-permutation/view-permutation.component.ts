@@ -13,6 +13,7 @@ export class ViewPermutationComponent implements OnInit {
 
   idPermutation !: number
   permutation !: PermutationDTO
+  isLoading = true
 
   constructor(
     private location: Location,
@@ -33,18 +34,21 @@ export class ViewPermutationComponent implements OnInit {
       {
         next : (data) => {
           if(data.success){
-           // console.log(data)
             this.permutation = data.data
           }
+          this.isLoading = false
         },
-        error : (err) => {
-          console.log(err)
-      }
+        error : () => this.isLoading = false
       }
     )
   }
 
    goBack() {
     this.location.back()
+  }
+
+  get statusClass(): string {
+    const code = this.permutation?.traitementPermutation?.statut?.code?.toLowerCase() || 'default';
+    return `status-${code}`;
   }
 }

@@ -116,7 +116,12 @@ export class CreateMutationComponent implements OnInit {
 
     }
     onSaveDemande() {
-       // console.log("ici")
+        const activeForm = this.typeDestinationSouhaitee === 'DEC' ? this.demandePecForm : this.centralRegionForm;
+        if (activeForm.invalid) {
+            activeForm.markAllAsTouched();
+            Swal.fire({ icon: 'warning', text: 'Veuillez renseigner tous les champs obligatoires.' });
+            return;
+        }
         this.spinner.show();
         let mutation : MutationDTO = new MutationDTO()
         if(this.typeDestinationSouhaitee === 'DEC')
@@ -165,7 +170,6 @@ export class CreateMutationComponent implements OnInit {
 
 
 
-        if(this.demandePecForm.valid || this.centralRegionForm.valid)
         {
            // console.log("demandePecForm ", this.centralRegionForm)
             this.mutationService.post(mutation)
@@ -184,6 +188,13 @@ export class CreateMutationComponent implements OnInit {
                                     this.location.back();
                                 });
                             }
+                        },
+                        error: () => {
+                            this.spinner.hide();
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'La demande de mutation n’a pas pu être soumise. Veuillez réessayer.'
+                            });
                         }
                     }
 
@@ -295,4 +306,3 @@ export class CreateMutationComponent implements OnInit {
         }
     }
 }
-
