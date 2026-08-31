@@ -35,7 +35,6 @@ export class CreateUtilisateurComponent implements OnInit {
   typeMatricule: any;
   diplomeACA: any;
   diplomePROF: any;
-  diplomePED: any;
   bureau: any;
   fonction: any;
   direction: any;
@@ -112,7 +111,6 @@ export class CreateUtilisateurComponent implements OnInit {
       dateEntreEtablissement: ["", Validators.required],
       dateEntreService: [""],
       diplomeACA: [""],
-      diplomePED: [""],
       diplomePROF: [""],
       matriculeContratuel: ["", matriculeContractuelValidator],
       matriculeFonctionnaire: ["", matriculeFonctionnaireValidator],
@@ -156,9 +154,6 @@ export class CreateUtilisateurComponent implements OnInit {
 
     this.referenceService.listDiplomeACA().subscribe((response) => {
       if (response.success) this.diplomeACA = response.data;
-    });
-    this.referenceService.listDiplomePED().subscribe((response) => {
-      if (response.success) this.diplomePED = response.data;
     });
     this.referenceService.listDiplomePROF().subscribe((response) => {
       if (response.success) this.diplomePROF = response.data;
@@ -424,10 +419,6 @@ export class CreateUtilisateurComponent implements OnInit {
       diplomeACA:
         this.deconectedForm.controls["diplomeACA"].value !== ""
           ? { code: this.deconectedForm.controls["diplomeACA"].value }
-          : null,
-      diplomePED:
-        this.deconectedForm.controls["diplomePED"].value !== ""
-          ? { code: this.deconectedForm.controls["diplomePED"].value }
           : null,
       diplomePROF:
         this.deconectedForm.controls["diplomePROF"].value !== ""

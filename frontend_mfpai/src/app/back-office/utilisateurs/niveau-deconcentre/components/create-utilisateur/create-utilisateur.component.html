@@ -403,15 +403,6 @@
                     </select>
                 </div>
                 <div class="col-sm-4">
-                    <label class="form-label">Diplôme PED </label>
-                    <select class="form-select" formControlName="diplomePED">
-                        <option value="">Sélectionner</option>
-                        <option *ngFor="let dipPED of diplomePED" [value]="dipPED?.code">{{dipPED?.label}}</option>
-
-                    </select>
-                </div>
-
-                <div class="col-sm-4">
                     <label class="form-label">Type Poste <span style="color: red">*</span></label>
                     <select class="form-select" formControlName="typePoste">
                         <option value="">Sélectionner</option>

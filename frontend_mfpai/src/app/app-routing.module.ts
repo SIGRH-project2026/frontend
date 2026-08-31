@@ -3,6 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import {AuthGuard, IsAuthGuard} from "./guard/auth.guard";
 
 const routes: Routes = [
+  {
+    path: 'auth',
+    loadChildren: () => import('./back-office/authentification/authentification.module').then(mod => mod.AuthentificationModule)
+  },
     {
     path: '',
     loadChildren: () => import('./front-office/front-office.module').then(mod => mod.FrontOfficeModule)
@@ -16,10 +20,6 @@ const routes: Routes = [
   {
     path: 'courriers',
     loadChildren: () => import('./back-office/formations/courriers/courriers.module').then(mod => mod.CourriersModule)
-  },
-  {
-    path: 'auth',
-    loadChildren: () => import('./back-office/authentification/authentification.module').then(mod => mod.AuthentificationModule)
   },
   {
     path: 'formations',

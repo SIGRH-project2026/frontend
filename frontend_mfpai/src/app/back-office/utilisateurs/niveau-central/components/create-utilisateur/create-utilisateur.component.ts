@@ -44,7 +44,6 @@ export class CreateUtilisateurComponent implements OnInit{
   grade: any;
    typePoste: any;
    diplomeACA: any;
-   diplomePED: any;
    diplomePROF: any;
    typeMatricule: any;
   speciality: any;
@@ -102,7 +101,6 @@ export class CreateUtilisateurComponent implements OnInit{
       dateEntreEnseignement: ['', Validators.required],
     //  dateEntreEtablissement: ['', Validators.required],
       diplomeACA: [''],
-      diplomePED: [''],
       diplomePROF: [''],
       matriculeContratuel: ['', matriculeContractuelValidator],
       matriculeFonctionnaire: ['', matriculeFonctionnaireValidator],
@@ -159,6 +157,12 @@ export class CreateUtilisateurComponent implements OnInit{
         this.direction = response.data;
     });
 
+    this.referenceService.listProfilesCEN().subscribe(response => {
+      if (response.success) {
+        this.profils = response.data;
+      }
+    });
+
 
        this.referenceService.listButreaus().subscribe(response => {
       if(response.success) {
@@ -187,10 +191,6 @@ export class CreateUtilisateurComponent implements OnInit{
     this.referenceService.listDiplomeACA().subscribe(response => {
       if(response.success)
         this.diplomeACA = response.data;
-    });
-    this.referenceService.listDiplomePED().subscribe(response => {
-      if(response.success)
-        this.diplomePED = response.data;
     });
     this.referenceService.listDiplomePROF().subscribe(response => {
       if(response.success)
@@ -412,7 +412,6 @@ export class CreateUtilisateurComponent implements OnInit{
      dateEntreEnseignement: this.centralForm.controls['dateEntreEnseignement'].value,
      //  dateEntreEtablissement: ['', Validators.required],
      diplomeACA: this.centralForm.controls['diplomeACA'].value !== '' ? {code:  this.centralForm.controls['diplomeACA'].value} : null,
-     diplomePED: this.centralForm.controls['diplomePED'].value !== '' ? {code: this.centralForm.controls['diplomePED'].value} : null,
      diplomePROF: this.centralForm.controls['diplomePROF'].value !== '' ? {code: this.centralForm.controls['diplomePROF'].value} : null,
 
      matriculeContratuel: this.centralForm.controls['typeMatricule'].value === 'MATCON'  ? this.centralForm.controls['matriculeContratuel'].value + "/" + this.validationResult : null,

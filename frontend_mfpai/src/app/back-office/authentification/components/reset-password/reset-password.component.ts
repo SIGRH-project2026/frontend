@@ -33,15 +33,15 @@ export class ResetPasswordComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.token =  this.activatedRoute.snapshot.queryParams['token'];
-   // console.log('token', token)
-    if(this.token!=null){
-      let decodeToken: any = jwtDecode(this.token);
-
-     // console.log("dec", decodeToken)
-
-      this.login = decodeToken?.infos?.login
-
+    this.token = this.activatedRoute.snapshot.queryParamMap.get('token');
+    if (this.token) {
+      try {
+        const decodeToken: any = jwtDecode(this.token);
+        this.login = decodeToken?.infos?.login ?? '';
+      } catch {
+        this.authService.showSwal('error', 'Le lien de création du mot de passe est invalide.');
+        this.router.navigate(['/auth/login']);
+      }
     }
     this.resetPasswordForm = this.formBuilder.group({
        password: ['', Validators.required],
