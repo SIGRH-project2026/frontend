@@ -33,9 +33,7 @@ export interface ResetOrForgetFormDTO {
 
 export interface ActivateAccountDTO {
     matricule: string
-    defaultPassword: string
-    newPassword: string
-    passwordConfirmed: string
+    email: string
 }
 
 

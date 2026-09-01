@@ -13,9 +13,6 @@ import { ActivateAccountDTO } from '../../../../models/auth-response';
 export class ActivateAccountComponent {
   activationForm: FormGroup;
   isLoading = false;
-  hideDefaultPassword = true;
-  hideNewPassword = true;
-  hideConfirmation = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -24,23 +21,17 @@ export class ActivateAccountComponent {
   ) {
     this.activationForm = this.formBuilder.group({
       matricule: ['', [Validators.required, Validators.maxLength(20)]],
-      defaultPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      passwordConfirmed: ['', Validators.required]
+      email: ['', [Validators.required, Validators.email]]
     });
   }
 
   activate(): void {
     if (this.activationForm.invalid || this.isLoading) return;
-    if (this.activationForm.value.newPassword !== this.activationForm.value.passwordConfirmed) {
-      this.authService.showSwal('error', 'Les mots de passe ne correspondent pas.');
-      return;
-    }
-
     this.isLoading = true;
     const data: ActivateAccountDTO = {
       ...this.activationForm.getRawValue(),
-      matricule: this.activationForm.value.matricule.trim()
+      matricule: this.activationForm.value.matricule.trim(),
+      email: this.activationForm.value.email.trim()
     };
     this.authService.activateAccount(data).subscribe({
       next: response => {
@@ -51,7 +42,7 @@ export class ActivateAccountComponent {
         }
         Swal.fire({
           icon: 'success',
-          title: 'Compte activé',
+          title: 'Demande enregistrée',
           text: response.message,
           confirmButtonColor: '#056db6'
         }).then(() => this.router.navigate(['/auth/login']));
