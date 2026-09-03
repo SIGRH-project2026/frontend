@@ -109,12 +109,22 @@ export class TokenInterceptor implements HttpInterceptor {
                 ? event.clone({ body: this.normalizeResponse(event.body) })
                 : event),
             catchError(err => {
-                if (err instanceof HttpErrorResponse && err.status === 401) {
+                if (this.requiresTokenRefresh(err, req)) {
                     return this.handle401(clone, next);
                 }
                 return throwError(() => err);
             })
         );
+    }
+
+    private requiresTokenRefresh(error: unknown, request: HttpRequest<any>): boolean {
+        if (!(error instanceof HttpErrorResponse) || request.url.includes('/auth/refresh')) {
+            return false;
+        }
+
+        const authenticationStatus = error.error?.status?.toString().toUpperCase();
+        return error.status === 401
+            || (error.status === 403 && authenticationStatus === 'UNAUTHORIZED');
     }
 
     /** Répare récursivement les chaînes UTF-8 anciennement décodées en Latin-1. */
@@ -153,10 +163,13 @@ export class TokenInterceptor implements HttpInterceptor {
             return this.credentialsService.refreshAccessTokenBlacklist().pipe(
                 switchMap(token => {
                     this.isRefreshing = false;
+                    this.credentialsService.setCredentials(token);
                     this.refreshTokenSubject.next(token);
                     return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
                 }),
                 catchError(err => {
+                    this.isRefreshing = false;
+                    this.refreshTokenSubject.next(null);
                     this.credentialsService.logout();
                     return throwError(() => err);
                 })

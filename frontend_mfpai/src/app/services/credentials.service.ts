@@ -55,10 +55,10 @@ export class CredentialsService implements OnDestroy {
 
         const API_URL = `${this.apiUrl}auth/refresh-token`;
 
-        return this.http.post<AuthResponseApi>(API_URL, { refreshToken: refresh }).pipe(
+        return this.http.post<AuthResponseApi>(API_URL, { token: refresh }).pipe(
             map(res => {
 
-                const newAccessToken = res?.payload?.refreshToken || res?.payload?.token || null;
+                const newAccessToken = res?.payload?.token || null;
                 if (!newAccessToken) {
                     throw new Error("Nouveau accessToken non reçu");
                 }

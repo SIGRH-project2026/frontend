@@ -71,6 +71,8 @@ export class ListeDesImputationsBulletinComponent implements OnInit {
       ...globalProfiles,
       'Assistant-DRH',
       'Representant-IA',
+      'Agent-bureau-das',
+      'Chef-bureau-das',
       'Chef-division-das',
       'Représentant-IEF'
     ];

@@ -11,6 +11,7 @@ import { FileService } from 'src/app/shared/services/files/file.service';
 import { CredentialsService } from 'src/app/services/credentials.service';
 import {UtilisateurService} from "../../../../../services/utilisateur.service";
 import {NgxSpinner, NgxSpinnerService} from "ngx-spinner";
+import { TypeActeDTO } from '../models/TypeActeDTO';
 
 @Component({
   selector: 'app-liste-demandes',
@@ -35,6 +36,7 @@ throw new Error('Method not implemented.');
   closeResult = '';
   actList:any[]=[];
   typeActe:string="";
+  typeActes: TypeActeDTO[] = [];
   referenceActe:string='';
   date:string="";
   statutActe:string="";
@@ -70,6 +72,17 @@ throw new Error('Method not implemented.');
     this.refreshData();
       this.listAct();           
     this.initForm();
+    this.getTypeActes();
+  }
+
+  getTypeActes(): void {
+    this.acteService.listTypeActe().subscribe({
+      next: (data: ResponseApi2) => {
+        if (data.status?.includes('OK')) {
+          this.typeActes = data.payload ?? [];
+        }
+      }
+    });
   }
 
  

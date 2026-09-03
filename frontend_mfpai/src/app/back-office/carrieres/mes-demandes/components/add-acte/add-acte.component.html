@@ -9,11 +9,10 @@
                 <div class="row g-3">
                     <div class="col-sm-4">
                         <label class="form-label">Acte</label>
-                        <select class="form-select" formControlName="acte" [(ngModel)]="typeSelectionne" (change)="onchangeActe($event)"
+                        <select class="form-select" formControlName="acte" (change)="onchangeActe($event)"
                             id="acte">
                             <option value="">Sélectionner</option>
-                            <option value="AA">Acte Administratif</option>
-                            <option value="AG">Acte de Gestion</option>
+                            <option *ngFor="let type of typeActes" [value]="type.codeActe">{{ type.libelleActe }}</option>
                         </select>
                    <div style="color: red" *ngIf="f['acte'].touched && f['acte'].hasError('required')">Acte <strong>obligatoire!</strong></div>
 

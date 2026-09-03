@@ -81,6 +81,7 @@
               class="nav-link"
               [routerLink]="subMenu.menPath"
               routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: subMenu.menPath === '/carrieres/mon-dossier' }"
               (click)="getMenTitle(subMenu.menTitle)"
             >
               <span>{{ subMenu.menTitle }}</span>

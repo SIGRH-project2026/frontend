@@ -42,6 +42,7 @@ export class ListeDemandesRecusComponent {
   closeResult = "";
   date: string = "";
   typeActe: string = "";
+  typeActes: TypeActeDTO[] = [];
   codeTypeActe: string = "";
   statutActe: string = "";
   reference: string = "";
@@ -94,7 +95,18 @@ export class ListeDemandesRecusComponent {
     this.initRetourForm();
     this.initModifForm();
     this.initRejetForm();
+    this.getTypeActes();
 
+  }
+
+  getTypeActes(): void {
+    this.acteService.listTypeActe().subscribe({
+      next: (data: ResponseApi2) => {
+        if (data.status?.includes("OK")) {
+          this.typeActes = data.payload ?? [];
+        }
+      },
+    });
   }
 
   constructor(

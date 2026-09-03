@@ -15,8 +15,7 @@
                                 <label class="form-label">Acte</label>
                                 <select class="form-select" formControlName="acte" [(ngModel)]="typeSelectionne" (change)="onchangeActe($event)"id="acte">
                                     <option [value]="" >Sélectionner</option>
-                                    <option value="aa">Acte Administratif</option>
-                                    <option value="ag">Acte de Gestion</option>
+                                    <option *ngFor="let type of typeActes" [value]="type.codeActe">{{ type.libelleActe }}</option>
                                 </select>
                                 <div style="color: red" *ngIf="f['acte'].touched && f['acte'].hasError('required')">Acte <strong>obligatoire!</strong></div>
 

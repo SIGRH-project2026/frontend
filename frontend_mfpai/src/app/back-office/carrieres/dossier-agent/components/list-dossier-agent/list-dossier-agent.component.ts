@@ -191,7 +191,30 @@ private getDismissReason(reason: any): string {
         if(data.success){
             this.dossier=data.data;
             if(this.dossier.utilisateur.matricule == val){
-              this.router.navigate(['create-dossier-agent',this.dossier.utilisateur.matricule], { relativeTo: this.route.parent })
+              if (this.dossier.hasDossier) {
+                Swal.fire({
+                  title: 'Dossier existant',
+                  text: 'Cet agent possède déjà un dossier. Voulez-vous ouvrir le dossier existant ?',
+                  icon: 'info',
+                  showCancelButton: true,
+                  confirmButtonColor: '#1D4A7B',
+                  confirmButtonText: 'Ouvrir le dossier',
+                  cancelButtonText: 'Annuler'
+                }).then(result => {
+                  if (result.isConfirmed) {
+                    this.router.navigate(
+                      ['create-dossier-agent', this.dossier.utilisateur.matricule],
+                      { relativeTo: this.route.parent }
+                    );
+                  }
+                });
+                return;
+              }
+
+              this.router.navigate(
+                ['create-dossier-agent', this.dossier.utilisateur.matricule],
+                { relativeTo: this.route.parent }
+              );
             }
           }
         },

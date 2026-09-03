@@ -13,6 +13,7 @@ import { FileDTO } from '../models/FileDTO';
 import { CredentialsService } from 'src/app/services/credentials.service';
 import { TypeAGDTO } from '../models/TypeAGDTO ';
 import { TypeAADTO } from '../models/TypeAADTO ';
+import { TypeActeDTO } from '../models/TypeActeDTO';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class EditActeComponent implements OnInit{
   actes: TypeAADTO[] | TypeAGDTO[] = [];  
   acteAA:TypeAADTO[]=[];
   acteAG:TypeAGDTO[]=[];
+  typeActes: TypeActeDTO[] = [];
 
 
   constructor(
@@ -61,6 +63,17 @@ export class EditActeComponent implements OnInit{
     this.getAG();
     this.getOneDemande();
     this.initForm();
+    this.getTypeActes();
+  }
+
+  getTypeActes(): void {
+    this.acteService.listTypeActe().subscribe({
+      next: (data: ResponseApi2) => {
+        if (data.status?.includes('OK')) {
+          this.typeActes = data.payload ?? [];
+        }
+      }
+    });
   }
 
   getAA() {
@@ -87,10 +100,12 @@ getAG() {
 
 onchangeActe(event: any) {
   this.typeSelectionne = event.target.value;
-  if (this.typeSelectionne === "AA") { 
+  if (this.typeSelectionne.toLowerCase() === "aa") { 
       this.actes = this.acteAA;     
-  } else {
+  } else if (this.typeSelectionne.toLowerCase() === "ag") {
       this.actes = this.acteAG;
+  } else {
+      this.actes = [];
   }
 }
   

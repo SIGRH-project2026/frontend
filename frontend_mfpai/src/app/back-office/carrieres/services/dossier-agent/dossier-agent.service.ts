@@ -122,9 +122,6 @@ getDossierCurrentUser() : Observable<ResponseApiData>{
    
 
 private handleError(error: any) {
-
-  console.log(error?.error?.message);
-  this.showSwal('error',error?.error?.message)
       if (error.status === 0) {
         // A client-side or network error occurred. Handle it accordingly.
         console.error('An error occurred:', error.error);
@@ -134,8 +131,8 @@ private handleError(error: any) {
         console.error(
           `Backend returned code ${error.status}, body was: `, error.error);
       }
-      // Return an observable with a user-facing error message.
-      return throwError(() => new Error(`Something bad happened; please try again later`));
+      // Preserve the HTTP response so the component can display the backend message.
+      return throwError(() => error);
     }
 
 }

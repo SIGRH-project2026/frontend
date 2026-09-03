@@ -12,8 +12,7 @@
 
                 <select class="form-select" [(ngModel)]="typeActe" (ngModelChange)="onSelectedType($event)">
                     <option value="">Tous les Actes</option>
-                    <option value="aa"  >Acte Administratif</option>
-                    <option value="ag">Acte de Gestion </option>
+                    <option *ngFor="let type of typeActes" [value]="type.codeActe">{{ type.libelleActe }}</option>
                 </select>
             </div>
             <!--   <div class="buttons-group">
@@ -198,8 +197,7 @@
                     <label class="form-label">Type acte</label >
                     <select class="form-select" formControlName="typeActe">
                         <option value="">Sélectionner</option>
-                        <option value="Acte Administratif">Acte Administratif</option>
-                        <option value="Acte de Gestion">Acte de Gestion</option>
+                        <option *ngFor="let type of typeActes" [value]="type.codeActe">{{ type.libelleActe }}</option>
                     </select>
                 </div>
             </div>

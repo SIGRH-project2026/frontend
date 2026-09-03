@@ -15,7 +15,6 @@ import { PieceJointes } from '../../../models/dossier-agent/pieceJointes';
 import { EtatCivil } from '../../../models/dossier-agent/etatCivil';
 import { ReferencesService } from 'src/app/services/references.service';
 import { ActeService } from 'src/app/services/acteService.service';
-import { log } from 'console';
 
 
 @Component({
@@ -86,9 +85,10 @@ export class AddDossierAgentComponent  implements OnInit{
 
 
     getActeFromTypeActe(code: any) {
-        console.log("get acte by type acte ",code);
+        const normalizedCode = String(code ?? '').trim().toLowerCase();
+        this.actes = [];
 
-        if(code =="aa"){
+        if(normalizedCode === "aa"){
             this.acteService.listAA().subscribe(
                 data => {
                     if(data.status ==="OK")
@@ -97,7 +97,7 @@ export class AddDossierAgentComponent  implements OnInit{
                         console.log(data)
                     }
                 })
-        }else{
+        }else if (normalizedCode === "ag") {
             this.acteService.listAG().subscribe(
                 data =>{
                     if(data.status ==="OK")
@@ -339,7 +339,11 @@ export class AddDossierAgentComponent  implements OnInit{
 
                 },
                 error: (error: HttpErrorResponse) => {
-                    const message = error.error?.message
+                    const details = typeof error.error?.errors === 'string'
+                        ? error.error.errors
+                        : null;
+                    const message = details
+                        ?? error.error?.message
                         ?? 'Une erreur est survenue. Vérifiez vos informations.';
                     this.dossierDossierAgentService.showSwal('error', message);
                 }
@@ -523,14 +527,31 @@ export class AddDossierAgentComponent  implements OnInit{
 
     addDossier() {
         const formValue = this.dossierForm.value;
+        const typeCode = String(formValue.typeActe ?? '').trim().toLowerCase();
+        const selectedType = this.typeActe.find(
+            type => String(type.codeActe ?? '').trim().toLowerCase() === typeCode
+        );
+        const selectedActe = this.actes.find(acte => acte.code === formValue.acte);
+
+        if (!selectedType || !selectedActe) {
+            this.dossierDossierAgentService.showSwal(
+                'error',
+                "Le type d'acte ou l'acte sélectionné est introuvable. Rechargez la page puis réessayez."
+            );
+            return;
+        }
+
         let sitAd: SituationAdministrative = new SituationAdministrative()
         sitAd.dateActe = formValue.dateActe
         sitAd.numeroActe = formValue.numeroActe
-        sitAd.typeActe = {"id":0,"codeActe":formValue.typeActe,"libelleActe":""}
-        formValue.typeActe==="aa" ?
-            sitAd.acteAA= {"id":0,"code":formValue.acte,"libelle":"","typeSortie":"" }
-            :
-            sitAd.acteAG= {"id":0,"code":formValue.acte,"libelle":"","typeSortie":"" }
+        sitAd.typeActe = selectedType
+        if (typeCode === "aa") {
+            sitAd.acteAA = selectedActe
+            sitAd.acteAG = undefined as any
+        } else {
+            sitAd.acteAG = selectedActe
+            sitAd.acteAA = undefined as any
+        }
 
         sitAd.id=0
 

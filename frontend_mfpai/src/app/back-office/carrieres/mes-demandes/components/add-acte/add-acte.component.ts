@@ -16,6 +16,7 @@ import { UserDTOs } from 'src/app/models/UserDTOs';
 import { FileService } from 'src/app/shared/services/files/file.service';
 import { TypeAADTO } from '../models/TypeAADTO ';
 import { TypeAGDTO } from '../models/TypeAGDTO ';
+import { TypeActeDTO } from '../models/TypeActeDTO';
 
 @Component({
   selector: 'app-add-acte',
@@ -48,6 +49,7 @@ export class AddActeComponent implements OnInit {
   showDateInput = false;
   dateRetour:Date=new Date();
   actes: TypeAADTO[] | TypeAGDTO[] = [];  
+  typeActes: TypeActeDTO[] = [];
 
 
 
@@ -73,6 +75,7 @@ export class AddActeComponent implements OnInit {
     this.initForm();
     this.getAA();
     this.getAG();
+    this.getTypeActes();
     //this.formBuilder.array([])
   }
 
@@ -156,11 +159,25 @@ export class AddActeComponent implements OnInit {
 
   onchangeActe(event: any) {
     this.typeSelectionne = event.target.value;
-    if (this.typeSelectionne === "AA") { 
+    this.demandeActeForm.get('typeActe')?.reset('');
+    const codeType = this.typeSelectionne.trim().toLowerCase();
+    if (codeType === "aa") { 
         this.actes = this.acteAA;     
-    } else {
+    } else if (codeType === "ag") {
         this.actes = this.acteAG;
+    } else {
+        this.actes = [];
     }
+}
+
+getTypeActes() {
+    this.acteService.listTypeActe().subscribe({
+        next: (data: ResponseApi2) => {
+            if (data.status?.includes("OK")) {
+                this.typeActes = data.payload ?? [];
+            }
+        }
+    });
 }
 
 getAA() {
@@ -212,14 +229,15 @@ getAG() {
       demandeActe.direction=this.userDTO.direction
       demandeActe.commentaire=this.demandeActeForm.value.commentaire;
       // console.log({code:this.demandeActeForm.value.typeActe});
-      this.acteService.getTypeActe(this.demandeActeForm.value.typeActe)
-      demandeActe.codetypeActe=this.demandeActeForm.value.acte.toLowerCase();
+      const codeTypeActe = String(this.demandeActeForm.value.acte).trim();
+      const codeTypeActeNormalise = codeTypeActe.toLowerCase();
+      demandeActe.codetypeActe=codeTypeActe;
       // console.log({aaaaaaaaaa:demandeActe.codetypeActe});
-      if( this.typeSelectionne=="AA"){
+      if(codeTypeActeNormalise==="aa"){
         // console.log("1111111111");
         demandeActe.codeTypeActeAA=this.demandeActeForm.value.typeActe;
       }
-      if( this.typeSelectionne=="AG"){
+      if(codeTypeActeNormalise==="ag"){
         demandeActe.codeTypeActeAG=this.demandeActeForm.value.typeActe;
         //console.log("222222222222");
       }
@@ -239,7 +257,20 @@ getAG() {
                 }).then(() => {
                   this.router.navigate(['carrieres/mes-demandes']);
                 });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Création impossible',
+                  text: data.message || data.errors || 'La demande d\'acte n\'a pas pu être créée.'
+                });
               }
+            },
+            error: (error: any) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Création impossible',
+                text: error?.error?.message || error?.message || 'Le serveur ne répond pas.'
+              });
             }
           })
 
@@ -320,4 +351,3 @@ const stem: string[] = [
   "Demande d'autorisation de sortie du territoire national",
   "Demande de mise en position de stage",
 ];
-
