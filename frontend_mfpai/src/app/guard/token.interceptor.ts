@@ -6,7 +6,7 @@ import {
     HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse
 } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take, finalize, shareReplay } from 'rxjs/operators';
 import {CredentialsService} from "../services/credentials.service";
 
 
@@ -91,8 +91,8 @@ export class TokenInterceptor implements HttpInterceptor {
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-    private isRefreshing = false;
-    private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+    private refreshRequest: Observable<string> | null = null;
+    private refreshSessionToken: string | null = null;
 
     constructor(private credentialsService: CredentialsService) {}
 
@@ -100,7 +100,7 @@ export class TokenInterceptor implements HttpInterceptor {
         const token = this.credentialsService.getCredentials();
         let clone = req;
 
-        if (token) {
+        if (token && !req.headers.has('Authorization') && !/\/auth\/login(?:[/?]|$)/.test(req.url)) {
             clone = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
         }
 
@@ -109,7 +109,7 @@ export class TokenInterceptor implements HttpInterceptor {
                 ? event.clone({ body: this.normalizeResponse(event.body) })
                 : event),
             catchError(err => {
-                if (this.requiresTokenRefresh(err, req)) {
+                if (token && token === this.credentialsService.getCredentials() && this.requiresTokenRefresh(err, req)) {
                     return this.handle401(clone, next);
                 }
                 return throwError(() => err);
@@ -118,7 +118,7 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 
     private requiresTokenRefresh(error: unknown, request: HttpRequest<any>): boolean {
-        if (!(error instanceof HttpErrorResponse) || request.url.includes('/auth/refresh')) {
+        if (!(error instanceof HttpErrorResponse) || /\/auth\/(?:login|logout|refresh[^/?]*)(?:[/?]|$)/.test(request.url)) {
             return false;
         }
 
@@ -156,32 +156,39 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 
     private handle401(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (!this.isRefreshing) {
-            this.isRefreshing = true;
-            this.refreshTokenSubject.next(null);
-
-            return this.credentialsService.refreshAccessTokenBlacklist().pipe(
-                switchMap(token => {
-                    this.isRefreshing = false;
+        const sessionToken = this.credentialsService.getCredentials();
+        if (!this.refreshRequest || this.refreshSessionToken !== sessionToken) {
+            this.refreshSessionToken = sessionToken;
+            this.refreshRequest = this.credentialsService.refreshAccessTokenBlacklist().pipe(
+                map(token => {
+                    if (this.credentialsService.getCredentials() !== sessionToken) {
+                        throw new Error('La session a changé pendant le renouvellement.');
+                    }
                     this.credentialsService.setCredentials(token);
-                    this.refreshTokenSubject.next(token);
-                    return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
+                    return token;
                 }),
                 catchError(err => {
-                    this.isRefreshing = false;
-                    this.refreshTokenSubject.next(null);
-                    this.credentialsService.logout();
+                    if (this.credentialsService.getCredentials() === sessionToken) {
+                        this.credentialsService.clearCredentials();
+                        this.credentialsService.clearRefreshToken();
+                        this.credentialsService.notifyLogout();
+                    }
                     return throwError(() => err);
-                })
-            );
-        } else {
-            return this.refreshTokenSubject.pipe(
-                filter(token => token !== null),
-                take(1),
-                switchMap(token =>
-                    next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }))
-                )
+                }),
+                finalize(() => {
+                    if (this.refreshSessionToken === sessionToken) {
+                        this.refreshRequest = null;
+                        this.refreshSessionToken = null;
+                    }
+                }),
+                shareReplay({ bufferSize: 1, refCount: false })
             );
         }
+        return this.refreshRequest.pipe(switchMap(token => {
+            if (this.credentialsService.getCredentials() !== token) {
+                return throwError(() => new Error('La session a changé.'));
+            }
+            return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
+        }));
     }
 }

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
+import { CredentialsService } from './credentials.service';
 import { environment } from "../../environments/environment";
 import { ResponseApi } from "../models/response-api";
 import { ResponseApi2 } from "../shared/models/ResponseApi";
@@ -16,7 +17,17 @@ export class ReferencesService {
     "Access-Control-Allow-Credentials": "true",
   });
 
-  constructor(private _http: HttpClient) {}
+  private cachedMenus?: { token: string; profileId: number; menus: any[] };
+
+  constructor(private _http: HttpClient, private credentialsService: CredentialsService) {}
+
+  getCachedMenus(profileId: number): any[] | undefined {
+    const cached = this.cachedMenus;
+    // Transmission unique des menus de connexion au premier sidebar.
+    this.cachedMenus = undefined;
+    return cached?.token === this.credentialsService.getCredentials()
+      && cached?.profileId === profileId ? cached.menus : undefined;
+  }
 
   listService = (): Observable<ResponseApi> =>
     this._http.get<ResponseApi>(`${this.apiUrl}static/services`, {
@@ -187,10 +198,16 @@ export class ReferencesService {
   listCorpsByMatricule = (code: string): Observable<ResponseApi> =>
     this._http.get<ResponseApi>(`${this.apiUrl}static/corps/${code}`);
 
-  getMenus = (profileId: number): Observable<ResponseApi2> =>
-    this._http.get<ResponseApi>(
-      `${this.apiUrl}menus/listByProfile/${profileId}`,
-    );
+  getMenus = (profileId: number, cacheForNavigation = false): Observable<any[]> => {
+    const token = this.credentialsService.getCredentials();
+    return this._http.get<any[]>(
+        `${this.apiUrl}menus/listByProfile/${profileId}`,
+      ).pipe(tap(menus => {
+        if (cacheForNavigation && token && token === this.credentialsService.getCredentials()) {
+          this.cachedMenus = { token, profileId, menus };
+        }
+      }));
+  };
 
   indicateurIaIefEtab = (codeProfile: string): Observable<ResponseApi2> => {
     let params = new HttpParams().set("profileCode", codeProfile);

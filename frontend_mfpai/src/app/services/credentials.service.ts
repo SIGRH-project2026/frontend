@@ -25,7 +25,11 @@ export class CredentialsService implements OnDestroy {
 
     private handleStorageEvent(event: StorageEvent) {
         if (event.key === 'logout') {
-            this.logout();
+            // Le stockage est partagé : ne pas relancer une déconnexion HTTP
+            // ni effacer une session créée depuis cet événement.
+            if (!this.getCredentials()) {
+                this.router.navigate(['/auth/login']);
+            }
         }
     }
  private  readonly _credentials = "Token";
@@ -224,16 +228,18 @@ export class CredentialsService implements OnDestroy {
 
     logout(): void {
         const API_URL = `${this.apiUrl}auth/logout`;
-        this.http.post(API_URL, {  }).subscribe({
-            next: () => {
-                localStorage.clear();
-                //this.router.navigate(['/auth/login']);
-                this.notifyLogout()
-            },
+        const token = this.getCredentials();
+        this.clearCredentials();
+        this.clearRefreshToken();
+        this.notifyLogout();
+        if (!token) {
+            return;
+        }
+        this.http.post(API_URL, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        }).subscribe({
             error: (err) => {
                 console.error('Erreur lors du logout', err);
-                localStorage.clear();
-
             }
         });
 
