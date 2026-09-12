@@ -209,15 +209,6 @@ export class ListPersonnelComponent implements OnInit {
     });
   }
 
-  loadEtablissementsByEFF(code: any): void {
-    this.referenceService.listEtablissementByEFFCode(code)
-      .subscribe(response => {
-        if (response.success) {
-          this.etablissement = response.data;
-        }
-      });
-  }
-
   /**
    * Charge les services d'une direction
    */
@@ -507,11 +498,7 @@ export class ListPersonnelComponent implements OnInit {
         this.bureausCentral = [];
         
         this.structureCode = code;
-        
-        if (code === 'MIN') {
-          this.loadEtablissementsByEFF(code);
-        }
-        
+
         // Réinitialiser la pagination et rechercher
         this.page = 1;
         this.searchWithCurrentFilters();
