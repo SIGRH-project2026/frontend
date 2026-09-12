@@ -47,7 +47,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   pageOptions: any = { totalPages: 0, size: 10 };
   filterValue = "";
   profils: Profil[] = [];
-  structure: any;
   codeIA: any;
   searchData!: SearchData;
   region: any;
@@ -168,10 +167,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       if (response.success) this.speciality = response.data;
     });
 
-    this.referenceService.lisStructure().subscribe((response) => {
-      if (response.success) this.structure = response.data;
-    });
-
     // Restaure la recherche précédente si l'on revient d'une autre page
     // (ex. détail ou modification d'un utilisateur). L'état est perdu au
     // rechargement complet de la page.
@@ -200,10 +195,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       this.advancedSearchForm.patchValue(savedState.formValue);
 
       // Recharge les listes déroulantes dépendantes des valeurs restaurées.
-      const { structure, region, ia, ief, corps } = savedState.formValue;
-      if (structure) {
-        this.getStruct(structure);
-      }
+      const { region, ia, ief, corps } = savedState.formValue;
       if (region) {
         this.getListIA(region);
       }
@@ -327,22 +319,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
         return "by clicking on a backdrop";
       default:
         return `with: ${reason}`;
-    }
-  }
-
-  getStruct(code: any) {
-    if (code) {
-      this.spinner.show();
-      this.referenceService
-        .listEtablissementByEFFCode(code)
-        .subscribe((response) => {
-          if (response.success) {
-            this.etablissement = response.data;
-            this.spinner.hide();
-          }
-        });
-
-      this.spinner.hide();
     }
   }
 
@@ -805,7 +781,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       typeSystemeEnseignement: [""],
       specialite: [""],
       matricule: [""],
-      structure: [""],
       corps: [""],
       grade: [""],
       prenom: [""],

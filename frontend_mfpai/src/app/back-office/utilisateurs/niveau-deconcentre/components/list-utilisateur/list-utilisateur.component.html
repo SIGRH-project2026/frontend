@@ -38,86 +38,56 @@
     <form [formGroup]="advancedSearchForm" (ngSubmit)="onSearchUser()">
       <div class="row g-3">
         <div class="col-sm-4">
-          <label class="form-label"
-            >IA/Ministère <span style="color: red">*</span></label
-          >
+          <label class="form-label">Région</label>
           <select
             class="form-select"
-            #typeStructureValue
-            formControlName="structure"
-            (change)="getStruct($any($event.target).value)"
+            formControlName="region"
+            (change)="getListIA($any($event.target).value)"
           >
             <option value="">Sélectionner</option>
-            <option *ngFor="let struc of structure" [value]="struc?.code">
-              {{ struc?.label }}
+            <option *ngFor="let reg of region" [value]="reg.code">
+              {{ reg?.label }}
             </option>
           </select>
         </div>
-        <ng-container *ngIf="typeStructureValue.value === 'IA'">
-          <div class="col-sm-4">
-            <label class="form-label">Région</label>
-            <select
-              class="form-select"
-              formControlName="region"
-              (change)="getListIA($any($event.target).value)"
-            >
-              <option value="">Sélectionner</option>
-              <option *ngFor="let reg of region" [value]="reg.code">
-                {{ reg?.label }}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm-4">
-            <label class="form-label">IA</label>
-            <select
-              class="form-select"
-              formControlName="ia"
-              (change)="
-                getListEF($any($event.target).value);
-                getListEtabByIA($any($event.target).value)
-              "
-            >
-              <option value="">Sélectionner</option>
-              <option *ngFor="let ie of ia" [value]="ie.code">
-                {{ ie?.label }}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm-4">
-            <label class="form-label">IEF</label>
-            <select
-              class="form-select"
-              formControlName="ief"
-              (change)="getListEtablissement($any($event.target).value)"
-            >
-              <option value="">Sélectionner</option>
-              <option *ngFor="let ie of ief" [value]="ie.code">
-                {{ ie?.label }}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm-4">
-            <label class="form-label">Etablissements/CFP/EFF </label>
-            <select class="form-select" formControlName="etablissement">
-              <option value="">Sélectionner</option>
-              <option *ngFor="let eta of etablissement" [value]="eta.code">
-                {{ eta?.label }}
-              </option>
-            </select>
-          </div>
-        </ng-container>
-
-        <ng-container *ngIf="typeStructureValue.value === 'MIN'">
-          <div class="col-sm-4">
-            <label class="form-label">EFF </label>
-            <select class="form-select" formControlName="etablissement">
-              <option value="">Sélectionner</option>
-              <option *ngFor="let eta of etablissement" [value]="eta.code">
-                {{ eta?.code }}
-              </option>
-            </select>
-          </div>
-        </ng-container>
+        <div class="col-sm-4">
+          <label class="form-label">IA</label>
+          <select
+            class="form-select"
+            formControlName="ia"
+            (change)="
+              getListEF($any($event.target).value);
+              getListEtabByIA($any($event.target).value)
+            "
+          >
+            <option value="">Sélectionner</option>
+            <option *ngFor="let ie of ia" [value]="ie.code">
+              {{ ie?.label }}
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">IEF</label>
+          <select
+            class="form-select"
+            formControlName="ief"
+            (change)="getListEtablissement($any($event.target).value)"
+          >
+            <option value="">Sélectionner</option>
+            <option *ngFor="let ie of ief" [value]="ie.code">
+              {{ ie?.label }}
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Etablissements/CFP/EFF </label>
+          <select class="form-select" formControlName="etablissement">
+            <option value="">Sélectionner</option>
+            <option *ngFor="let eta of etablissement" [value]="eta.code">
+              {{ eta?.label }}
+            </option>
+          </select>
+        </div>
 
         <div class="col-sm-4">
           <label class="form-label">Corps</label>

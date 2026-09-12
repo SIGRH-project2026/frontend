@@ -50,7 +50,6 @@ export class EditUtilisateurComponent implements OnInit{
      diplomeACA: any;
      diplomePED: any;
      codeIA: any;
-     structure: any;
      eeministere: any;
 
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -82,27 +81,17 @@ export class EditUtilisateurComponent implements OnInit{
     initForm(){
         this.deconectedRegionForm = this.formBuilder.group({
             region:   new FormGroup({
-                code: new FormControl('')
+                code: new FormControl('', [Validators.required])
             }),
             ia:   new FormGroup({
-                code: new FormControl('')
+                code: new FormControl('', [Validators.required])
             }),
             etablissement:  new FormGroup({
-                code: new FormControl('')
+                code: new FormControl('', [Validators.required])
             }),
             ief:  new FormGroup({
                 code: new FormControl('')
             }),
-
-            structure:   new FormGroup({
-                code: new FormControl('', [Validators.required])
-            }),
-
-          /*  eefMinistere:   new FormGroup({
-                code: new FormControl('')
-            }),
-
-           */
         })
         this.deconectedForm = this.formBuilder.group({
             nom: ['', Validators.required], // Assurez-vous que 'login' est correct
@@ -222,10 +211,6 @@ export class EditUtilisateurComponent implements OnInit{
                 this.typeMatricule = response.data;
         });
 
-        this.referenceService.lisStructure().subscribe(response => {
-            if(response.success)
-                this.structure = response.data;
-        });
        /* this.referenceService.listEEMinistere().subscribe(response => {
             if(response.success)
                 this.eeministere = response.data;
@@ -255,28 +240,18 @@ export class EditUtilisateurComponent implements OnInit{
                         this.profile = this.deconectedDTO.profils?.[0];
                         this.iaDB = this.deconectedDTO.ia?.code;
 
-                        if (this.deconectedDTO?.structure?.code) {
-                            this.getStruct(this.deconectedDTO.structure.code);
+                        if (this.deconectedDTO?.region?.code) {
+                            this.getListIA(this.deconectedDTO.region.code);
                         }
 
-                        if(this.deconectedDTO?.structure?.code === 'IA') {
-                            //this.getStruct(this.deconectedDTO?.structure?.code);
-
-                            if (this.deconectedDTO?.region?.code) {
-                                this.getListIA(this.deconectedDTO.region.code);
-                            }
-
-
-                            if(this.deconectedDTO?.ief){
-                                 this.getListEF(this.deconectedDTO?.ia?.code);
-                                 this.getListEtablissement(this.deconectedDTO?.ief?.code);
-                                //  console.log("1222")
-                            } else {
-                                //console.log("2222")
-                                   this.getListEtablissement(this.deconectedDTO?.ia?.code);
-                                   this.getListEF(this.deconectedDTO?.ia?.code);
-                            }
-
+                        if(this.deconectedDTO?.ief){
+                             this.getListEF(this.deconectedDTO?.ia?.code);
+                             this.getListEtablissement(this.deconectedDTO?.ief?.code);
+                            //  console.log("1222")
+                        } else {
+                            //console.log("2222")
+                               this.getListEtablissement(this.deconectedDTO?.ia?.code);
+                               this.getListEF(this.deconectedDTO?.ia?.code);
                         }
 
                         if (this.deconectedDTO?.corpsGrade?.code) {
@@ -367,10 +342,6 @@ export class EditUtilisateurComponent implements OnInit{
 
                             etablissement:  this.deconectedRegionForm.controls['etablissement'].patchValue({
                                 code:  this.deconectedDTO?.etablissement?.code
-                            }),
-
-                            structure:    this.deconectedRegionForm.controls['structure'].patchValue({
-                                code: this.deconectedDTO?.structure?.code
                             }),
 
                         })
@@ -517,23 +488,6 @@ export class EditUtilisateurComponent implements OnInit{
     }
 
 
-    getStruct(code: any) {
-        if(code) {
-            this.spinner.show()
-            this.referenceService.listEtablissementByEFFCode(code)
-                .subscribe(response => {
-
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        this.spinner.hide()
-                    }
-                });
-
-            this.spinner.hide()
-        }
-    }
-
-
     getListStructure(code: any): void {
 
         this.referenceService.listStructureMfpaaByCode(code)
@@ -609,7 +563,6 @@ export class EditUtilisateurComponent implements OnInit{
            // region:   this.deconectedRegionForm.controls['region'].value,
             region:  this.deconectedRegionForm.controls['region'].value !== null ?  this.deconectedRegionForm.controls['region'].value : null,
             speciality:   this.deconectedForm.controls['speciality'].value,
-            structure:  this.deconectedRegionForm.controls['structure'].value,
             ia:  this.deconectedRegionForm.controls['ia'].value !== null ?  this.deconectedRegionForm.controls['ia'].value : null,
             //ia:  this.deconectedRegionForm.controls['ia'].value,
             ief: this.deconectedRegionForm.controls['ief'].value !== null ?  this.deconectedRegionForm.controls['ief'].value : null,

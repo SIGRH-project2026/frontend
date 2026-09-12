@@ -50,7 +50,6 @@ export class CreateUtilisateurComponent implements OnInit {
   quantum: any;
   codeIA: any;
   deconectedRegionForm!: FormGroup;
-  structure: any;
   eeministere: any;
 
   alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -72,12 +71,11 @@ export class CreateUtilisateurComponent implements OnInit {
 
   initForm() {
     this.deconectedRegionForm = this.formBuilder.group({
-      region: [""],
-      etablissement: [""],
-      typeSystemeEnseignement: [""],
-      ia: [""],
+      region: ["", Validators.required],
+      etablissement: ["", Validators.required],
+      typeSystemeEnseignement: ["", Validators.required],
+      ia: ["", Validators.required],
       ief: [""],
-      structure: ["", Validators.required],
       eefMinistere: [""],
     });
     this.deconectedForm = this.formBuilder.group({
@@ -163,10 +161,6 @@ export class CreateUtilisateurComponent implements OnInit {
       if (response.success) this.typeMatricule = response.data;
     });
 
-    this.referenceService.lisStructure().subscribe((response) => {
-      if (response.success) this.structure = response.data;
-    });
-
     this.referenceService.listTypeSystemeEnseignement().subscribe((response) => {
       if (response.success) this.typeSystemeEnseignement = response.data;
     });
@@ -238,25 +232,6 @@ export class CreateUtilisateurComponent implements OnInit {
         this.cfp = response.data;
       }
     });
-  }
-
-  getStruct(code: any) {
-    if (code) {
-      this.spinner.show();
-
-      if (code === "MIN") {
-        this.referenceService
-          .listEtablissementByEFFCode(code)
-          .subscribe((response) => {
-            if (response.success) {
-              this.etablissement = response.data;
-              this.spinner.hide();
-            }
-          });
-
-        this.spinner.hide();
-      } else this.spinner.hide();
-    }
   }
 
   getListEtablissement(code: any): void {
@@ -379,9 +354,6 @@ export class CreateUtilisateurComponent implements OnInit {
           ? { code: this.deconectedRegionForm.controls["region"].value }
           : null,
       speciality: { code: this.deconectedForm.controls["speciality"].value },
-      structure: {
-        code: this.deconectedRegionForm.controls["structure"].value,
-      },
       //ia:   {code: this.deconectedRegionForm.controls['ia'].value},
       ief:
         this.deconectedRegionForm.controls["ief"].value !== ""

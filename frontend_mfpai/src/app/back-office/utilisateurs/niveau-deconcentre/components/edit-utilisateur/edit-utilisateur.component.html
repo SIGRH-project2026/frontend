@@ -11,78 +11,50 @@
 
 
 
-                <div class="col-sm-4" formGroupName="structure">
-                    <label class="form-label">IA/Ministère</label>
-                    <select class="form-select" #typeStructureValue formControlName="code"
-                            (change)=" getStruct($any($event.target).value)" >
+                <div class="col-sm-4" formGroupName="region">
+                    <label class="form-label">Région <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="code"
+                            (change)="getListIA($any($event.target).value); ">
                         <option value="">Sélectionner</option>
-                        <option *ngFor="let struc of structure" [value]="struc?.code">{{struc?.label}}</option>
-                        <!--div style="color: red" *ngIf="f['typeMatricule'].touched && f['typeMatricule'].hasError('required')">Type matricule
-                            <strong>obligatoire!</strong>
-                        </div-->
+                        <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
                     </select>
+                    <div style="color: red" *ngIf="f1['region'].touched && f1['region'].hasError('required')">Région
+                        <strong>obligatoire!</strong>
+                    </div>
 
                 </div>
 
-                <ng-container *ngIf="typeStructureValue.value === 'IA'">
 
-                    <div class="col-sm-4" formGroupName="region">
-                        <label class="form-label">Région <span style="color: red">*</span></label>
-                        <select class="form-select" formControlName="code"
-                                (change)="getListIA($any($event.target).value); ">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
-                        </select>
-                        <div style="color: red" *ngIf="f1['region'].touched && f1['region'].hasError('required')">Région
-                            <strong>obligatoire!</strong>
-                        </div>
-
+                <div class="col-sm-4" formGroupName="ia">
+                    <label class="form-label">IA <span style="color: red">*</span></label>
+                    <select class="form-select" #checkIA formControlName="code" (change)="getListEF($any($event.target).value);
+                getListEtabByIA($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f1['ia'].touched && f1['ia'].hasError('required')">IA
+                        <strong>obligatoire!</strong>
                     </div>
 
-
-                    <div class="col-sm-4" formGroupName="ia">
-                        <label class="form-label">IA <span style="color: red">*</span></label>
-                        <select class="form-select" #checkIA formControlName="code" (change)="getListEF($any($event.target).value);
-                    getListEtabByIA($any($event.target).value)">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let ie of ia" [value]="ie.code">{{ie?.label}}</option>
-                        </select>
-                        <div style="color: red" *ngIf="f1['ia'].touched && f1['ia'].hasError('required')">IA
-                            <strong>obligatoire!</strong>
-                        </div>
-
+                </div>
+                <div class="col-sm-4" formGroupName="ief">
+                    <label class="form-label">IEF</label>
+                    <select class="form-select" formControlName="code" (change)="
+                        getListEtablissement($any($event.target).value);">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4" formGroupName="etablissement">
+                    <label class="form-label">Etablissements/EFF/CFP <span style="color: red">*</span></label>
+                    <select class="form-select" formControlName="code">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
+                    </select>
+                    <div style="color: red" *ngIf="f1['etablissement'].touched && f1['etablissement'].hasError('required')">L'établissement
+                        <strong>obligatoire!</strong>
                     </div>
-                    <div class="col-sm-4" formGroupName="ief">
-                        <label class="form-label">IEF</label>
-                        <select class="form-select" formControlName="code" (change)="
-                            getListEtablissement($any($event.target).value);">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-4" formGroupName="etablissement">
-                        <label class="form-label">Etablissements/EFF/CFP <span style="color: red">*</span></label>
-                        <select class="form-select" formControlName="code">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
-                        </select>
-                        <div style="color: red" *ngIf="f1['etablissement'].touched && f1['etablissement'].hasError('required')">L'établissement
-                            <strong>obligatoire!</strong>
-                        </div>
-                    </div>
-
-                </ng-container>
-
-                <ng-container *ngIf="typeStructureValue.value === 'MIN'">
-                    <div class="col-sm-4" formGroupName="etablissement">
-                        <label class="form-label">EEF <span style="color: red">*</span></label>
-                        <select class="form-select" formControlName="code">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.code}}</option>
-                        </select>
-
-                    </div>
-                </ng-container>
+                </div>
 
                 <!--div class="col-sm-4">
                     <label class="form-label">Structures MFPAA</label>

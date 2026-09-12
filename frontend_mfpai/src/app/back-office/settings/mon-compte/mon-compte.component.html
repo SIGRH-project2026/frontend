@@ -81,49 +81,36 @@
                             <ng-template>
                                 <div class="row details g-3">
 
-                                    <ng-container *ngIf="utilisateur?.structure?.code === 'IA' ;else structure">
-
-                                        <div class="col-sm-6">
-                                            <div class="details-item">
-                                                <span>Région</span>
-                                                <span>{{ utilisateur?.region?.label }}</span>
-                                            </div>
+                                    <div class="col-sm-6">
+                                        <div class="details-item">
+                                            <span>Région</span>
+                                            <span>{{ utilisateur?.region?.label }}</span>
                                         </div>
+                                    </div>
 
-                                        <div class="col-sm-6">
-                                            <div class="details-item">
-                                                <span>IA</span>
-                                                <span>{{ utilisateur?.ia?.label }}</span>
-                                            </div>
+                                    <div class="col-sm-6">
+                                        <div class="details-item">
+                                            <span>IA</span>
+                                            <span>{{ utilisateur?.ia?.label }}</span>
                                         </div>
+                                    </div>
 
-                                        <ng-container *ngIf="utilisateur?.ief">
-                                            <div class="col-sm-6">
-                                                <div class="details-item">
-                                                    <span>IEF</span>
-                                                    <span>{{ utilisateur?.ief?.label }}</span>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-
-
+                                    <ng-container *ngIf="utilisateur?.ief">
                                         <div class="col-sm-6">
                                             <div class="details-item">
-                                                <span>Etablissements/CFP/EEF</span>
-                                                <span>{{ utilisateur?.etablissement?.label }}</span>
+                                                <span>IEF</span>
+                                                <span>{{ utilisateur?.ief?.label }}</span>
                                             </div>
                                         </div>
                                     </ng-container>
 
-                                    <ng-template #structure>
-                                        <div class=" col-sm-6">
-                                            <div class="details-item">
-                                                <span>EEF</span>
-                                                <span>{{ utilisateur?.etablissement?.label }}
-                                                    ( {{ utilisateur?.etablissement?.code }} )</span>
-                                            </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="details-item">
+                                            <span>Etablissements/CFP/EEF</span>
+                                            <span>{{ utilisateur?.etablissement?.label }}</span>
                                         </div>
-                                    </ng-template>
+                                    </div>
                                 </div>
                             </ng-template>
                         </div>
