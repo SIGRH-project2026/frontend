@@ -25,7 +25,6 @@ export class AddEtablissementComponent implements OnInit {
   iEF: Ief[] = [];
 
   etablissementForm!: FormGroup;
-  structure: any;
   etablissement: any;
   codeIA: any;
   ief: any;
@@ -51,41 +50,23 @@ export class AddEtablissementComponent implements OnInit {
       }
     });
 
-    this.referenceService.lisStructure().subscribe((response) => {
-      if (response.success) this.structure = response.data;
-    });
-
     this.referenceService.lisTypeEtablissement().subscribe((response) => {
       if (response.success) this.typeEtablissement = response.data;
     });
 
+    this.referenceService.listTypeSystemeEnseignement().subscribe((response) => {
+      if (response.success) this.typeSystemeEnseignement = response.data;
+    });
+
     this.etablissementForm = this.formBuilder.group({
-      structure: ["", Validators.required],
-      region: [""],
-      ia: [""],
-      typeEtablissement: [""],
+      region: ["", Validators.required],
+      ia: ["", Validators.required],
+      typeEtablissement: ["", Validators.required],
       ief: [""],
       typeSystemeEnseignement: [""],
       code: ["", Validators.required],
       label: ["", Validators.required],
     });
-  }
-
-  getStruct(code: any) {
-    if (code) {
-      this.spinner.show();
-      this.referenceService
-        .listEtablissementByEFFCode(code)
-        .subscribe((response) => {
-          if (response.success) {
-            this.etablissement = response.data;
-
-            this.spinner.hide();
-          }
-        });
-
-      this.spinner.hide();
-    }
   }
 
   getListIA(code: any): void {
@@ -132,24 +113,22 @@ export class AddEtablissementComponent implements OnInit {
     }
   }
 
-  getTypeSystemeEnseignement(code: any): void {
-    if (code) {
-      this.spinner.show();
-      this.referenceService
-        .getTypeSystemeEnseignement(code)
-        .subscribe((response) => {
-          if (response.success) {
-            this.typeSystemeEnseignement = response.data;
-            this.spinner.hide();
-          }
-        });
-      this.spinner.hide();
+  onTypeEtablissementChange(code: string): void {
+    const typeSystemeEnseignementControl =
+      this.etablissementForm.controls["typeSystemeEnseignement"];
+
+    typeSystemeEnseignementControl.setValue("");
+
+    if (code === "CFP" || code === "LYC") {
+      typeSystemeEnseignementControl.setValidators(Validators.required);
+    } else {
+      typeSystemeEnseignementControl.clearValidators();
     }
+    typeSystemeEnseignementControl.updateValueAndValidity();
   }
 
   onSave() {
     let formData = {
-      structure: { code: this.etablissementForm.controls["structure"].value },
       region:
         this.etablissementForm.controls["region"].value !== ""
           ? { code: this.etablissementForm.controls["region"].value }
@@ -192,7 +171,10 @@ export class AddEtablissementComponent implements OnInit {
       },
       complete: () => {},
       error: (error) => {
-        this.parametreService.showSwal("error", error?.error?.message);
+        this.parametreService.showSwal(
+          "error",
+          this.parametreService.buildErrorMessage(error),
+        );
       },
     });
   }
