@@ -133,8 +133,9 @@
 
                         <div class="col-sm-12">
                             <label class="form-label">Justificatifs</label>
-                            <ngx-dropzone (change)="onSelect($event)" formControlName='file' class="">
-                                <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
+                            <p class="form-text">Veuillez insérer uniquement des pièces justificatives au format PDF (.pdf).</p>
+                            <ngx-dropzone (change)="onSelect($event)" accept=".pdf" class="">
+                                <ngx-dropzone-label>Glisser et déposer un fichier PDF ou cliquer pour le sélectionner</ngx-dropzone-label>
                                 <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
                                     <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
                                 </ngx-dropzone-preview>
@@ -154,4 +155,4 @@
 
         </mat-stepper>
     </div>
-</div>  
+</div>

@@ -7,99 +7,81 @@
     <div class="panel-list-body">
         <form [formGroup]="etablissementForm">
             <div class="row g-4">
-                <!-- Structure -->
+                <!-- Région -->
                 <div class="col-sm-6">
-                    <label class="form-label">Structure</label>
-                    <select class="form-select" formControlName="structure"
-                            (change)="onStructureChange($any($event.target).value)">
+                    <label class="form-label">Région</label>
+                    <select class="form-select" formControlName="region"
+                            (change)="onRegionChange($any($event.target).value)">
                         <option value="">Sélectionner</option>
-                        <option *ngFor="let struc of structure" [value]="struc?.code">
-                            {{struc?.label}}
+                        <option *ngFor="let reg of region" [value]="reg?.code">
+                            {{ reg?.label }}
                         </option>
                     </select>
                 </div>
 
-                <!-- Section pour IA -->
-                <ng-container *ngIf="etablissementForm.get('structure')?.value === 'IA'">
-                    <!-- Région -->
+                <!-- IA -->
+                <div class="col-sm-6">
+                    <label class="form-label">IA</label>
+                    <select class="form-select" formControlName="ia"
+                            (change)="onIaChange($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let ia of iA" [value]="ia?.code">
+                            {{ ia?.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Type établissement -->
+                <div class="col-sm-6">
+                    <label class="form-label">Type établissement</label>
+                    <select class="form-select" formControlName="typeEtablissement"
+                            (change)="onTypeEtablissementChange($any($event.target).value)">
+                        <option value="">Sélectionner</option>
+                        <option *ngFor="let typeEtab of typeEtablissement" [value]="typeEtab?.code">
+                            {{ typeEtab?.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- IEF (visible seulement si type établissement est CFP) -->
+                <ng-container *ngIf="etablissementForm.get('typeEtablissement')?.value === 'CFP'">
                     <div class="col-sm-6">
-                        <label class="form-label">Région</label>
-                        <select class="form-select" formControlName="region"
-                                (change)="onRegionChange($any($event.target).value)">
+                        <label class="form-label">IEF</label>
+                        <select class="form-select" formControlName="ief">
                             <option value="">Sélectionner</option>
-                            <option *ngFor="let reg of region" [value]="reg?.code">
-                                {{ reg?.label }}
+                            <option *ngFor="let ief of iEF" [value]="ief?.code">
+                                {{ ief?.label }}
                             </option>
                         </select>
-                    </div>
-
-                    <!-- IA -->
-                    <div class="col-sm-6">
-                        <label class="form-label">IA</label>
-                        <select class="form-select" formControlName="ia"
-                                (change)="onIaChange($any($event.target).value)">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let ia of iA" [value]="ia?.code">
-                                {{ ia?.label }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Type établissement -->
-                    <div class="col-sm-6">
-                        <label class="form-label">Type établissement</label>
-                        <select class="form-select" formControlName="typeEtablissement">
-                            <option value="">Sélectionner</option>
-                            <option *ngFor="let typeEtab of typeEtablissement" [value]="typeEtab?.code">
-                                {{ typeEtab?.label }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- IEF (visible seulement si type établissement est CFP) -->
-                    <ng-container *ngIf="etablissementForm.get('typeEtablissement')?.value === 'CFP'">
-                        <div class="col-sm-6">
-                            <label class="form-label">IEF</label>
-                            <select class="form-select" formControlName="ief">
-                                <option value="">Sélectionner</option>
-                                <option *ngFor="let ief of iEF" [value]="ief?.code">
-                                    {{ ief?.label }}
-                                </option>
-                            </select>
-                        </div>
-                    </ng-container>
-
-                    <!-- Label EFF -->
-                    <div class="col-sm-6">
-                        <label class="form-label">Label EFF</label>
-                        <input type="text" class="form-control" placeholder="Saisir" 
-                               formControlName="label" />
-                    </div>
-
-                    <!-- Code EFF -->
-                    <div class="col-sm-6">
-                        <label class="form-label">Code EFF</label>
-                        <input type="text" class="form-control" placeholder="Saisir" 
-                               formControlName="code" />
                     </div>
                 </ng-container>
 
-                <!-- Section pour MIN -->
-                <ng-container *ngIf="etablissementForm.get('structure')?.value === 'MIN'">
-                    <!-- Libellé Etablissement -->
+                <!-- Type système enseignement (visible pour CFP et Lycée) -->
+                <ng-container *ngIf="etablissementForm.get('typeEtablissement')?.value === 'CFP' || etablissementForm.get('typeEtablissement')?.value === 'LYC'">
                     <div class="col-sm-6">
-                        <label class="form-label">Libellé établissement</label>
-                        <input type="text" class="form-control" placeholder="Saisir" 
-                               formControlName="label" />
-                    </div>
-
-                    <!-- Sigle Etablissement -->
-                    <div class="col-sm-6">
-                        <label class="form-label">Sigle établissement</label>
-                        <input type="text" class="form-control" placeholder="Saisir" 
-                               formControlName="code" />
+                        <label class="form-label">Type système enseignement</label>
+                        <select class="form-select" formControlName="typeSystemeEnseignement">
+                            <option value="">Sélectionner</option>
+                            <option *ngFor="let typeSysEns of typeSystemeEnseignement" [value]="typeSysEns?.code">
+                                {{ typeSysEns?.label }}
+                            </option>
+                        </select>
                     </div>
                 </ng-container>
+
+                <!-- Label EFF -->
+                <div class="col-sm-6">
+                    <label class="form-label">Label EFF</label>
+                    <input type="text" class="form-control" placeholder="Saisir"
+                           formControlName="label" />
+                </div>
+
+                <!-- Code EFF -->
+                <div class="col-sm-6">
+                    <label class="form-label">Code EFF</label>
+                    <input type="text" class="form-control" placeholder="Saisir"
+                           formControlName="code" />
+                </div>
 
                 <!-- ACTIONS -->
                 <div class="row g-3 mt-2">

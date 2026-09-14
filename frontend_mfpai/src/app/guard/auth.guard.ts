@@ -19,24 +19,19 @@ export class AuthGuard  {
   }
   canActivate(
       route: ActivatedRouteSnapshot,
-      state: RouterStateSnapshot): boolean {
+      state: RouterStateSnapshot): boolean | UrlTree {
     const token: string | null = this._credentialsService.getCredentials();
 
     if (token != null) {
       if (this._credentialsService.isTokenExpired(token)) {
-        this.router.navigate(['/auth/login'], {
-          queryParams: { returnUrl: state.url }
-        });
         this._credentialsService.clearCredentials();
-        return false;
       } else {
         return true;
       }
     }
-    this.router.navigate(['/auth/login'], {
+    return this.router.createUrlTree(['/auth/login'], {
       queryParams: { returnUrl: state.url }
     });
-    return false;
 
   }
 
@@ -44,8 +39,7 @@ export class AuthGuard  {
 
 }
 
-export const IsAuthGuard: CanActivateChildFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {
+export const IsAuthGuard: CanActivateChildFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree => {
   return inject(AuthGuard).canActivate(route, state);
 }
-
 

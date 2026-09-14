@@ -9,47 +9,34 @@
             <h5 class="title-form">Emplacement</h5>
             <div class="row details py-3 g-3">
 
-                <ng-container *ngIf="deconectedDTO?.structure?.code === 'IA' ;else structure">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>Région</span>
-                            <span>{{ deconectedDTO?.region?.label}}</span>
-                        </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Région</span>
+                        <span>{{ deconectedDTO?.region?.label}}</span>
                     </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>IA</span>
-                            <span>{{ deconectedDTO?.ia?.label}}</span>
-                        </div>
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>IA</span>
+                        <span>{{ deconectedDTO?.ia?.label}}</span>
                     </div>
+                </div>
 
-                    <ng-container *ngIf="deconectedDTO?.ief?.code">
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="details-item">
-                                <span>IEF</span>
-                                <span>{{ deconectedDTO?.ief?.label}}</span>
-                            </div>
-                        </div>
-                    </ng-container>
-
+                <ng-container *ngIf="deconectedDTO?.ief?.code">
                     <div class="col-lg-4 col-sm-6">
                         <div class="details-item">
-                            <span>Etablissements/CFP/EEF</span>
-                            <span>{{ deconectedDTO?.etablissement?.label}}</span>
+                            <span>IEF</span>
+                            <span>{{ deconectedDTO?.ief?.label}}</span>
                         </div>
                     </div>
                 </ng-container>
 
-                <ng-template #structure>
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="details-item">
-                            <span>EEF</span>
-                            <span>{{ deconectedDTO?.etablissement?.label}} ( {{deconectedDTO?.etablissement?.code}} )</span>
-                        </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="details-item">
+                        <span>Etablissements/CFP/EEF</span>
+                        <span>{{ deconectedDTO?.etablissement?.label}}</span>
                     </div>
-                </ng-template>
-
-
+                </div>
 
             </div>
 

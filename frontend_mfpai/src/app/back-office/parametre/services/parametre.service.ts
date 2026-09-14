@@ -22,6 +22,32 @@ export class ParametreService {
     });
   }
 
+  // Construit un message d'erreur exploitable à partir de la réponse HTTP :
+  // le backend renvoie souvent un message générique dans `message` et le détail
+  // réel (exception, erreurs de validation par champ) dans `errors`.
+  buildErrorMessage(error: any): string {
+    const message = error?.error?.message;
+    const details = error?.error?.errors;
+
+    if (!details) {
+      return message || 'Une erreur est survenue';
+    }
+
+    if (Array.isArray(details)) {
+      const fieldErrors = details
+        .map((d: any) => (d?.field ? `${d.field} : ${d.message}` : d?.message ?? d))
+        .filter(Boolean)
+        .join(' | ');
+      return fieldErrors ? `${message} (${fieldErrors})` : message;
+    }
+
+    if (typeof details === 'string' && details !== message) {
+      return `${message} : ${details}`;
+    }
+
+    return message || 'Une erreur est survenue';
+  }
+
   apiUrl: string = environment.apiUrl;
   headers= new HttpHeaders({
     'Content-Type': 'application/json',

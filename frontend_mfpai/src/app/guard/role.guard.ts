@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, CanActivateChildFn, Router, RouterStateSnapshot} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, CanActivateChildFn, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {CredentialsService} from "../services/credentials.service";
 import {AlertService} from "../shared/commons/alert.service";
 
@@ -16,7 +16,7 @@ export class RoleGuard {
   }
 
   canActivate( route: ActivatedRouteSnapshot,
-               state: RouterStateSnapshot): boolean {
+               state: RouterStateSnapshot): boolean | UrlTree {
     const authorizedRoles = route?.data?.['role']; // role 
 
 
@@ -38,13 +38,12 @@ export class RoleGuard {
         titre: 'Autorisations'
       });
 
-      this.router.navigateByUrl('/dashboard');
-      return false;
+      return this.router.parseUrl('/dashboard');
     }
   }
 }
 
 
-export const IsRoleGuard: CanActivateChildFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {
+export const IsRoleGuard: CanActivateChildFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree => {
   return inject(RoleGuard).canActivate(route, state);
 }

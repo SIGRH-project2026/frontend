@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import Swal from 'sweetalert2';
 import { Location } from "@angular/common";
-import {Etablissement, Ia, Ief, Region} from "../../../../../models/utilisateur";
+import {Etablissement, Ia, Ief, Region, TypeSystemeEnseignement} from "../../../../../models/utilisateur";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ReferencesService} from "../../../../../services/references.service";
 import {ParametreService} from "../../../services/parametre.service";
@@ -22,12 +22,12 @@ export class EditEtablissementComponent implements OnInit {
   iEF: Ief[] = [];
 
   etablissementForm!: FormGroup;
-  structure: any;
   etablissement: any;
   codeIA: any;
   etabtId: any;
   ief: any;
   typeEtablissement: any;
+  typeSystemeEnseignement: TypeSystemeEnseignement[] = [];
   etablissementData!: Etablissement;
 
   constructor(
@@ -56,25 +56,25 @@ export class EditEtablissementComponent implements OnInit {
       }
     });
 
-    this.referenceService.lisStructure().subscribe(response => {
-      if(response.success) {
-        this.structure = response.data;
-      }
-    });
-
     this.referenceService.lisTypeEtablissement().subscribe(response => {
       if(response.success) {
         this.typeEtablissement = response.data;
       }
     });
 
+    this.referenceService.listTypeSystemeEnseignement().subscribe(response => {
+      if(response.success) {
+        this.typeSystemeEnseignement = response.data;
+      }
+    });
+
     // CORRECTION : Formulaire avec des contrôles simples au lieu de FormGroup imbriqués
     this.etablissementForm = this.formBuilder.group({
-      structure: ['', Validators.required],
-      region: [''],
-      ia: [''],
-      typeEtablissement: [''],
+      region: ['', Validators.required],
+      ia: ['', Validators.required],
+      typeEtablissement: ['', Validators.required],
       ief: [''],
+      typeSystemeEnseignement: [''],
       code: ['', Validators.required],
       label: ['', Validators.required],
     });
@@ -91,36 +91,27 @@ export class EditEtablissementComponent implements OnInit {
 
         // CORRECTION : Patch des valeurs dans le formulaire
         this.etablissementForm.patchValue({
-          structure: this.etablissementData?.structure?.code || '',
-          region: this.etablissementData?.region?.code || '',
+          region: this.etablissementData?.ia?.region?.code || '',
           ia: this.etablissementData?.ia?.code || '',
           typeEtablissement: this.etablissementData?.typeEtablissement?.code || '',
           ief: this.etablissementData?.ief?.code || '',
+          typeSystemeEnseignement: this.etablissementData?.typeSystemeEnseignement?.code || '',
           code: this.etablissementData?.code || '',
           label: this.etablissementData?.label || ''
         });
 
+        this.updateTypeSystemeEnseignementValidator(this.etablissementData?.typeEtablissement?.code);
+
         // Charger les listes dépendantes APRÈS le patch
-        if(this.etablissementData?.structure?.code === 'IA') {
-          // Charger les IA si région existe
-          if(this.etablissementData?.region?.code) {
-            this.getListIA(this.etablissementData.region.code);
-          }
-          
-          // Charger les IEF si IA existe
-          if(this.etablissementData?.ia?.code) {
-            this.getListEF(this.etablissementData.ia.code);
-          }
-          
-          // Charger la liste des établissements si nécessaire
-          if(this.etablissementData?.ia?.code) {
-            this.getStruct(this.etablissementData.structure.code);
-            this.getListEtabByIA(this.etablissementData.ia.code);
-          }
-        } else if(this.etablissementData?.structure?.code === 'MIN') {
-          this.getStruct(this.etablissementData.structure.code);
+        if(this.etablissementData?.ia?.region?.code) {
+          this.getListIA(this.etablissementData.ia.region.code);
         }
-        
+
+        if(this.etablissementData?.ia?.code) {
+          this.getListEF(this.etablissementData.ia.code);
+          this.getListEtabByIA(this.etablissementData.ia.code);
+        }
+
         this.spinner.hide();
       } else {
         this.spinner.hide();
@@ -139,21 +130,6 @@ export class EditEtablissementComponent implements OnInit {
         showConfirmButton: true,
       });
     });
-  }
-
-  getStruct(code: any) {
-    if(code) {
-      this.spinner.show();
-      this.referenceService.listEtablissementByEFFCode(code)
-          .subscribe(response => {
-            if (response.success) {
-              this.etablissement = response.data;
-            }
-            this.spinner.hide();
-          }, error => {
-            this.spinner.hide();
-          });
-    }
   }
 
   getListIA(code: any): void {
@@ -200,26 +176,6 @@ export class EditEtablissementComponent implements OnInit {
     }
   }
 
-  // CORRECTION : Méthode pour gérer le changement de structure
-  onStructureChange(code: string) {
-    if(code === 'IA') {
-      // Réinitialiser certains champs si nécessaire
-      this.etablissementForm.patchValue({
-        region: '',
-        ia: '',
-        typeEtablissement: '',
-        ief: ''
-      });
-    } else if(code === 'MIN') {
-      this.etablissementForm.patchValue({
-        region: '',
-        ia: '',
-        typeEtablissement: '',
-        ief: ''
-      });
-    }
-  }
-
   // CORRECTION : Méthode pour gérer le changement de région
   onRegionChange(code: string) {
     if(code) {
@@ -245,6 +201,22 @@ export class EditEtablissementComponent implements OnInit {
     }
   }
 
+  onTypeEtablissementChange(code: string): void {
+    this.etablissementForm.patchValue({ typeSystemeEnseignement: '' });
+    this.updateTypeSystemeEnseignementValidator(code);
+  }
+
+  private updateTypeSystemeEnseignementValidator(code: string | undefined): void {
+    const typeSystemeEnseignementControl = this.etablissementForm.controls['typeSystemeEnseignement'];
+
+    if (code === 'CFP' || code === 'LYC') {
+      typeSystemeEnseignementControl.setValidators(Validators.required);
+    } else {
+      typeSystemeEnseignementControl.clearValidators();
+    }
+    typeSystemeEnseignementControl.updateValueAndValidity();
+  }
+
   // CORRECTION : Méthode pour la modification (UPDATE)
   onSave() {
     // Vérifier si c'est une modification ou un ajout
@@ -257,11 +229,11 @@ export class EditEtablissementComponent implements OnInit {
 
   createEtablissement() {
     let formData = {
-      structure: this.etablissementForm.value.structure ? {code: this.etablissementForm.value.structure} : null,
       region: this.etablissementForm.value.region ? {code: this.etablissementForm.value.region} : null,
       ia: this.etablissementForm.value.ia ? {code: this.etablissementForm.value.ia} : null,
       typeEtablissement: this.etablissementForm.value.typeEtablissement ? {code: this.etablissementForm.value.typeEtablissement} : null,
       ief: this.etablissementForm.value.ief ? {code: this.etablissementForm.value.ief} : null,
+      typeSystemeEnseignement: this.etablissementForm.value.typeSystemeEnseignement ? {code: this.etablissementForm.value.typeSystemeEnseignement} : null,
       label: this.etablissementForm.value.label,
       code: this.etablissementForm.value.code
     };
@@ -280,7 +252,7 @@ export class EditEtablissementComponent implements OnInit {
         });
       },
       error: (error) => {
-        this.parametreService.showSwal('error', error?.error?.message);
+        this.parametreService.showSwal('error', this.parametreService.buildErrorMessage(error));
       }
     });
   }
@@ -289,11 +261,11 @@ export class EditEtablissementComponent implements OnInit {
   updateEtablissement() {
     let formData = {
       id: this.etabtId, // Ajouter l'ID pour la modification
-      structure: this.etablissementForm.value.structure ? {code: this.etablissementForm.value.structure} : null,
       region: this.etablissementForm.value.region ? {code: this.etablissementForm.value.region} : null,
       ia: this.etablissementForm.value.ia ? {code: this.etablissementForm.value.ia} : null,
       typeEtablissement: this.etablissementForm.value.typeEtablissement ? {code: this.etablissementForm.value.typeEtablissement} : null,
       ief: this.etablissementForm.value.ief ? {code: this.etablissementForm.value.ief} : null,
+      typeSystemeEnseignement: this.etablissementForm.value.typeSystemeEnseignement ? {code: this.etablissementForm.value.typeSystemeEnseignement} : null,
       label: this.etablissementForm.value.label,
       code: this.etablissementForm.value.code
     };
@@ -313,7 +285,7 @@ export class EditEtablissementComponent implements OnInit {
         });
       },
       error: (error) => {
-        this.parametreService.showSwal('error', error?.error?.message);
+        this.parametreService.showSwal('error', this.parametreService.buildErrorMessage(error));
       }
     });
   }

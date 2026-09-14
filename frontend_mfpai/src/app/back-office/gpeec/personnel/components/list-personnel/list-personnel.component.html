@@ -20,7 +20,6 @@
                     <!-- Ordre personnalisé avec renommage pour DGPEEC -->
                     <option value="NIVEAU_CENTRAL">MEFPT - Niveau Central</option>
                     <option value="IA">MEFPT - Niveau déconcentré</option>
-                    <option value="MIN">Autres Sectorielles</option>
                     <!-- Autres options (MIN et autres) -->
                     <!-- <ng-container *ngFor="let struc of structure">
                         <option *ngIf="struc?.code !== 'IA' && struc?.code !== 'Ministère' && struc?.code !== 'NIVEAU_CENTRAL'" [value]="struc?.code">
@@ -165,19 +164,6 @@
         </div>
         <div class="col-sm-6">
             <label class="form-label form-label-sm">Etablissement</label>
-            <select class="form-select" formControlName="etablissement" (change)="onEtablissementChange($any($event.target).value)">
-                <option value="">Sélectionner</option>
-                <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
-            </select>
-        </div>
-    </div>
-</ng-container>
-
-<!-- ==================== MIN ==================== -->
-<ng-container *ngIf="typeStructureValue.value === 'MIN'">
-    <div class="row g-3 mt-2" style="width: 100%; margin-left: 0;">
-        <div class="col-sm-6">
-            <label class="form-label form-label-sm">EFF</label>
             <select class="form-select" formControlName="etablissement" (change)="onEtablissementChange($any($event.target).value)">
                 <option value="">Sélectionner</option>
                 <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>

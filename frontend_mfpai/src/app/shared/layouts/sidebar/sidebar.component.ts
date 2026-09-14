@@ -96,7 +96,12 @@ export class SidebarComponent implements OnInit {
     });
 
     this.userInfos = this.credentialsService.getUserInfos();
-    this.refreshCurrentProfile();
+    const cachedMenus = this.referenceService.getCachedMenus(this.profileId);
+    if (cachedMenus) {
+      this.updateMenus(cachedMenus);
+    } else {
+      this.refreshCurrentProfile();
+    }
     this.getAllNotification()
     this.notificationService.listenNotify().subscribe(() => {
       this.notificationsLength = this.notificationService.nbrDeNotification()
@@ -107,11 +112,19 @@ export class SidebarComponent implements OnInit {
    // this.menuItems = MENUITEMS
 
     this.referenceService.getMenus(this.profileId)
-         .subscribe((data : any) =>{
-          console.log("data", data)
-          const normalizedMenus = this.normalizeMenus(data);
-          this.menuItems = this.sortMenus(this.hideCareerImputationMenu(normalizedMenus));
-         })
+         .subscribe({
+           next: (data: any) => this.updateMenus(data),
+           error: () => this.alertService.showAlert({
+             titre: 'Menus',
+             status: 'WARNING',
+             message: 'Impossible d’actualiser les menus. Veuillez actualiser la page pour réessayer.'
+           })
+         });
+  }
+
+  private updateMenus(menus: Menu[]): void {
+    const normalizedMenus = this.normalizeMenus(menus);
+    this.menuItems = this.sortMenus(this.hideCareerImputationMenu(normalizedMenus));
   }
 
   /**
@@ -131,6 +144,9 @@ export class SidebarComponent implements OnInit {
         const currentProfiles = response?.data?.profils ?? [];
         if (currentProfiles.length > 0) {
           this.profilConnecte = currentProfiles;
+          if (this.profileId !== currentProfiles[0].id) {
+            this.menuItems = [];
+          }
           this.profileId = currentProfiles[0].id;
         }
         this.getMenus();

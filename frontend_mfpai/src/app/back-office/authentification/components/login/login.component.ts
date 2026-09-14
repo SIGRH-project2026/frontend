@@ -52,9 +52,10 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin(): void {
-
-
-
+    if (this.isLoading || this.loginForm.invalid) {
+      return;
+    }
+    this.menuItems = undefined;
     const credentials: Credentials = {
         token: "",
         login: this.loginForm.value.login.trim(),
@@ -66,10 +67,10 @@ export class LoginComponent implements OnInit {
 
     this.authService.loginUser(credentials).subscribe({
       next: (response: AuthResponseApi) => {
-        this.isLoading = false;
         const resp : any =   response.payload
    
         if (response.status === "WRONG_CREDENTIALS"){
+          this.isLoading = false;
           this.authService.showSwal('error', response.message);
         }
         else if (resp?.token !== undefined){
@@ -85,31 +86,11 @@ export class LoginComponent implements OnInit {
             this.profilConnecte = this.userInfos?.profil
             this.profileId = this.profilConnecte[0].id
 
-            this.getMenus()
-
-
-
             this.spinner.show();
-            setTimeout(() => {
-
-                this.spinner.hide();
-                let alert = {
-                    message: `Bienvenue ${this.userInfos?.prenom} ${this.userInfos?.nom}`,
-                    titre: 'Plateforme SIGRH',
-                    status: 'INFO'
-                };
-                this.alert.showAlert(alert);
-
-                if(this.menuItems[0]?.menPath === '/dashboard')
-                    this.router.navigate(['dashboard']);
-                else {
-                  //  console.log(this.menuItems[0]?.children[0]?.menPath)
-                   this.router.navigate([`${this.menuItems[0]?.children[0]?.menPath}`]);
-
-                }
-
-
-            }, 2000);
+            this.getMenus();
+        } else {
+          this.isLoading = false;
+          this.authService.showSwal('error', response.message || 'La connexion a échoué.');
         }
 
 
@@ -118,12 +99,13 @@ export class LoginComponent implements OnInit {
         // Called when the request is completed (optional)
       },
       error: (error) => {
+          this.isLoading = false;
         // Error occurred, handle the error here
           if (typeof error === 'undefined' || error == null) {
               this.authService.showSwal('error', "Serveur indisponible.");
           } else {
 
-              const message = error?.error?.message || 'Une erreur est survenue.';
+              const message = typeof error === 'string' ? error : error?.error?.message || 'Une erreur est survenue.';
               this.authService.showSwal('error', message);
           }
       }
@@ -133,16 +115,60 @@ export class LoginComponent implements OnInit {
 
   }
 
-    getMenus(){
-        this.referenceService.getMenus(this.profileId)
-            .subscribe((data : any) =>{
+    getMenus(): void {
+        this.referenceService.getMenus(this.profileId, true)
+            .subscribe({
+              next: (data : any) => {
                 this.menuItems = this.sortMenus(data);
+                this.finishLoginNavigation();
+              },
+              error: () => this.finishLoginNavigation()
+            });
+    }
 
+    private async finishLoginNavigation(): Promise<void> {
+        const targetPath = this.findMenuPath(this.menuItems) || '/dashboard';
+        try {
+            let navigated = await this.router.navigateByUrl(targetPath).catch(() => false);
+            if (!navigated && targetPath !== '/dashboard') {
+                navigated = await this.router.navigateByUrl('/dashboard');
+            }
+            navigated = navigated && !!this._credentialsService.getCredentials()
+                && !this.router.url.startsWith('/auth/');
+            this.alert.showAlert({
+                message: navigated
+                    ? `Bienvenue ${this.userInfos?.prenom} ${this.userInfos?.nom}`
+                    : 'La navigation après connexion a été refusée. Veuillez réessayer.',
+                titre: 'Plateforme SIGRH',
+                status: navigated ? 'INFO' : 'ERROR'
+            });
+        } catch {
+            this.alert.showAlert({
+                message: 'Impossible de charger la page après connexion. Veuillez actualiser la page.',
+                titre: 'Plateforme SIGRH',
+                status: 'ERROR'
+            });
+        } finally {
+            this.isLoading = false;
+            this.spinner.hide();
+        }
+    }
 
-                //this.subMenuActive(this.menuItems);
-            })
-
-
+    private findMenuPath(menus: any[]): string | undefined {
+        for (const menu of menus || []) {
+            if (menu?.menPath === '/dashboard') {
+                return '/dashboard';
+            }
+            const childPath = this.findMenuPath(menu?.children);
+            if (childPath) {
+                return childPath;
+            }
+            const path = menu?.menPath?.trim();
+            if (path?.startsWith('/') && !path.startsWith('//') && path !== '/') {
+                return path;
+            }
+        }
+        return undefined;
     }
 
     private order = [113, 100, 137, 114, 130, 103, 106, 108, 126, 138];

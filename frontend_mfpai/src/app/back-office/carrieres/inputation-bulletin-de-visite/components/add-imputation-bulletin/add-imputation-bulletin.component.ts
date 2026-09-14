@@ -101,11 +101,19 @@ export class AddImputationBulletinComponent implements OnInit {
   filesIsNull : boolean = true
   disableButton : boolean = true
 
-  onSelect(event: { addedFiles: any; }) {
-    console.log(event);
-    this.files.push(...event.addedFiles);
-    this.filesIsNull = false
-    this.selectedFile = true
+  onSelect(event: { addedFiles: File[]; rejectedFiles?: File[]; }) {
+    const pdfFiles = event.addedFiles.filter(file => /\.pdf$/i.test(file.name));
+    if (event.rejectedFiles?.length || pdfFiles.length !== event.addedFiles.length) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Format de fichier non autorisé',
+        text: 'Veuillez insérer uniquement des pièces justificatives au format PDF (.pdf). Les autres formats ne sont pas acceptés.',
+        confirmButtonText: 'Compris'
+      });
+    }
+    this.files.push(...pdfFiles);
+    this.filesIsNull = this.files.length === 0;
+    this.selectedFile = !this.filesIsNull;
   }
 
   disabledButtonFunc(){
@@ -118,10 +126,8 @@ export class AddImputationBulletinComponent implements OnInit {
   onRemove(event: File) {
     console.log(event);
     this.files.splice(this.files.indexOf(event), 1);
-    this.selectedFile = false
-
-    if(this.files.length == 0)
-      this.filesIsNull = true
+    this.filesIsNull = this.files.length === 0;
+    this.selectedFile = !this.filesIsNull;
   }
 
   onSaveImputationBulletin(){

@@ -56,53 +56,37 @@
 
                 <div class="row details py-3 g-3">
 
-                    <ng-container *ngIf="userResultDec?.structure?.code === 'IA'">
-                        <ng-container>
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>Région</span>
-                                    <span>{{ userResultDec?.region?.label }}</span>
-                                </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="details-item">
+                            <span>Région</span>
+                            <span>{{ userResultDec?.region?.label }}</span>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="userResultDec?.ia">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>IA</span>
+                                <span>{{ userResultDec?.ia?.label }}</span>
                             </div>
-                        </ng-container>
-                        <ng-container *ngIf="userResultDec?.ia">
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>IA</span>
-                                    <span>{{ userResultDec?.ia?.label }}</span>
-                                </div>
-                            </div>
-                        </ng-container>
-
-                        <ng-container  *ngIf="userResultDec?.ief">
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>IEF</span>
-                                    <span>{{ userResultDec?.ief?.label }}</span>
-                                </div>
-                            </div>
-                        </ng-container>
-
-                        <ng-container  *ngIf="userResultDec?.etablissement">
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>Etablissement</span>
-                                    <span>{{ userResultDec?.etablissement?.label }}</span>
-                                </div>
-                            </div>
-                        </ng-container>
-
+                        </div>
                     </ng-container>
 
-                    <ng-container *ngIf="userResultDec?.structure?.code === 'MIN'">
-                        <ng-container  *ngIf="userResultDec?.etablissement">
-                            <div class="col-lg-4 col-sm-6">
-                                <div class="details-item">
-                                    <span>EFF</span>
-                                    <span>{{ userResultDec?.etablissement?.label }}</span>
-                                </div>
+                    <ng-container  *ngIf="userResultDec?.ief">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>IEF</span>
+                                <span>{{ userResultDec?.ief?.label }}</span>
                             </div>
-                        </ng-container>
+                        </div>
+                    </ng-container>
+
+                    <ng-container  *ngIf="userResultDec?.etablissement">
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="details-item">
+                                <span>Etablissement</span>
+                                <span>{{ userResultDec?.etablissement?.label }}</span>
+                            </div>
+                        </div>
                     </ng-container>
 
                 </div>
