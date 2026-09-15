@@ -22,6 +22,7 @@ export class ActeDTO{
     codetypeActe!:string;
     codeTypeActeAA!:string;
     codeTypeActeAG!:string;
+    autreTypeActe?: string;
     typeSortie!:string;
     statutActe!:StatutActeDTO;
     dateDemandeActe!:Date;
@@ -42,4 +43,3 @@ export class ActeDTO{
     /* ia!:Ia
     ief!:Ief; */
   }
-  

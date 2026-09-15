@@ -86,8 +86,19 @@ export class AddActeComponent implements OnInit {
       commentaire: [''],
       acte:['', Validators.required],
       typeActe: ['', Validators.required],
+      autreTypeActe: [''],
       files: [null, Validators.required] 
 
+    });
+    this.demandeActeForm.get('typeActe')?.valueChanges.subscribe(value => {
+      const autreType = this.demandeActeForm.get('autreTypeActe')!;
+      if (value === 'AUTRE') {
+        autreType.setValidators([Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]);
+      } else {
+        autreType.clearValidators();
+        autreType.reset('');
+      }
+      autreType.updateValueAndValidity();
     });
   }
 
@@ -232,6 +243,9 @@ getAG() {
       const codeTypeActe = String(this.demandeActeForm.value.acte).trim();
       const codeTypeActeNormalise = codeTypeActe.toLowerCase();
       demandeActe.codetypeActe=codeTypeActe;
+      if (this.demandeActeForm.value.typeActe === 'AUTRE') {
+        demandeActe.autreTypeActe = this.demandeActeForm.value.autreTypeActe.trim();
+      }
       // console.log({aaaaaaaaaa:demandeActe.codetypeActe});
       if(codeTypeActeNormalise==="aa"){
         // console.log("1111111111");

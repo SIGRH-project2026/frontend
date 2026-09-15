@@ -23,9 +23,15 @@
                         <select class="form-select" id="typeActe" formControlName="typeActe">
                             <option value="">Sélectionner</option>
                             <option *ngFor="let typeActe of actes" [value]="typeActe.code">{{ typeActe.libelle }}</option>
+                            <option *ngIf="typeSelectionne" value="AUTRE">AUTRE</option>
                         </select>
                        <div style="color: red" *ngIf="f['typeActe'].touched && f['typeActe'].hasError('required')">Type Acte <strong>obligatoire!</strong></div>
  
+                    </div>
+                    <div class="col-sm-4" *ngIf="f['typeActe'].value === 'AUTRE'">
+                        <label class="form-label" for="autreTypeActe">Préciser le type d'acte <span style="color: red">*</span></label>
+                        <input type="text" class="form-control" id="autreTypeActe" formControlName="autreTypeActe" maxlength="100" placeholder="Saisir le type d'acte" />
+                        <div style="color: red" *ngIf="f['autreTypeActe'].touched && f['autreTypeActe'].invalid">Veuillez saisir un type d'acte (100 caractères maximum).</div>
                     </div>
                 </div>
             <div class="row g-3">
