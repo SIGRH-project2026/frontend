@@ -7,5 +7,5 @@ export const environment = {
   apiUrl: "http://localhost:9080/api/v1/mfpai/",
 
   // Production ==> SERVEUR SIGRH
-  // apiUrl: "https://sirh-formation.sec.gouv.sn/projet-api-v2/",
+  //apiUrl: "https://sirh-formation.sec.gouv.sn/projet-api-v2/",
 };
