@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ResponseApi2 } from 'src/app/shared/models/ResponseApi';
 import { MutationDTO } from '../../../demandes-mutation-permutation-recues/models/mutationDTO';
 import { MutationService } from '../../../demandes-mutation-permutation-recues/services/mutation.service';
+import { FileService } from 'src/app/shared/services/files/file.service';
 
 @Component({
     selector: 'app-view-mutation',
@@ -19,6 +20,7 @@ export class ViewMutationComponent {
     constructor(
         private location: Location,
         private readonly mutationService : MutationService,
+        private readonly fileService: FileService,
         private readonly _activatedRoute : ActivatedRoute
     ) {
         this.idMutation = this._activatedRoute.snapshot.paramMap.get('dataId')
@@ -41,6 +43,16 @@ export class ViewMutationComponent {
                 },
                 error: () => this.isLoading = false
             })
+    }
+
+    visualiser(doc: any) {
+        if (doc?.generatedName)
+            this.fileService.openPdfInNewTab(doc.generatedName);
+    }
+
+    telecharger(doc: any) {
+        if (doc?.generatedName)
+            this.fileService.telecharger(doc.generatedName);
     }
 
     get statusClass(): string {

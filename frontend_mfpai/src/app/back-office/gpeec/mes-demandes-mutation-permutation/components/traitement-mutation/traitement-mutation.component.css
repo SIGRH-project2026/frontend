@@ -1,0 +1,6 @@
+.documents-list{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.documents-list li{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.55rem .75rem;border-radius:10px;background:#fbfcfe;border:1px solid #e8edf3}
+.documents-list li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#26364d;font-size:.85rem}
+.doc-actions{display:flex;gap:.4rem;flex:0 0 auto}
+.doc-actions button{width:32px;height:32px;display:grid;place-items:center;border:none;border-radius:8px;color:#225486;background:#eaf1f7;cursor:pointer;transition:.2s}
+.doc-actions button:hover{color:#fff;background:#225486}

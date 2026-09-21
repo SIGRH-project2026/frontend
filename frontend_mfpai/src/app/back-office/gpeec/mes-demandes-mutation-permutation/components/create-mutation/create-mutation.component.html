@@ -187,6 +187,21 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-6">
+                            <label class="form-label">Document justificatif</label>
+                            <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                                <ngx-dropzone-label>
+                                    <i class="material-icons">cloud_upload</i>
+                                    <p class="fw-semibold">Sélectionner le document</p>
+                                    <small>ou glisser et déposer le fichier</small>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                                      (removed)="onRemoveFile(f, piecesJointesFiles)">
+                                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+
                         <div class="col-lg-12">
                             <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
                             <textarea class="form-control" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
@@ -269,6 +284,20 @@
                                 </select>
                             </div>
                         </ng-container>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Document justificatif</label>
+                        <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                            <ngx-dropzone-label>
+                                <i class="material-icons">cloud_upload</i>
+                                <p class="fw-semibold">Sélectionner le document</p>
+                                <small>ou glisser et déposer le fichier</small>
+                            </ngx-dropzone-label>
+                            <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                                  (removed)="onRemoveFile(f, piecesJointesFiles)">
+                                <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                            </ngx-dropzone-preview>
+                        </ngx-dropzone>
                     </div>
                     <div class="col-lg-12">
                         <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>

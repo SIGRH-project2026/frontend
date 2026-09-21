@@ -33,7 +33,16 @@
       <div class="info-card"><i class="fas fa-globe-africa"></i><div><small>Région</small><strong>{{ mutation.regionSouhaitee?.label || '—' }}</strong></div></div>
       <ng-container *ngIf="mutation.destinataireType === 'DEC'"><div class="info-card"><i class="fas fa-landmark"></i><div><small>IA</small><strong>{{ mutation.iaSouhaitee?.label || '—' }}</strong></div></div><div *ngIf="mutation.iefSouhaitee" class="info-card"><i class="fas fa-school"></i><div><small>IEF</small><strong>{{ mutation.iefSouhaitee?.label }}</strong></div></div><div class="info-card"><i class="fas fa-university"></i><div><small>Établissement</small><strong>{{ mutation.etablissementSouhaitee?.label || '—' }}</strong></div></div></ng-container>
       <ng-container *ngIf="mutation.destinataireType === 'CEN'"><div class="info-card"><i class="fas fa-building"></i><div><small>Direction</small><strong>{{ mutation.directionSouhaitee?.label || '—' }}</strong></div></div><div *ngIf="mutation.serviceSouhaite" class="info-card"><i class="fas fa-sitemap"></i><div><small>Service</small><strong>{{ mutation.serviceSouhaite?.label }}</strong></div></div><div *ngIf="mutation.divisionSouhaitee" class="info-card"><i class="fas fa-sitemap"></i><div><small>Division</small><strong>{{ mutation.divisionSouhaitee?.label }}</strong></div></div><div *ngIf="mutation.bureauSouhaite" class="info-card"><i class="fas fa-door-open"></i><div><small>Bureau</small><strong>{{ mutation.bureauSouhaite?.label }}</strong></div></div></ng-container>
-    </div><div class="comment-card"><i class="fas fa-comment-alt"></i><div><small>Commentaire du demandeur</small><p>{{ mutation.commentaire || 'Aucun commentaire renseigné.' }}</p></div></div></div></mat-tab>
+    </div><div class="comment-card"><i class="fas fa-comment-alt"></i><div><small>Commentaire du demandeur</small><p>{{ mutation.commentaire || 'Aucun commentaire renseigné.' }}</p></div></div>
+    <div class="comment-card documents-card"><i class="fas fa-paperclip"></i><div class="documents-body"><small>Dossier courant</small>
+      <ul *ngIf="mutation.dossierSigne; else dossierInitial" class="documents-list">
+        <li><span>Dossier signé</span><div class="doc-actions"><button type="button" title="Visualiser" (click)="visualiser({generatedName: mutation.dossierSigne})"><i class="fas fa-eye"></i></button><button type="button" title="Télécharger" (click)="telecharger({generatedName: mutation.dossierSigne})"><i class="fas fa-download"></i></button></div></li>
+      </ul>
+      <ng-template #dossierInitial><ul *ngIf="mutation.pieceJointes?.length; else noDoc" class="documents-list">
+        <li *ngFor="let doc of mutation.pieceJointes"><span>{{ doc.originalName || 'Document' }}</span><div class="doc-actions"><button type="button" title="Visualiser" (click)="visualiser(doc)"><i class="fas fa-eye"></i></button><button type="button" title="Télécharger" (click)="telecharger(doc)"><i class="fas fa-download"></i></button></div></li>
+      </ul></ng-template>
+      <ng-template #noDoc><p>Aucun document joint.</p></ng-template>
+    </div></div></div></mat-tab>
   </mat-tab-group></section>
 </main>
 

@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import { MutationService } from "../../../demandes-mutation-permutation-recues/services/mutation.service";
 import { MutationDTO } from "../../../demandes-mutation-permutation-recues/models/mutationDTO";
 import { ReferencesService } from "src/app/services/references.service";
+import { FileService } from 'src/app/shared/services/files/file.service';
+import { of, switchMap, throwError, finalize } from 'rxjs';
 
 import { Service, Division, Bureau, Direction } from "src/app/models/utilisateur";
 
@@ -36,6 +38,8 @@ export class EditMutationComponent implements OnInit {
   bureau: Bureau[] = [];
   CheckDivision: any;
   typeDestinationSouhaitee = "SEL";
+  piecesJointesFiles: File[] = [];
+  saving = false;
   constructor(
       private _formBuilder: FormBuilder,
       private location: Location,
@@ -44,6 +48,7 @@ export class EditMutationComponent implements OnInit {
       private readonly mutationService : MutationService,
       private readonly _activatedRoute : ActivatedRoute,
       private readonly referenceService: ReferencesService,
+      public readonly fileService: FileService,
   ) {
     this.idMutation = this._activatedRoute.snapshot.paramMap.get('dataId')
 
@@ -108,13 +113,25 @@ export class EditMutationComponent implements OnInit {
             {
               this.mutation = data.payload
               this.typeDestinationSouhaitee = this.mutation.destinataireType
-              this.typeDestinationSouhaitee = this.mutation.demandeur.typeUser
+              const m = this.mutation;
+              this.demandePecForm.patchValue({typeDestinationSouhaitee: m.destinataireType,
+                region: m.regionSouhaitee?.code, ia: m.iaSouhaitee?.code, ief: m.iefSouhaitee?.code,
+                etablissement: m.etablissementSouhaitee?.code, commentaire: m.commentaire});
+              this.centralRegionForm.patchValue({region: m.regionSouhaitee?.code,
+                direction: m.directionSouhaitee?.code, division: m.divisionSouhaitee?.code,
+                bureau: m.bureauSouhaite?.code, services: m.serviceSouhaite?.code, commentaire: m.commentaire});
+              if (m.regionSouhaitee) this.getListIA(m.regionSouhaitee.code);
+              if (m.iaSouhaitee) { this.getListEF(m.iaSouhaitee.code); this.getListEtabByIA(m.iaSouhaitee.code); }
+              if (m.divisionSouhaitee) { this.CheckDivision = m.divisionSouhaitee.code; this.getListBureau(m.divisionSouhaitee.code); }
             }
 
           }
         })
   }
   onSaveDemande() {
+    if (this.saving) return;
+    const form = this.typeDestinationSouhaitee === 'DEC' ? this.demandePecForm : this.centralRegionForm;
+    if (form.invalid) { form.markAllAsTouched(); return; }
     let mutation : MutationDTO = new MutationDTO()
     if(this.typeDestinationSouhaitee === 'DEC')
     {
@@ -124,7 +141,7 @@ export class EditMutationComponent implements OnInit {
       let _ia = this.ia.find((ia : any) => ia.code == this.demandePecForm.value.ia)
       if(_ia)
         mutation.iaSouhaitee = _ia
-      let _ief = this.ief.find(( ief : any) => ief.code == this.demandePecForm.value.ief)
+      let _ief = this.ief?.find(( ief : any) => ief.code == this.demandePecForm.value.ief)
       if(_ief)
         mutation.iefSouhaitee = _ief
 
@@ -163,8 +180,15 @@ export class EditMutationComponent implements OnInit {
 
 
 
-    if(this.demandePecForm.valid || this.centralRegionForm.valid)
-      this.mutationService.patch(this.idMutation, mutation)
+    this.saving = true;
+    const upload = this.piecesJointesFiles.length
+      ? this.fileService.storeMultipleFiles(this.idMutation, 'mutationDemande', this.piecesJointesFiles)
+      : of({status: 'OK'});
+    upload.pipe(switchMap((result: any) => {
+      if (result.status !== 'OK') return throwError(() => new Error(result.message || 'Échec de l’envoi du dossier.'));
+      this.piecesJointesFiles = [];
+      return this.mutationService.patch(this.idMutation, mutation);
+    }), finalize(() => this.saving = false))
           .subscribe({
             next : (data : ResponseApi2) =>{
               if(data.status?.includes('OK'))
@@ -176,10 +200,15 @@ export class EditMutationComponent implements OnInit {
                 }).then(() => {
                   this.router.navigate(["gpeec/mes-demandes-mutation-permutation"]);
                 });
-            }
+              else Swal.fire({icon: 'error', text: data.message || 'La modification a échoué.'});
+            },
+            error: () => { Swal.fire({icon: 'error', text: 'La modification n’a pas été soumise. Vérifiez les pièces jointes et réessayez.'}); }
           })
 
   }
+
+  onSelectFiles(event: { addedFiles: File[] }) { this.piecesJointesFiles.push(...event.addedFiles); }
+  onRemoveFile(file: File) { this.piecesJointesFiles = this.piecesJointesFiles.filter(f => f !== file); }
 
   onReset() {
     Swal.fire({

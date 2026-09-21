@@ -13,6 +13,7 @@ import { MutationService } from "../../../demandes-mutation-permutation-recues/s
 import { ResponseApi2 } from "src/app/shared/models/ResponseApi";
 import { Bureau, Direction, Division, Service } from "src/app/models/utilisateur";
 import {NgxSpinnerService} from "ngx-spinner";
+import { FileService } from "src/app/shared/services/files/file.service";
 
 @Component({
     selector: "app-create-mutation",
@@ -41,6 +42,7 @@ export class CreateMutationComponent implements OnInit {
 
     bureau: Bureau[] = [];
     CheckDivision: any;
+    piecesJointesFiles: File[] = [];
     constructor(
         private _formBuilder: FormBuilder,
         private location: Location,
@@ -50,6 +52,7 @@ export class CreateMutationComponent implements OnInit {
         private readonly _userService: UtilisateurService,
         private readonly referenceService: ReferencesService,
         private readonly mutationService : MutationService,
+        private readonly fileService: FileService,
         private spinner: NgxSpinnerService,
     ) {
 
@@ -176,17 +179,9 @@ export class CreateMutationComponent implements OnInit {
                 .subscribe({
                         next : (data : ResponseApi2) =>{
                           //  console.log({ddd : data});
-                            
+
                             if(data.status?.includes('OK')){
-                                Swal.fire({
-                                    icon: "success",
-                                    html: "La demande de mutation a été soumise avec succès.",
-                                    showConfirmButton: false,
-                                    timer: 2000,
-                                }).then(() => {
-                                    this.spinner.hide();
-                                    this.location.back();
-                                });
+                                this.uploadPiecesJointes(data.payload?.id);
                             }
                         },
                         error: () => {
@@ -201,6 +196,50 @@ export class CreateMutationComponent implements OnInit {
                 )}
 
 
+    }
+
+    uploadPiecesJointes(idMutation: number | undefined) {
+        if (!idMutation || this.piecesJointesFiles.length === 0) {
+            this.spinner.hide();
+            Swal.fire({
+                icon: "success",
+                html: "La demande de mutation a été soumise avec succès.",
+                showConfirmButton: false,
+                timer: 2000,
+            }).then(() => {
+                this.location.back();
+            });
+            return;
+        }
+        this.fileService.storeMultipleFiles(idMutation, 'mutationDemande', this.piecesJointesFiles)
+            .subscribe({
+                next: () => {
+                    this.spinner.hide();
+                    Swal.fire({
+                        icon: "success",
+                        html: "La demande de mutation a été soumise avec succès.",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    }).then(() => {
+                        this.location.back();
+                    });
+                },
+                error: () => {
+                    this.spinner.hide();
+                    Swal.fire({
+                        icon: 'warning',
+                        text: 'La demande de mutation a été soumise mais l’envoi du document a échoué. Veuillez le joindre ultérieurement.'
+                    });
+                }
+            });
+    }
+
+    onSelectFiles(event: { addedFiles: any }, filesArray: File[]) {
+        filesArray.push(...event.addedFiles);
+    }
+
+    onRemoveFile(event: File, filesArray: File[]) {
+        filesArray.splice(filesArray.indexOf(event), 1);
     }
 
     onReset() {

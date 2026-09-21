@@ -1,57 +1,66 @@
-.carousel{
-    width: 100% !important;
-    height: calc(100vh - 100px) !important;
-}
-.carousel-inner{
-    width: 100% !important;
-    height: calc(100vh - 100px) !important;
-}
-.picsum-img-wrapper img{
-    width: 100% !important;
-    height: calc(100vh - 100px);
-    object-fit: cover;
-    object-position: top center;
-}
-
-/* CSS pour le carousel */
-.carousel-item {
+.welcome-banner {
     position: relative;
-    text-align: center;
-    /* Pour centrer le texte */
+    width: 100%;
+    aspect-ratio: 3 / 1;
+    min-height: 360px;
+    overflow: hidden;
+    background: #172638;
 }
 
-.carousel-caption {
-    width: 70%;
-    position: absolute;
-    top: calc(50% - 100px);
-    bottom: 0;
-    /* top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); */
-    /* Pour centrer verticalement et horizontalement */
-    color: white;
-    /* Couleur du texte */
-    z-index: 1;
-    /* Pour s'assurer que le texte est au-dessus de l'image */
-}
-
-.carousel-caption h1{
-    line-height: 1.5;
-}
-/* CSS pour le dégradé linéaire */
-.picsum-img-wrapper::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+.welcome-banner-image {
+    display: block;
     width: 100%;
     height: 100%;
-    background: linear-gradient(rgba(29, 74, 123, .8), rgba(29, 74, 123, .5));
-    /* Dégradé linéaire semi-transparent */
-    z-index: 0;
-    /* Pour s'assurer que le dégradé est en arrière-plan */
+    object-fit: cover;
+    object-position: center;
 }
 
+.welcome-banner-content {
+    position: absolute;
+    top: 50%;
+    left: max(5%, calc((100% - 1320px) / 2));
+    transform: translateY(-50%);
+    width: min(45%, 650px);
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .55);
+}
+
+.welcome-banner-content h1 {
+    font-size: clamp(1.7rem, 2.5vw, 2.8rem);
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.welcome-banner-content p {
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
+    margin: 1rem 0 0;
+}
+
+@media (max-width: 767px) {
+    .welcome-banner {
+        height: 480px;
+    }
+
+    .welcome-banner-image {
+        object-position: 65% center;
+    }
+
+    .welcome-banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 25%, rgba(12, 27, 43, .9));
+    }
+
+    .welcome-banner-content {
+        z-index: 1;
+        top: auto;
+        bottom: 2rem;
+        left: 6%;
+        width: 88%;
+        transform: none;
+    }
+}
 
 .section-title {
     text-align: center;
