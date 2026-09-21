@@ -12,6 +12,7 @@ import { TraitementMutation } from "../../../demandes-mutation-permutation-recue
 import { CredentialsService } from "src/app/services/credentials.service";
 import { MutationService } from "../../../demandes-mutation-permutation-recues/services/mutation.service";
 import { NgxSpinnerService } from 'ngx-spinner';
+import { FileService } from "src/app/shared/services/files/file.service";
 
 @Component({
   selector: 'app-traitement-mutation',
@@ -39,7 +40,12 @@ export class TraitementMutationComponent implements OnInit {
   profile: any;
   pourTraitementDGPEEC: boolean = false;
   piecesJointesFiles: File[] = [];
+  dossierSigneFiles: File[] = [];
+  submitting = false;
   disableAction = true
+  get utiliseBordereau(): boolean {
+    return this.profile === 'Représentant-IEF' || this.profile === 'Representant-IA';
+  }
   constructor(
     private _formBuilder: FormBuilder,
     private location: Location,
@@ -49,6 +55,7 @@ export class TraitementMutationComponent implements OnInit {
     private readonly mutationService : MutationService,
     private readonly _activatedRoute : ActivatedRoute,
     private readonly _credentialService: CredentialsService,
+    private readonly fileService: FileService,
     private spinner: NgxSpinnerService,
   ) {
     this.idMutation = this._activatedRoute.snapshot.paramMap.get('dataId')
@@ -81,8 +88,12 @@ export class TraitementMutationComponent implements OnInit {
     this.mutationService.get(this.idMutation)
         .subscribe({
           next : (data : ResponseApi2) =>{
-            if(data.status?.includes("OK"))
-              this.mutation = data.payload
+            if(data.status?.includes("OK")) {
+              this.mutation = data.payload;
+              // Le rôle de cette étape ne dépend pas de l'ordre des profils du compte.
+              this.profile = this.mutation.profilDevantTraiter;
+              this.pourTraitementDGPEEC = this.profile === 'Chef-division-dgpeec';
+            }
           }
         })
   }
@@ -236,6 +247,15 @@ export class TraitementMutationComponent implements OnInit {
   }
 
   onValid() {
+    if (this.submitting) return;
+    if (this.utiliseBordereau && !this.piecesJointesFiles.length) {
+      Swal.fire({icon: 'warning', text: 'Veuillez joindre le bordereau de réception et de transmission.'});
+      return;
+    }
+    if (!this.dossierSigneFiles.length) {
+      Swal.fire({icon: 'warning', text: 'Téléchargez le dossier, signez-le puis déposez la version signée avant de transmettre.'});
+      return;
+    }
     let traitementMutation : TraitementMutation = new TraitementMutation()
     traitementMutation.motif = "Accepter par le chef : avant transmission pour signature par le ministre"
     traitementMutation.codeStatutMutation = this.nextStatus(this.profile)
@@ -252,10 +272,13 @@ export class TraitementMutationComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.submitting = true;
         this.spinner.show()
-        this.mutationService.Traitement(this.mutation.id, this.piecesJointesFiles[0], traitementMutation)
+        this.mutationService.Traitement(this.mutation.id, this.utiliseBordereau ? this.piecesJointesFiles[0] : undefined, traitementMutation, this.dossierSigneFiles[0])
             .subscribe({
               next : (data : ResponseApi2) =>{
+                this.submitting = false;
+                this.spinner.hide();
                 if(data.status?.includes('OK'))
                   Swal.fire({
                     html: 'Demande de mutation <b>'+ this.mutation.numeroRef +'</b> validée avec succès.',
@@ -267,6 +290,12 @@ export class TraitementMutationComponent implements OnInit {
                     this.spinner.hide()
                     this.location.back();
                   })
+                else Swal.fire({icon: 'error', text: data.message || 'La transmission a échoué.'});
+              },
+              error: () => {
+                this.submitting = false;
+                this.spinner.hide();
+                Swal.fire({icon: 'error', text: 'Le dossier n’a pas été transmis. Veuillez réessayer.'});
               }
             });
       }
@@ -276,6 +305,19 @@ export class TraitementMutationComponent implements OnInit {
 
   goBack() {
     this.location.back()
+  }
+
+  telechargerDossier(fileName: string) { this.fileService.telecharger(fileName); }
+  selectionnerDossier(event: { addedFiles: File[] }) { this.dossierSigneFiles = event.addedFiles.slice(0, 1); }
+
+  visualiserPieceJointe(doc: any) {
+    if (doc?.generatedName)
+      this.fileService.openPdfInNewTab(doc.generatedName);
+  }
+
+  telechargerPieceJointe(doc: any) {
+    if (doc?.generatedName)
+      this.fileService.telecharger(doc.generatedName);
   }
 
   nextStatus(profilTraitant : string) : string{
@@ -344,7 +386,4 @@ export class TraitementMutationComponent implements OnInit {
       this.disableAction = true
   }
 }
-
-
-
 

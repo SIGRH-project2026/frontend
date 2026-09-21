@@ -124,7 +124,7 @@
                         </div>
                     </div>
 
-                    <div class="action-steps">
+                    <ng-container *ngTemplateOutlet="dossier"></ng-container><div class="action-steps">
                         <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
                         <button matStepperNext type="button" class="button button-primary text-white ">Suivant</button>
                     </div>
@@ -162,7 +162,7 @@
 
                         <div class="col-lg-6">
                             <label class="form-label">Région <span style="color: red">*</span></label>
-                            <select class="form-select" formControlName="region" [(ngModel)]="mutation.regionSouhaitee.code"
+                            <select class="form-select" formControlName="region"
                                     (change)="getListIA($any($event.target).value)">
                                 <option value="">Sélectionner</option>
                                 <option *ngFor="let reg of region" [value]="reg.code">{{reg?.label}}</option>
@@ -206,15 +206,15 @@
 
                         <div class="col-lg-12">
                             <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
-                            <textarea class="form-control" [(ngModel)]="mutation.commentaire" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
+                            <textarea class="form-control"  formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
                         </div>
                     </div>
 
-                    <div class="action-steps">
+                    <ng-container *ngTemplateOutlet="dossier"></ng-container><div class="action-steps">
                         <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
                         <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
                         <button matStepperNext type="button" class="button button-primary text-white"
-                                (click)="onSaveDemande()">Enregistrer</button>
+                                [disabled]="saving" (click)="onSaveDemande()">Enregistrer</button>
                     </div>
                 </form>
                 <form *ngIf="typeDestinationSouhaitee === 'CEN'" [formGroup]="centralRegionForm">
@@ -245,7 +245,7 @@
                         <ng-container *ngIf="directionValue.value === 'DRH'">
                             <div class="col-sm-4">
                                 <label class="form-label">Division </label>
-                                <select class="form-select" formControlName="division" [ngModel]="mutation.divisionSouhaitee.label" (change)="getListBureau($any($event.target).value); directionSelected($any($event.target).value)" >
+                                <select class="form-select" formControlName="division"  (change)="getListBureau($any($event.target).value); directionSelected($any($event.target).value)" >
                                     <option value="">Sélectionner</option>
                                     <option *ngFor="let div of division" [value]="div.code">{{div?.label}}</option>
                                 </select>
@@ -289,16 +289,33 @@
                     </div>
                     <div class="col-lg-12">
                         <label class="form-label">Commentaire <span class="text-danger fw-bold">*</span></label>
-                        <textarea class="form-control" [(ngModel)]="mutation.commentaire" formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
+                        <textarea class="form-control"  formControlName="commentaire" cols="30" rows="3" placeholder="Saisir"></textarea>
                     </div>
-                    <div class="action-steps">
+                    <ng-container *ngTemplateOutlet="dossier"></ng-container><div class="action-steps">
                         <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
                         <button matStepperPrevious type="button" class="button button-secondary">Précédent</button>
                         <button matStepperNext type="button" class="button button-primary text-white"
-                                (click)="onSaveDemande()">Enregistrer</button>
+                                [disabled]="saving" (click)="onSaveDemande()">Enregistrer</button>
                     </div>
                 </form>
             </mat-step>
         </mat-stepper>
     </div>
-</div>
+</div><ng-template #dossier>
+  <div class="my-3">
+    <h4>Dossier joint</h4>
+    <p *ngIf="!mutation?.pieceJointes?.length">Aucun document joint.</p>
+    <div *ngFor="let doc of mutation.pieceJointes" class="d-flex justify-content-between mb-2">
+      <span>{{ doc.originalName }}</span>
+      <button type="button" class="btn btn-outline-primary" (click)="fileService.telecharger(doc.generatedName)">Télécharger</button>
+    </div>
+    <label class="form-label">Ajouter les documents corrigés ou complémentaires</label>
+    <ngx-dropzone (change)="onSelectFiles($event)">
+      <ngx-dropzone-label>Sélectionner les documents du dossier</ngx-dropzone-label>
+      <ngx-dropzone-preview *ngFor="let file of piecesJointesFiles" [removable]="true" (removed)="onRemoveFile(file)">
+        <ngx-dropzone-label>{{ file.name }}</ngx-dropzone-label>
+      </ngx-dropzone-preview>
+    </ngx-dropzone>
+    <small>Les documents déjà joints sont conservés.</small>
+  </div>
+</ng-template>

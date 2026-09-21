@@ -112,7 +112,7 @@
                                                                 <span>Voir détails</span>
                                                             </a>
                                                         </li>
-                                                        <li *ngIf="(pourTraitement && doitTraiter(demande, profile) && demande.traitementMutation.statut.code !=='VALIDER' &&
+                                                        <li *ngIf="(pourTraitement && doitTraiter(demande) && demande.traitementMutation.statut.code !=='VALIDER' &&
                                                                     demande.traitementMutation.statut.code !=='REJETER' && 
                                                                     demande.traitementMutation.statut.code !=='AMODIFIER' && !demande?.osgenerated)  ">
                                                             <a class="dropdown-item" href="javascript:(0)" (click)="onTraitMutation(demande)">
@@ -120,7 +120,7 @@
                                                                 <span>Traiter</span>
                                                             </a>
                                                         </li>
-                                                        <li *ngIf="pourTraitement && doitTraiter(demande, profile)">
+                                                        <li *ngIf="pourTraitement && doitTraiter(demande) && demande.currentBordereauTransmission && (demande.profilDevantTraiter === 'Représentant-IEF' || demande.profilDevantTraiter === 'Representant-IA')">
                                                             <a class="dropdown-item" href="javascript:(0)"  (click)="visualiser2(demande.currentBordereauTransmission)">
                                                                 <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
                                                                 <span>BE/lettre de transmission</span>

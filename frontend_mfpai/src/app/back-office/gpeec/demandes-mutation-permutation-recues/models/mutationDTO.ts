@@ -1,10 +1,12 @@
 import { UserDTOs } from "src/app/models/UserDTOs"
 import { Bureau, Direction, Division, Etablissement, Ia, Ief, Region, Service } from "src/app/models/utilisateur"
+import { FileDTO } from "src/app/back-office/carrieres/mes-demandes/components/models/FileDTO"
 import { TraitementMutation } from "./traitementMutation"
 
 export class MutationDTO{
     id !: number
     commentaire !: string
+    dossierSigne?: string;
     regionSouhaitee !: Region 
     iaSouhaitee !: Ia
     iefSouhaitee !: Ief
@@ -24,6 +26,7 @@ export class MutationDTO{
     profilDevantTraiter !: string
     osgenerated !: boolean
     currentBordereauTransmission !: string
+    pieceJointes !: FileDTO[]
 
 }
 class OrigineDemandeurLog  {

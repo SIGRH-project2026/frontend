@@ -55,10 +55,11 @@ export class MutationService {
     return this._httpClient.patch(`${this.apiUrl}${this.endpoint}/update/${idMutation}`,data ).pipe(
         catchError(this.handleError)
     );}
-  Traitement = (idMutation: number, bordereau : File, data :  TraitementMutation): Observable<ResponseApi2> =>{
+  Traitement = (idMutation: number, bordereau : File | undefined, data : TraitementMutation, dossierSigne?: File): Observable<ResponseApi2> =>{
     const formData = new FormData();
-     formData.append('TraitementMutation', decodeURIComponent(JSON.stringify(data)));
-     formData.append('bordereau', bordereau);
+     formData.append('TraitementMutation', JSON.stringify(data));
+     if (bordereau) formData.append('bordereau', bordereau);
+     if (dossierSigne) formData.append('dossierSigne', dossierSigne);
 
     return this._httpClient.patch(`${this.apiUrl}${this.endpoint}/traitement/${idMutation}`,formData ).pipe(
         catchError(this.handleError)
@@ -97,4 +98,3 @@ export class MutationService {
     return throwError(() => new Error(`Something bad happened; please try again later`));
   }
 }
-

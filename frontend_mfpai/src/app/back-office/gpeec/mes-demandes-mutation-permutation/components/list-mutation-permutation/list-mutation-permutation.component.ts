@@ -19,7 +19,6 @@ import { ReferencesService } from 'src/app/services/references.service';
 import { UtilisateurService } from 'src/app/services/utilisateur.service';
 import { UserDTOs } from 'src/app/models/UserDTOs';
 import { FileService } from 'src/app/shared/services/files/file.service';
-import { log } from 'node:console';
 @Component({
   selector: 'app-list-permutation',
   templateUrl: './list-mutation-permutation.component.html',
@@ -178,6 +177,7 @@ export class ListMutationPermutationComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.getUserDetail();
     this.listmutations();
     this.getAllPermutations();
     this.getCurrentUser()
@@ -335,19 +335,20 @@ export class ListMutationPermutationComponent implements OnInit {
   genererOSMutation(allMutation : boolean, idMutation : number){
     this.mutationService.genererOS(allMutation, idMutation).subscribe({
       next : (data: any) => {
-        if (!data?.payload) {
-          this.showOsError('Le fichier de l’ordre de service n’a pas été retourné.');
+        if (data?.status !== 'OK' || !data?.payload) {
+          this.showOsError(data?.message || 'Le fichier de l’ordre de service n’a pas été retourné.');
           return;
         }
-        this.Telecharger(data.payload)
+        this.Telecharger(data.payload, () => {
         Swal.fire({
           icon: 'success',
           html: `<strong> Ordre de service généré avec succès </strong>`,
           showConfirmButton: false,
           timer: 1500
         }).then(() => {
-          window.location.reload()
+          this.listmutations();
         })
+        });
       },
       error: () => this.showOsError('La génération de l’ordre de service a échoué.')
     })
@@ -403,7 +404,7 @@ export class ListMutationPermutationComponent implements OnInit {
       error: () => this.showOsError('La génération de l’ordre de service a échoué.')
     })
   }
-  Telecharger(filename:string){
+  Telecharger(filename:string, onSuccess?: () => void){
     if (!filename) {
       this.showOsError('Aucun ordre de service disponible au téléchargement.');
       return;
@@ -435,6 +436,7 @@ export class ListMutationPermutationComponent implements OnInit {
 
           // Libérer l'URL blob pour libérer la mémoire
           URL.revokeObjectURL(blobUrl);
+          onSuccess?.();
           //this.spinner.hide()
         },
         () => this.showOsError('Le téléchargement de l’ordre de service a échoué.')
@@ -756,22 +758,43 @@ getUserDetail(){
                    })
 }
 //vérification du profil traitant
-doitTraiter(mutation : MutationDTO, codeProfilConnected : string) : boolean{
+doitTraiter(mutation : MutationDTO) : boolean {
+  // À cette étape, le traitement DPEEC est terminé : seule la préparation de l'OS reste à faire.
+  if (mutation.traitementMutation?.statut?.code === 'REC-DGPEEC') return false;
+  const attendu = mutation.profilDevantTraiter;
+  if (!attendu || mutation.demandeur?.id === this.userId) return false;
 
-  if(mutation.profilDevantTraiter === codeProfilConnected) {
-
-    return true
-  }
-
-  if(mutation.profilDevantTraiter === "Chef-service" || mutation.profilDevantTraiter === "Chef-division")
-   {  if(mutation.demandeur.service && mutation.demandeur.service.code === this.user.service.code)
-        return true
-      if(mutation.demandeur.division && mutation.demandeur.division.code === this.user.division.code)
-        return true
+  return this.profilConnecte.some((profil: { code: string }) => {
+    const origine = mutation.origineDemandeurLog;
+    if (profil.code === attendu) {
+      if (['Chef-etablissement', 'Chef-cfp', 'Chef-EFF'].includes(attendu)) {
+        return !!origine?.etablissement?.code && origine.etablissement.code === this.user?.etablissement?.code;
+      }
+      if (attendu === 'Représentant-IEF') {
+        return !!origine?.ief?.code && origine.ief.code === this.user?.ief?.code;
+      }
+      if (attendu === 'Representant-IA') {
+        return !!origine?.ia?.code && origine.ia.code === this.user?.ia?.code;
+      }
+      if (attendu.startsWith('Chef-service')) {
+        return !!origine?.service?.code && origine.service.code === this.user?.service?.code;
+      }
+      if (attendu.startsWith('Chef-division') && attendu !== 'Chef-division-dgpeec') {
+        return !!origine?.division?.code && origine.division.code === this.user?.division?.code;
+      }
+      return true;
     }
 
-    return false
-  }
+    // Les profils génériques exigent le rôle et le rattachement correspondant.
+    if (attendu === 'Chef-service' && profil.code.startsWith('Chef-service-')) {
+      return !!origine?.service?.code && origine.service.code === this.user?.service?.code;
+    }
+    if (attendu === 'Chef-division' && profil.code.startsWith('Chef-division-')) {
+      return !!origine?.division?.code && origine.division.code === this.user?.division?.code;
+    }
+    return false;
+  });
+}
   visualiser2(fileName: string): void {
     this.fileService.openPdfInNewTab(fileName)
     };

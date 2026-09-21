@@ -192,12 +192,33 @@
                                 <span>{{mutation?.commentaire}}</span>
                             </div>
                         </div>
+                        <div class="col-lg-12">
+                            <div class="details-item">
+                                <span>Dossier courant</span>
+                                <span *ngIf="!mutation.dossierSigne && !mutation?.pieceJointes?.length">Aucun document joint.</span>
+                            </div>
+                            <ul *ngIf="mutation.dossierSigne" class="documents-list">
+                                <li><span>Dossier signé</span><div class="doc-actions">
+                                    <button type="button" title="Visualiser" (click)="visualiserPieceJointe({generatedName: mutation.dossierSigne})"><i class="fas fa-eye"></i></button>
+                                    <button type="button" title="Télécharger" (click)="telechargerDossier(mutation.dossierSigne)"><i class="fas fa-download"></i></button>
+                                </div></li>
+                            </ul>
+                            <ul *ngIf="!mutation.dossierSigne && mutation?.pieceJointes?.length" class="documents-list">
+                                <li *ngFor="let doc of mutation.pieceJointes">
+                                    <span>{{ doc.originalName || 'Document' }}</span>
+                                    <div class="doc-actions">
+                                        <button type="button" title="Visualiser" (click)="visualiserPieceJointe(doc)"><i class="fas fa-eye"></i></button>
+                                        <button type="button" title="Télécharger" (click)="telechargerPieceJointe(doc)"><i class="fas fa-download"></i></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div class="action-steps" *ngIf="pourTraitementDGPEEC">
+                <ng-container *ngIf="pourTraitementDGPEEC" [ngTemplateOutlet]="signatureDossier"></ng-container><div class="action-steps" *ngIf="pourTraitementDGPEEC">
                     <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button> 
                     <button type="button" class="button button-primary text-white" (click)="onValid()" *ngIf="pourTraitementDGPEEC">Accepter</button>
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="disableAction" *ngIf="!pourTraitementDGPEEC">Accepter</button>
+                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="(utiliseBordereau && !piecesJointesFiles.length) || !dossierSigneFiles.length || submitting" *ngIf="!pourTraitementDGPEEC">Accepter</button>
                     <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-yellow text-white" (click)="onModifier()">A
                         modifier</button>
                     <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
@@ -209,12 +230,12 @@
                 </div>
             </mat-step>
             <mat-step *ngIf="!pourTraitementDGPEEC" [stepControl]="transmissionBordereauxGroup">
-                <ng-template matStepLabel>Soumettre Bordereau</ng-template>
-                <div class="modal-body py-md-3">
+                <ng-template matStepLabel>Signer et transmettre le dossier</ng-template><ng-container *ngTemplateOutlet="signatureDossier"></ng-container>
+                <div class="modal-body py-md-3" *ngIf="utiliseBordereau">
                     <form>
                         <div class="row g-3">
                             <div class="col-lg-12">
-                                <label class="form-label">Veuillez soumettre le bordereau de transmission <span class="text-danger fw-bold">*</span></label>
+                                <label class="form-label">Bordereau de réception et de transmission (IEF / IA) <span class="text-danger fw-bold">*</span></label>
                                 <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
                                     <ngx-dropzone-label>
                                         <i class="material-icons">cloud_upload</i>
@@ -233,7 +254,7 @@
                 <div class="action-steps">
                     <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button> 
                     <button type="button" class="button button-primary text-white" (click)="onValid()" *ngIf="pourTraitementDGPEEC">Accepter</button>
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="disableAction" *ngIf="!pourTraitementDGPEEC">Accepter</button>
+                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="(utiliseBordereau && !piecesJointesFiles.length) || !dossierSigneFiles.length || submitting" *ngIf="!pourTraitementDGPEEC">Accepter</button>
                     <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-yellow text-white" (click)="onModifier()">A
                         modifier</button>
                     <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
@@ -291,4 +312,22 @@
             Annuler
         </button>
     </div>
+</ng-template><ng-template #signatureDossier>
+  <section class="my-3 p-3 border rounded">
+    <h4>Dossier à signer</h4>
+    <p>Téléchargez le dossier reçu, signez-le puis déposez la version signée.</p>
+    <button *ngIf="mutation.dossierSigne" type="button" class="btn btn-outline-primary mb-2" (click)="telechargerDossier(mutation.dossierSigne)">Télécharger la dernière version signée</button>
+    <ng-container *ngIf="!mutation.dossierSigne">
+      <button *ngFor="let doc of mutation.pieceJointes" type="button" class="btn btn-outline-primary m-1" (click)="telechargerPieceJointe(doc)">Télécharger {{ doc.originalName }}</button>
+      <p *ngIf="!mutation.pieceJointes?.length">Aucun dossier initial joint.</p>
+    </ng-container>
+    <button *ngIf="utiliseBordereau && mutation.currentBordereauTransmission" type="button" class="btn btn-outline-secondary m-1" (click)="telechargerDossier(mutation.currentBordereauTransmission)">Télécharger le bordereau reçu</button>
+    <label class="form-label d-block mt-3">Dossier signé (un fichier regroupant les pièces) <span class="text-danger">*</span></label>
+    <ngx-dropzone [multiple]="false" (change)="selectionnerDossier($event)">
+      <ngx-dropzone-label>Déposer le dossier signé</ngx-dropzone-label>
+      <ngx-dropzone-preview *ngFor="let file of dossierSigneFiles" [removable]="true" (removed)="dossierSigneFiles = []">
+        <ngx-dropzone-label>{{ file.name }}</ngx-dropzone-label>
+      </ngx-dropzone-preview>
+    </ngx-dropzone>
+  </section>
 </ng-template>
