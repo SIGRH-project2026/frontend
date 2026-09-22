@@ -468,6 +468,11 @@
             class="button button-primary text-white"
             (click)="onValid()"
             *ngIf="pourTraitementDGPEEC"
+            [disabled]="
+              (utiliseBordereau && !piecesJointesFiles.length) ||
+              !dossierSigneFiles.length ||
+              submitting
+            "
           >
             Accepter
           </button>
@@ -709,7 +714,7 @@
       Télécharger le bordereau reçu
     </button> -->
     <label class="form-label d-block mt-3"
-      >Dossier signé (un fichier regroupant les pièces)
+      >Dossier signé (hors bordereau joint séparément)
       <span class="text-danger">*</span></label
     >
     <ngx-dropzone [multiple]="false" (change)="selectionnerDossier($event)">
@@ -725,5 +730,27 @@
         <ngx-dropzone-label>{{ file.name }}</ngx-dropzone-label>
       </ngx-dropzone-preview>
     </ngx-dropzone>
+    <ng-container *ngIf="pourTraitementDGPEEC && utiliseBordereau">
+      <label class="form-label d-block mt-3"
+        >Bordereau accompagnant la demande
+        <span class="text-danger">*</span></label
+      >
+      <!-- <button type="button" class="btn btn-outline-secondary mb-2" (click)="telechargerDossier(mutation.currentBordereauTransmission)">Télécharger le bordereau reçu</button> -->
+      <ngx-dropzone
+        [multiple]="false"
+        (change)="onSelectFiles($event, piecesJointesFiles)"
+      >
+        <ngx-dropzone-label
+          >Joindre le bordereau accompagnant la demande</ngx-dropzone-label
+        >
+        <ngx-dropzone-preview
+          *ngFor="let file of piecesJointesFiles"
+          [removable]="true"
+          (removed)="onRemoveFile(file, piecesJointesFiles)"
+        >
+          <ngx-dropzone-label>{{ file.name }}</ngx-dropzone-label>
+        </ngx-dropzone-preview>
+      </ngx-dropzone>
+    </ng-container>
   </section>
 </ng-template>

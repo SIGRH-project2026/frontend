@@ -125,7 +125,6 @@ export class CreateMutationComponent implements OnInit {
             Swal.fire({ icon: 'warning', text: 'Veuillez renseigner tous les champs obligatoires.' });
             return;
         }
-        this.spinner.show();
         let mutation : MutationDTO = new MutationDTO()
         if(this.typeDestinationSouhaitee === 'DEC')
         {
@@ -170,6 +169,15 @@ export class CreateMutationComponent implements OnInit {
         }
         mutation.idUserdemandeur = this.userInfos.id
         mutation.destinataireType = this.typeDestinationSouhaitee
+
+        if (!mutation.regionSouhaitee
+            || (this.typeDestinationSouhaitee === 'DEC' && (!mutation.iaSouhaitee || !mutation.etablissementSouhaitee))
+            || (this.typeDestinationSouhaitee === 'CEN' && !mutation.directionSouhaitee)
+            || !['DEC', 'CEN'].includes(this.typeDestinationSouhaitee)) {
+            Swal.fire({ icon: 'warning', text: 'Veuillez sélectionner à nouveau la destination souhaitée : la sélection ne correspond plus à la liste disponible.' });
+            return;
+        }
+        this.spinner.show();
 
 
 
@@ -278,7 +286,10 @@ export class CreateMutationComponent implements OnInit {
             })
     }
     getListIA(code: any): void {
-
+        this.demandePecForm.patchValue({ ia: '', ief: '', etablissement: '' });
+        this.ia = [];
+        this.ief = [];
+        this.etablissement = [];
         this.referenceService.listIAByCode(code)
             .subscribe(response => {
 
@@ -288,7 +299,9 @@ export class CreateMutationComponent implements OnInit {
             });
     }
     getListEF(code: any): void {
-
+        this.demandePecForm.patchValue({ ief: '', etablissement: '' });
+        this.ief = [];
+        this.etablissement = [];
         this.codeIA = code;
         this.referenceService.listIEFByCode(code)
             .subscribe(response => {
@@ -312,7 +325,8 @@ export class CreateMutationComponent implements OnInit {
     }
 
     getListEtablissement(code: any): void {
-
+        this.demandePecForm.patchValue({ etablissement: '' });
+        this.etablissement = [];
         if(code) {
             this.referenceService.listEtablissementByCode(code)
                 .subscribe(response => {

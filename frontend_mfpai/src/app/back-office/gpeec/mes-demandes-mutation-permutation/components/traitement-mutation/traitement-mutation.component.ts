@@ -45,7 +45,8 @@ export class TraitementMutationComponent implements OnInit {
   disableAction = true
   get utiliseBordereau(): boolean {
     return ['Représentant-IEF', 'Representant-IA']
-      .includes(this.profile);
+      .includes(this.profile)
+      || (this.profile === 'Chef-division-dgpeec' && !!this.mutation.currentBordereauTransmission);
   }
   get bordereauRecuVisible(): boolean {
     return !!this.mutation.currentBordereauTransmission

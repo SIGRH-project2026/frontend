@@ -41,7 +41,13 @@
       <ng-template #dossierInitial><ul *ngIf="mutation.pieceJointes?.length; else noDoc" class="documents-list">
         <li *ngFor="let doc of mutation.pieceJointes"><span>{{ doc.originalName || 'Document' }}</span><div class="doc-actions"><button type="button" title="Visualiser" (click)="visualiser(doc)"><i class="fas fa-eye"></i></button><button type="button" title="Télécharger" (click)="telecharger(doc)"><i class="fas fa-download"></i></button></div></li>
       </ul></ng-template>
-      <ng-template #noDoc><p>Aucun document joint.</p></ng-template>
+      <ul *ngIf="mutation.currentBordereauTransmission" class="documents-list">
+        <li><span>Bordereau reçu accompagnant la demande</span><div class="doc-actions">
+          <button type="button" title="Visualiser le bordereau reçu" (click)="visualiser({generatedName: mutation.currentBordereauTransmission})"><i class="fas fa-eye"></i></button>
+          <button type="button" title="Télécharger le bordereau reçu" (click)="telecharger({generatedName: mutation.currentBordereauTransmission})"><i class="fas fa-download"></i></button>
+        </div></li>
+      </ul>
+      <ng-template #noDoc><p *ngIf="!mutation.currentBordereauTransmission">Aucun document joint.</p></ng-template>
     </div></div></div></mat-tab>
   </mat-tab-group></section>
 </main>

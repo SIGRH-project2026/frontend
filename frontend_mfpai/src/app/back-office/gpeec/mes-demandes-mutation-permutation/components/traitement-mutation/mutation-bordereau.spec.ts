@@ -40,6 +40,30 @@ describe('Transmission du bordereau et du dossier signé', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'warning' }));
   });
 
+  it('joint le dossier signé et le bordereau reçu au traitement DGPEEC', async () => {
+    component.profile = 'Chef-division-dgpeec';
+    component.pourTraitementDGPEEC = true;
+    component.mutation.currentBordereauTransmission = 'bordereau-ia.pdf';
+    component.onValid();
+    await Promise.resolve();
+    expect(component.utiliseBordereau).toBeTrue();
+    expect(transmettre).toHaveBeenCalledWith(1, component.piecesJointesFiles[0],
+      jasmine.objectContaining({ codeStatutMutation: 'REC-DGPEEC' }), component.dossierSigneFiles[0]);
+  });
+
+  it('conserve le bordereau de l’IA sans demander un nouveau dépôt à la DRH', async () => {
+    component.profile = 'Directeur-DRH';
+    component.mutation.currentBordereauTransmission = 'bordereau-ia.pdf';
+    component.piecesJointesFiles = [];
+    component.onValid();
+    await Promise.resolve();
+    expect(component.utiliseBordereau).toBeFalse();
+    expect(component.bordereauRecuVisible).toBeTrue();
+    expect(component.mutation.currentBordereauTransmission).toBe('bordereau-ia.pdf');
+    expect(transmettre).toHaveBeenCalledWith(1, undefined,
+      jasmine.objectContaining({ codeStatutMutation: 'REC-DRH' }), component.dossierSigneFiles[0]);
+  });
+
   for (const profile of ['Chef-etablissement', 'Chef-cfp', 'Chef-EFF', 'Chef-service', 'Chef-division-dfc', 'Directeur-DRH', 'Chef-division-dgpeec']) {
     it(`ne demande pas de nouveau bordereau pour ${profile}`, async () => {
       component.profile = profile;
