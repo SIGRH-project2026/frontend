@@ -120,7 +120,7 @@
                                                                 <span>Traiter</span>
                                                             </a>
                                                         </li>
-                                                        <li *ngIf="pourTraitement && doitTraiter(demande) && demande.currentBordereauTransmission && (demande.profilDevantTraiter === 'Représentant-IEF' || demande.profilDevantTraiter === 'Representant-IA')">
+                                                        <li *ngIf="pourTraitement && doitTraiter(demande) && demande.currentBordereauTransmission && !['Chef-etablissement', 'Chef-cfp', 'Chef-EFF'].includes(demande.profilDevantTraiter)">
                                                             <a class="dropdown-item" href="javascript:(0)"  (click)="visualiser2(demande.currentBordereauTransmission)">
                                                                 <img src="assets/icons/generate.svg" alt="Générer OS" title="Générer OS">
                                                                 <span>BE/lettre de transmission</span>

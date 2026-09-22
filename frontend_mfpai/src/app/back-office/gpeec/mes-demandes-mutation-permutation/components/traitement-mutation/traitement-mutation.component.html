@@ -1,331 +1,727 @@
-
 <div class="panel-list">
-    <div class="panel-form-header mb-0 border-bottom-0 pb-0">
-        <div class="panel-form-text flex-column align-items-start w-100">
-            <h3>Demande de mutation N° {{mutation?.numeroRef}}</h3>
-            <ul class="panel-infos">
-                <li>
-                    <span>N° Demande : </span>
-                    <span>{{mutation?.numeroRef}}</span>
-                </li>
-                <li>
-                    <span>Date demande : </span>
-                    <span>{{mutation?.dateDemande}}</span>
-                </li>
-                <li>
-                    <span>Status : </span>
-                    <span>{{mutation?.traitementMutation?.statut?.libelle}}</span>
-                </li>
-            </ul>
+  <div class="panel-form-header mb-0 border-bottom-0 pb-0">
+    <div class="panel-form-text flex-column align-items-start w-100">
+      <h3>Demande de mutation N° {{ mutation?.numeroRef }}</h3>
+      <ul class="panel-infos">
+        <li>
+          <span>N° Demande : </span>
+          <span>{{ mutation?.numeroRef }}</span>
+        </li>
+        <li>
+          <span>Date demande : </span>
+          <span>{{ mutation?.dateDemande }}</span>
+        </li>
+        <li>
+          <span>Status : </span>
+          <span>{{ mutation?.traitementMutation?.statut?.libelle }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel-list-body py-0 mt-3">
+    <mat-stepper linear #stepper>
+      <mat-step [stepControl]="infosBeneficiairesGroup">
+        <form>
+          <ng-template matStepLabel>Information demandeur</ng-template>
+          <div class="row g-4 mt-3">
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Matricule</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.matricule"
+                disabled
+              />
+            </div>
 
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Prénom demandeur</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.prenom"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Nom demandeur</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.nom"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Date de naissance</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.dateNaissance"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Lieu de naissance</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.lieuDeNaissance"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Téléphone</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.telephone"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Email</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.email"
+                disabled
+              />
+            </div>
+
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Adresse</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.demandeur?.adresse"
+                disabled
+              />
+            </div>
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Spécialité</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation.demandeur?.speciality?.label"
+                disabled
+              />
+            </div>
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Corps</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation.demandeur?.corpsGrade?.label"
+                disabled
+              />
+            </div>
+            <div class="col-lg-4 col-sm-6">
+              <label class="form-label">Grade</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation.demandeur?.grade?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="mutation?.origineDemandeurLog?.region"
+            >
+              <label class="form-label">Région</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.region?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'DEC' &&
+                mutation?.origineDemandeurLog?.ia
+              "
+            >
+              <label class="form-label">IA</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.ia?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'DEC' &&
+                mutation?.origineDemandeurLog?.ief
+              "
+            >
+              <label class="form-label">IEF</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.ief?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'DEC' &&
+                mutation?.origineDemandeurLog?.etablissement
+              "
+            >
+              <label class="form-label">Établissement</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.etablissement?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'CEN' &&
+                mutation?.origineDemandeurLog?.direction
+              "
+            >
+              <label class="form-label">Direction</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.direction?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'CEN' &&
+                mutation?.origineDemandeurLog?.service
+              "
+            >
+              <label class="form-label">Service</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.service?.label"
+                disabled
+              />
+            </div>
+
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'CEN' &&
+                mutation?.origineDemandeurLog?.bureau
+              "
+            >
+              <label class="form-label">Division</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.division?.label"
+                disabled
+              />
+            </div>
+            <div
+              class="col-lg-4 col-sm-6"
+              *ngIf="
+                mutation?.origineDemandeurLog?.origineUserType === 'CEN' &&
+                mutation?.origineDemandeurLog?.bureau
+              "
+            >
+              <label class="form-label">Bureau</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="mutation?.origineDemandeurLog?.bureau?.label"
+                disabled
+              />
+            </div>
+          </div>
+
+          <div class="action-steps">
+            <button
+              type="button"
+              class="button button-light-red"
+              (click)="onReset()"
+            >
+              Annuler
+            </button>
+            <button
+              matStepperNext
+              type="button"
+              class="button button-secondary"
+            >
+              Suivant
+            </button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="infosDemandeursGroup">
+        <ng-template matStepLabel>Destination souhaitée</ng-template>
+        <div class="py-3">
+          <div class="row details g-3">
+            <div class="col-lg-6">
+              <div class="details-item">
+                <span>Région</span>
+                <span>{{ mutation?.regionSouhaitee?.label }}</span>
+              </div>
+            </div>
+            <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'DEC'">
+              <div class="details-item">
+                <span>IA</span>
+                <span>{{ mutation?.iaSouhaitee?.label }}</span>
+              </div>
+            </div>
+
+            <ng-container
+              *ngIf="
+                mutation?.iefSouhaitee && mutation?.destinataireType === 'DEC'
+              "
+            >
+              <div class="col-lg-6">
+                <div class="details-item">
+                  <span>IEF</span>
+                  <span>{{ mutation?.iefSouhaitee?.label }}</span>
+                </div>
+              </div>
+            </ng-container>
+
+            <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'DEC'">
+              <div class="details-item">
+                <span>Établissement</span>
+                <span>{{ mutation?.etablissementSouhaitee?.label }}</span>
+              </div>
+            </div>
+            <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'CEN'">
+              <div class="details-item">
+                <span>Direction</span>
+                <span>{{ mutation?.directionSouhaitee?.label }}</span>
+              </div>
+            </div>
+            <div
+              class="col-lg-6"
+              *ngIf="
+                mutation?.serviceSouhaite &&
+                mutation?.destinataireType === 'CEN'
+              "
+            >
+              <div class="details-item">
+                <span>Service</span>
+                <span>{{ mutation?.serviceSouhaite?.label }}</span>
+              </div>
+            </div>
+            <div
+              class="col-lg-6"
+              *ngIf="
+                mutation?.divisionSouhaitee &&
+                mutation?.destinataireType === 'CEN'
+              "
+            >
+              <div class="details-item">
+                <span>Division</span>
+                <span>{{ mutation?.divisionSouhaitee?.label }}</span>
+              </div>
+            </div>
+            <div
+              class="col-lg-6"
+              *ngIf="
+                mutation?.bureauSouhaite && mutation?.destinataireType === 'CEN'
+              "
+            >
+              <div class="details-item">
+                <span>Bureau</span>
+                <span>{{ mutation?.bureauSouhaite?.label }}</span>
+              </div>
+            </div>
+
+            <div class="col-lg-12">
+              <div class="details-item">
+                <span>Commentaire</span>
+                <span>{{ mutation?.commentaire }}</span>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="details-item">
+                <span>Dossier courant</span>
+                <span
+                  *ngIf="
+                    !mutation.dossierSigne &&
+                    !bordereauRecuVisible &&
+                    !mutation?.pieceJointes?.length
+                  "
+                  >Aucun document joint.</span
+                >
+              </div>
+              <ul *ngIf="mutation.dossierSigne" class="documents-list">
+                <li>
+                  <span>Dossier signé</span>
+                  <div class="doc-actions">
+                    <button
+                      type="button"
+                      title="Visualiser"
+                      (click)="
+                        visualiserPieceJointe({
+                          generatedName: mutation.dossierSigne,
+                        })
+                      "
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button
+                      type="button"
+                      title="Télécharger"
+                      (click)="telechargerDossier(mutation.dossierSigne)"
+                    >
+                      <i class="fas fa-download"></i>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <ul *ngIf="bordereauRecuVisible" class="documents-list">
+                <li>
+                  <span>Bordereau de transmission</span>
+                  <div class="doc-actions">
+                    <button
+                      type="button"
+                      title="Visualiser le bordereau"
+                      (click)="
+                        visualiserPieceJointe({
+                          generatedName: mutation.currentBordereauTransmission,
+                        })
+                      "
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button
+                      type="button"
+                      title="Télécharger le bordereau"
+                      (click)="
+                        telechargerDossier(
+                          mutation.currentBordereauTransmission
+                        )
+                      "
+                    >
+                      <i class="fas fa-download"></i>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <ul
+                *ngIf="!mutation.dossierSigne && mutation?.pieceJointes?.length"
+                class="documents-list"
+              >
+                <li *ngFor="let doc of mutation.pieceJointes">
+                  <span>{{ doc.originalName || "Document" }}</span>
+                  <div class="doc-actions">
+                    <button
+                      type="button"
+                      title="Visualiser"
+                      (click)="visualiserPieceJointe(doc)"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button
+                      type="button"
+                      title="Télécharger"
+                      (click)="telechargerPieceJointe(doc)"
+                    >
+                      <i class="fas fa-download"></i>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-    </div>
-    <div class="panel-list-body py-0 mt-3">
-        <mat-stepper linear #stepper>
-            <mat-step [stepControl]="infosBeneficiairesGroup">
-                <form>
-                    <ng-template matStepLabel>Information demandeur</ng-template>
-                    <div class="row g-4 mt-3">
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Matricule</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.matricule" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Prénom demandeur</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.prenom" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Nom demandeur</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.nom" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Date de naissance</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.dateNaissance" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Lieu de naissance</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.lieuDeNaissance" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Téléphone</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.telephone" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Email</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.email" disabled />
-                        </div>
-
-
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Adresse</label>
-                            <input type="text" class="form-control" [value]="mutation?.demandeur?.adresse" disabled />
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Spécialité</label>
-                            <input type="text" class="form-control" [value]="mutation.demandeur?.speciality?.label" disabled />
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Corps</label>
-                            <input type="text" class="form-control" [value]="mutation.demandeur?.corpsGrade?.label" disabled />
-                        </div>
-                        <div class="col-lg-4 col-sm-6">
-                            <label class="form-label">Grade</label>
-                            <input type="text" class="form-control" [value]="mutation.demandeur?.grade?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.region">
-                            <label class="form-label">Région</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.region?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation?.origineDemandeurLog?.ia">
-                            <label class="form-label">IA</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.ia?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation?.origineDemandeurLog?.ief">
-                            <label class="form-label">IEF</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.ief?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'DEC' && mutation?.origineDemandeurLog?.etablissement">
-                            <label class="form-label">Établissement</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.etablissement?.label" disabled />
-                        </div>
-                        
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.direction">
-                            <label class="form-label">Direction</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.direction?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.service">
-                            <label class="form-label">Service</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.service?.label" disabled />
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.bureau">
-                            <label class="form-label">Division</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.division?.label" disabled />
-                        </div>
-                        <div class="col-lg-4 col-sm-6" *ngIf="mutation?.origineDemandeurLog?.origineUserType === 'CEN' && mutation?.origineDemandeurLog?.bureau">
-                            <label class="form-label">Bureau</label>
-                            <input type="text" class="form-control" [value]="mutation?.origineDemandeurLog?.bureau?.label" disabled />
-                        </div>
-                    </div>
-
-
-                    <div class="action-steps">
-                        <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
-                        <button matStepperNext type="button" class="button button-secondary">Suivant</button>
-
-                    </div>
-                </form>
-            </mat-step>
-            <mat-step [stepControl]="infosDemandeursGroup">
-                <ng-template matStepLabel>Destination souhaitée</ng-template>
-                <div class="py-3">
-                    <div class="row details g-3">
-                        <div class="col-lg-6">
-                            <div class="details-item">
-                                <span>Région</span>
-                                <span>{{mutation?.regionSouhaitee?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'DEC'">
-                            <div class="details-item">
-                                <span>IA</span>
-                                <span>{{mutation?.iaSouhaitee?.label}}</span>
-                            </div>
-                        </div>
-
-                        <ng-container *ngIf="mutation?.iefSouhaitee && mutation?.destinataireType === 'DEC'">
-                            <div class="col-lg-6">
-                                <div class="details-item">
-                                    <span>IEF</span>
-                                    <span>{{mutation?.iefSouhaitee?.label}}</span>
-                                </div>
-                            </div>
-                        </ng-container>
-
-
-                        <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'DEC'">
-                            <div class="details-item">
-                                <span>Établissement</span>
-                                <span>{{mutation?.etablissementSouhaitee?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6" *ngIf="mutation?.destinataireType === 'CEN'">
-                            <div class="details-item">
-                                <span>Direction</span>
-                                <span>{{mutation?.directionSouhaitee?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6" *ngIf="mutation?.serviceSouhaite && mutation?.destinataireType === 'CEN'">
-                            <div class="details-item">
-                                <span>Service</span>
-                                <span>{{mutation?.serviceSouhaite?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6" *ngIf="mutation?.divisionSouhaitee && mutation?.destinataireType === 'CEN'">
-                            <div class="details-item">
-                                <span>Division</span>
-                                <span>{{mutation?.divisionSouhaitee?.label}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-6" *ngIf="mutation?.bureauSouhaite && mutation?.destinataireType === 'CEN'">
-                            <div class="details-item">
-                                <span>Bureau</span>
-                                <span>{{mutation?.bureauSouhaite?.label}}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-12">
-                            <div class="details-item">
-                                <span>Commentaire</span>
-                                <span>{{mutation?.commentaire}}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="details-item">
-                                <span>Dossier courant</span>
-                                <span *ngIf="!mutation.dossierSigne && !mutation?.pieceJointes?.length">Aucun document joint.</span>
-                            </div>
-                            <ul *ngIf="mutation.dossierSigne" class="documents-list">
-                                <li><span>Dossier signé</span><div class="doc-actions">
-                                    <button type="button" title="Visualiser" (click)="visualiserPieceJointe({generatedName: mutation.dossierSigne})"><i class="fas fa-eye"></i></button>
-                                    <button type="button" title="Télécharger" (click)="telechargerDossier(mutation.dossierSigne)"><i class="fas fa-download"></i></button>
-                                </div></li>
-                            </ul>
-                            <ul *ngIf="!mutation.dossierSigne && mutation?.pieceJointes?.length" class="documents-list">
-                                <li *ngFor="let doc of mutation.pieceJointes">
-                                    <span>{{ doc.originalName || 'Document' }}</span>
-                                    <div class="doc-actions">
-                                        <button type="button" title="Visualiser" (click)="visualiserPieceJointe(doc)"><i class="fas fa-eye"></i></button>
-                                        <button type="button" title="Télécharger" (click)="telechargerPieceJointe(doc)"><i class="fas fa-download"></i></button>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <ng-container *ngIf="pourTraitementDGPEEC" [ngTemplateOutlet]="signatureDossier"></ng-container><div class="action-steps" *ngIf="pourTraitementDGPEEC">
-                    <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button> 
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" *ngIf="pourTraitementDGPEEC">Accepter</button>
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="(utiliseBordereau && !piecesJointesFiles.length) || !dossierSigneFiles.length || submitting" *ngIf="!pourTraitementDGPEEC">Accepter</button>
-                    <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-yellow text-white" (click)="onModifier()">A
-                        modifier</button>
-                    <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
-                </div>
-                <div class="action-steps" *ngIf="!pourTraitementDGPEEC">
-                    <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
-                    <button matStepperNext type="button" class="button button-secondary">Suivant</button>
-
-                </div>
-            </mat-step>
-            <mat-step *ngIf="!pourTraitementDGPEEC" [stepControl]="transmissionBordereauxGroup">
-                <ng-template matStepLabel>Signer et transmettre le dossier</ng-template><ng-container *ngTemplateOutlet="signatureDossier"></ng-container>
-                <div class="modal-body py-md-3" *ngIf="utiliseBordereau">
-                    <form>
-                        <div class="row g-3">
-                            <div class="col-lg-12">
-                                <label class="form-label">Bordereau de réception et de transmission (IEF / IA) <span class="text-danger fw-bold">*</span></label>
-                                <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
-                                    <ngx-dropzone-label>
-                                        <i class="material-icons">cloud_upload</i>
-                                        <p class="fw-semibold">Sélectionner les fichiers</p>
-                                        <small>ou glisser et déposer les fichiers</small>
-                                    </ngx-dropzone-label>
-                                    <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
-                                                          (removed)="onRemoveFile(f, piecesJointesFiles)">
-                                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
-                                    </ngx-dropzone-preview>
-                                </ngx-dropzone>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="action-steps">
-                    <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button> 
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" *ngIf="pourTraitementDGPEEC">Accepter</button>
-                    <button type="button" class="button button-primary text-white" (click)="onValid()" [disabled]="(utiliseBordereau && !piecesJointesFiles.length) || !dossierSigneFiles.length || submitting" *ngIf="!pourTraitementDGPEEC">Accepter</button>
-                    <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-yellow text-white" (click)="onModifier()">A
-                        modifier</button>
-                    <button *ngIf="pourTraitementDGPEEC" type="button" class="button button-red text-white" (click)="onRejet()">Rejeter</button>
-                </div>
-            </mat-step>
-        </mat-stepper>
-    </div>
+        <ng-container
+          *ngIf="pourTraitementDGPEEC"
+          [ngTemplateOutlet]="signatureDossier"
+        ></ng-container>
+        <div class="action-steps" *ngIf="pourTraitementDGPEEC">
+          <button
+            type="button"
+            class="button button-light-red"
+            (click)="onReset()"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            class="button button-primary text-white"
+            (click)="onValid()"
+            *ngIf="pourTraitementDGPEEC"
+          >
+            Accepter
+          </button>
+          <button
+            type="button"
+            class="button button-primary text-white"
+            (click)="onValid()"
+            [disabled]="
+              (utiliseBordereau && !piecesJointesFiles.length) ||
+              !dossierSigneFiles.length ||
+              submitting
+            "
+            *ngIf="!pourTraitementDGPEEC"
+          >
+            Accepter
+          </button>
+          <button
+            *ngIf="pourTraitementDGPEEC"
+            type="button"
+            class="button button-yellow text-white"
+            (click)="onModifier()"
+          >
+            A modifier
+          </button>
+          <button
+            *ngIf="pourTraitementDGPEEC"
+            type="button"
+            class="button button-red text-white"
+            (click)="onRejet()"
+          >
+            Rejeter
+          </button>
+        </div>
+        <div class="action-steps" *ngIf="!pourTraitementDGPEEC">
+          <button
+            type="button"
+            class="button button-light-red"
+            (click)="onReset()"
+          >
+            Annuler
+          </button>
+          <button matStepperNext type="button" class="button button-secondary">
+            Suivant
+          </button>
+        </div>
+      </mat-step>
+      <mat-step
+        *ngIf="!pourTraitementDGPEEC"
+        [stepControl]="transmissionBordereauxGroup"
+      >
+        <ng-template matStepLabel>Signer et transmettre le dossier</ng-template
+        ><ng-container *ngTemplateOutlet="signatureDossier"></ng-container>
+        <div class="modal-body py-md-3" *ngIf="utiliseBordereau">
+          <form>
+            <div class="row g-3">
+              <div class="col-lg-12">
+                <label class="form-label"
+                  >Bordereau de réception et de transmission
+                  <span class="text-danger fw-bold">*</span></label
+                >
+                <ngx-dropzone
+                  [multiple]="false"
+                  (change)="onSelectFiles($event, piecesJointesFiles)"
+                >
+                  <ngx-dropzone-label>
+                    <i class="material-icons">cloud_upload</i>
+                    <p class="fw-semibold">Sélectionner les fichiers</p>
+                    <small>ou glisser et déposer les fichiers</small>
+                  </ngx-dropzone-label>
+                  <ngx-dropzone-preview
+                    *ngFor="let f of piecesJointesFiles"
+                    [removable]="true"
+                    (removed)="onRemoveFile(f, piecesJointesFiles)"
+                  >
+                    <ngx-dropzone-label
+                      >{{ f.name }} ({{ f.type }})</ngx-dropzone-label
+                    >
+                  </ngx-dropzone-preview>
+                </ngx-dropzone>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="action-steps">
+          <button
+            type="button"
+            class="button button-light-red"
+            (click)="onReset()"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            class="button button-primary text-white"
+            (click)="onValid()"
+            *ngIf="pourTraitementDGPEEC"
+          >
+            Accepter
+          </button>
+          <button
+            type="button"
+            class="button button-primary text-white"
+            (click)="onValid()"
+            [disabled]="
+              (utiliseBordereau && !piecesJointesFiles.length) ||
+              !dossierSigneFiles.length ||
+              submitting
+            "
+            *ngIf="!pourTraitementDGPEEC"
+          >
+            Accepter
+          </button>
+          <button
+            *ngIf="pourTraitementDGPEEC"
+            type="button"
+            class="button button-yellow text-white"
+            (click)="onModifier()"
+          >
+            A modifier
+          </button>
+          <button
+            *ngIf="pourTraitementDGPEEC"
+            type="button"
+            class="button button-red text-white"
+            (click)="onRejet()"
+          >
+            Rejeter
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
 </div>
-
 
 <!-- Modal Rejeter -->
 <ng-template #rejetModal let-modal>
-    <div class="modal-header">
-        <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du rejet</h1>
-    </div>
-    <div class="modal-body py-md-3">
-        <form [formGroup]="rejetcForm">
-            <div class="row g-3">
-                <div class="col-sm-12">
-                    <label class="form-label">Motif du rejet</label>
-                    <textarea cols="30" rows="4" formControlName="motifReject" class="form-control" placeholder="Saisir"></textarea>
-                </div>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du rejet</h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="rejetcForm">
+      <div class="row g-3">
+        <div class="col-sm-12">
+          <label class="form-label">Motif du rejet</label>
+          <textarea
+            cols="30"
+            rows="4"
+            formControlName="motifReject"
+            class="form-control"
+            placeholder="Saisir"
+          ></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
 
-            </div>
-        </form>
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="button button-secondary w-100" (click)="onSaveRejet()">Enregistrer</button>
-        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
-            Annuler
-        </button>
-    </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="button button-secondary w-100"
+      (click)="onSaveRejet()"
+    >
+      Enregistrer
+    </button>
+    <button
+      type="button"
+      class="button button-outline-primary w-100"
+      (click)="modal.close('Save click')"
+    >
+      Annuler
+    </button>
+  </div>
 </ng-template>
 
 <!-- Modal À modifier -->
 <ng-template #amodifierModal let-modal>
-    <div class="modal-header">
-        <h1 class="modal-title fs-5" id="rejetModalLabel">Motif du renvoie de modification</h1>
-    </div>
-    <div class="modal-body py-md-3">
-        <form [formGroup]="modifForm">
-            <div class="row g-3">
-                <div class="col-sm-12">
-                    <label class="form-label">Motif</label>
-                    <textarea cols="30" rows="4" formControlName= "motifModification" class="form-control" placeholder="Saisir"></textarea>
-                </div>
-            </div>
-        </form>
-    </div>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="rejetModalLabel">
+      Motif du renvoie de modification
+    </h1>
+  </div>
+  <div class="modal-body py-md-3">
+    <form [formGroup]="modifForm">
+      <div class="row g-3">
+        <div class="col-sm-12">
+          <label class="form-label">Motif</label>
+          <textarea
+            cols="30"
+            rows="4"
+            formControlName="motifModification"
+            class="form-control"
+            placeholder="Saisir"
+          ></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
 
-    <div class="modal-footer">
-        <button type="button" class="button button-secondary w-100" (click)="onSaveModifier()">Enregistrer</button>
-        <button type="button" class="button button-outline-primary w-100" (click)="modal.close('Save click')">
-            Annuler
-        </button>
-    </div>
-</ng-template><ng-template #signatureDossier>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="button button-secondary w-100"
+      (click)="onSaveModifier()"
+    >
+      Enregistrer
+    </button>
+    <button
+      type="button"
+      class="button button-outline-primary w-100"
+      (click)="modal.close('Save click')"
+    >
+      Annuler
+    </button>
+  </div> </ng-template
+><ng-template #signatureDossier>
   <section class="my-3 p-3 border rounded">
     <h4>Dossier à signer</h4>
-    <p>Téléchargez le dossier reçu, signez-le puis déposez la version signée.</p>
-    <button *ngIf="mutation.dossierSigne" type="button" class="btn btn-outline-primary mb-2" (click)="telechargerDossier(mutation.dossierSigne)">Télécharger la dernière version signée</button>
+    <!-- <p>
+      Téléchargez le dossier reçu, signez-le puis déposez la version signée.
+    </p> -->
+    <!-- <button *ngIf="mutation.dossierSigne" type="button" class="btn btn-outline-primary mb-2" (click)="telechargerDossier(mutation.dossierSigne)">Télécharger la dernière version signée</button> -->
     <ng-container *ngIf="!mutation.dossierSigne">
-      <button *ngFor="let doc of mutation.pieceJointes" type="button" class="btn btn-outline-primary m-1" (click)="telechargerPieceJointe(doc)">Télécharger {{ doc.originalName }}</button>
+      <button
+        *ngFor="let doc of mutation.pieceJointes"
+        type="button"
+        class="btn btn-outline-primary m-1"
+        (click)="telechargerPieceJointe(doc)"
+      >
+        Télécharger {{ doc.originalName }}
+      </button>
       <p *ngIf="!mutation.pieceJointes?.length">Aucun dossier initial joint.</p>
     </ng-container>
-    <button *ngIf="utiliseBordereau && mutation.currentBordereauTransmission" type="button" class="btn btn-outline-secondary m-1" (click)="telechargerDossier(mutation.currentBordereauTransmission)">Télécharger le bordereau reçu</button>
-    <label class="form-label d-block mt-3">Dossier signé (un fichier regroupant les pièces) <span class="text-danger">*</span></label>
+    <!-- <button
+      *ngIf="bordereauRecuVisible"
+      type="button"
+      class="btn btn-outline-secondary m-1"
+      (click)="telechargerDossier(mutation.currentBordereauTransmission)"
+    >
+      Télécharger le bordereau reçu
+    </button> -->
+    <label class="form-label d-block mt-3"
+      >Dossier signé (un fichier regroupant les pièces)
+      <span class="text-danger">*</span></label
+    >
     <ngx-dropzone [multiple]="false" (change)="selectionnerDossier($event)">
-      <ngx-dropzone-label>Déposer le dossier signé</ngx-dropzone-label>
-      <ngx-dropzone-preview *ngFor="let file of dossierSigneFiles" [removable]="true" (removed)="dossierSigneFiles = []">
+      <ngx-dropzone-label
+        >Téléchargez le dossier reçu, signez-le puis déposez la version
+        signée.</ngx-dropzone-label
+      >
+      <ngx-dropzone-preview
+        *ngFor="let file of dossierSigneFiles"
+        [removable]="true"
+        (removed)="dossierSigneFiles = []"
+      >
         <ngx-dropzone-label>{{ file.name }}</ngx-dropzone-label>
       </ngx-dropzone-preview>
     </ngx-dropzone>

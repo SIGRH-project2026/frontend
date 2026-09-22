@@ -44,7 +44,12 @@ export class TraitementMutationComponent implements OnInit {
   submitting = false;
   disableAction = true
   get utiliseBordereau(): boolean {
-    return this.profile === 'Représentant-IEF' || this.profile === 'Representant-IA';
+    return ['Représentant-IEF', 'Representant-IA']
+      .includes(this.profile);
+  }
+  get bordereauRecuVisible(): boolean {
+    return !!this.mutation.currentBordereauTransmission
+      && !['Chef-etablissement', 'Chef-cfp', 'Chef-EFF'].includes(this.profile);
   }
   constructor(
     private _formBuilder: FormBuilder,
@@ -386,4 +391,3 @@ export class TraitementMutationComponent implements OnInit {
       this.disableAction = true
   }
 }
-
