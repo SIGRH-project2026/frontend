@@ -777,7 +777,7 @@ doitTraiter(mutation : MutationDTO) : boolean {
         return !!origine?.ia?.code && origine.ia.code === this.user?.ia?.code;
       }
       if (attendu.startsWith('Chef-service')) {
-        return !!origine?.service?.code && origine.service.code === this.user?.service?.code;
+        return this.memeRattachementChefService(mutation);
       }
       if (attendu.startsWith('Chef-division') && attendu !== 'Chef-division-dgpeec') {
         return !!origine?.division?.code && origine.division.code === this.user?.division?.code;
@@ -787,13 +787,22 @@ doitTraiter(mutation : MutationDTO) : boolean {
 
     // Les profils génériques exigent le rôle et le rattachement correspondant.
     if (attendu === 'Chef-service' && profil.code.startsWith('Chef-service-')) {
-      return !!origine?.service?.code && origine.service.code === this.user?.service?.code;
+      return this.memeRattachementChefService(mutation);
     }
     if (attendu === 'Chef-division' && profil.code.startsWith('Chef-division-')) {
       return !!origine?.division?.code && origine.division.code === this.user?.division?.code;
     }
     return false;
   });
+}
+private memeRattachementChefService(mutation: MutationDTO): boolean {
+  const origine = mutation.origineDemandeurLog;
+  // Une direction est considérée comme un service dans le circuit des mutations.
+  if (origine?.direction?.code) {
+    return origine.direction.code === this.user?.direction?.code;
+  }
+  return !this.user?.direction?.code && !!origine?.service?.code
+    && origine.service.code === this.user?.service?.code;
 }
   visualiser2(fileName: string): void {
     this.fileService.openPdfInNewTab(fileName)

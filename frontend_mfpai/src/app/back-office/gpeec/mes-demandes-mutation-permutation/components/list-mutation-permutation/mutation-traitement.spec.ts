@@ -38,6 +38,30 @@ describe('Accès au traitement des mutations', () => {
     expect(component.doitTraiter(mutation)).toBeFalse();
   });
 
+  it('considère la direction comme un service pour le chef de service', () => {
+    mutation.profilDevantTraiter = 'Chef-service';
+    mutation.origineDemandeurLog = { direction: { code: 'DFC' } } as any;
+    component.user = { direction: { code: 'DFC' } } as any;
+    for (const code of ['Chef-service', 'Chef-service-dfc']) {
+      component.profilConnecte = [{ code: 'Agent' }, { code }];
+      expect(component.doitTraiter(mutation)).toBeTrue();
+    }
+    component.user.direction.code = 'AUTRE';
+    expect(component.doitTraiter(mutation)).toBeFalse();
+    component.user = {} as any;
+    expect(component.doitTraiter(mutation)).toBeFalse();
+  });
+
+  it('conserve le rattachement au service en l’absence de direction', () => {
+    mutation.profilDevantTraiter = 'Chef-service';
+    component.profilConnecte = [{ code: 'Chef-service' }];
+    mutation.origineDemandeurLog = { service: { code: 'S1' } } as any;
+    component.user = { service: { code: 'S1' } } as any;
+    expect(component.doitTraiter(mutation)).toBeTrue();
+    component.user.service.code = 'S2';
+    expect(component.doitTraiter(mutation)).toBeFalse();
+  });
+
   it('autorise le traitement après ventilation DRH mais pas après traitement DPEEC', () => {
     component.profilConnecte = [{code: 'Chef-division-dgpeec'}];
     mutation.profilDevantTraiter = 'Chef-division-dgpeec';
