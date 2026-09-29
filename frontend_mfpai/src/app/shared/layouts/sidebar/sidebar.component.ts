@@ -559,7 +559,7 @@ const MENUITEMS: Menu[] = [
         menTitle: 'Demandes reçues',
         menPath: '/carrieres/demandes-recues',
         menType: 'link',
-        role: [ 'Admin-General', 'Chef-division-dgcaa', 'Chef-bureau-af'],
+        role: [ 'Admin-General', 'Assistant-DRH', 'Chef-division-dgcaa', 'Chef-bureau-af'],
       },
       {
         menTitle: 'Sortie temporaire',
