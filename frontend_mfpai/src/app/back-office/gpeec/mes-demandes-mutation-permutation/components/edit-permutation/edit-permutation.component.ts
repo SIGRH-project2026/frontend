@@ -11,6 +11,7 @@ import { ResponseApi2 } from "src/app/shared/models/ResponseApi";
 import { FileService } from "src/app/shared/services/files/file.service";
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { PermutationSignatureComponent, estProfilSignataire } from '../../../shared-permutation/permutation-signature/permutation-signature.component';
 
 @Component({
   selector: 'app-edit-permutation',
@@ -36,6 +37,10 @@ export class EditPermutationComponent implements OnInit {
   profile : any
   isProfOrFormateur: boolean =false;
   isDGPEEC : boolean= false
+  piecesJointesFiles: File[] = [];
+  // chef d'établissement, IEF, IA : valident en signant la demande de leurs agents
+  estSignataire = false;
+  @ViewChild(PermutationSignatureComponent) signature?: PermutationSignatureComponent;
   apiUrl: string = environment.apiUrl;
 
 
@@ -70,6 +75,7 @@ export class EditPermutationComponent implements OnInit {
       }
       if(this.profile === 'Professeur' || this.profile === 'Formateurs')
         this.isProfOrFormateur = true
+      this.estSignataire = estProfilSignataire(this.profile)
   console.log('isDgpeec +++ ', this.isDGPEEC);
   
   }
@@ -285,7 +291,25 @@ export class EditPermutationComponent implements OnInit {
       confirmButtonText: 'Oui',
       cancelButtonText: 'Non',
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (!result.isConfirmed)
+        return;
+      if (this.piecesJointesFiles.length === 0) {
+        this.traiterAcceptation();
+        return;
+      }
+      // le second agent joint son dossier avant d'accepter
+      this.fileService.storeMultipleFiles(this.permutation.id, 'permutationDemande', this.piecesJointesFiles)
+        .subscribe({
+          next: () => this.traiterAcceptation(),
+          error: () => Swal.fire({
+            icon: 'error',
+            text: 'L’envoi de votre dossier a échoué. Veuillez réessayer.'
+          })
+        });
+    });
+  }
+
+  traiterAcceptation() {
         let id = this.permutation.id
         let action = "ACCEPTER"
         if(this.pourTraitement)
@@ -319,8 +343,28 @@ export class EditPermutationComponent implements OnInit {
             })
           }
         })
-      }
-    });
+  }
+
+  get estReceveur(): boolean {
+    return !!this.permutation && this.permutation.utilisateur2?.id === this.userInfos?.id;
+  }
+
+  get peutAccepter(): boolean {
+    return this.estReceveur && this.permutation?.traitementPermutation?.statut?.code === 'SOUMISE';
+  }
+
+  // le dossier du second agent est attendu : déjà joint ou sélectionné
+  get dossierReceveurFourni(): boolean {
+    return this.piecesJointesFiles.length > 0
+      || !!this.permutation?.pieceJointes?.some(doc => doc.fileCode?.startsWith('RECEVEUR'));
+  }
+
+  onSelectFiles(event: { addedFiles: any }, filesArray: File[]) {
+    filesArray.push(...event.addedFiles);
+  }
+
+  onRemoveFile(event: File, filesArray: File[]) {
+    filesArray.splice(filesArray.indexOf(event), 1);
   }
 
   onModifier() {
@@ -397,7 +441,25 @@ export class EditPermutationComponent implements OnInit {
       confirmButtonText: 'Oui',
       cancelButtonText: 'Non',
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (!result.isConfirmed)
+        return;
+      if (this.estSignataire && this.signature) {
+        // chef d'établissement, IEF, IA : demandes signées (et bordereau) chargées avant la validation
+        this.signature.envoyer()
+          .subscribe({
+            next: () => this.envoyerValidation(),
+            error: () => Swal.fire({
+              icon: 'error',
+              text: 'Le chargement des documents signés a échoué. Veuillez réessayer.'
+            })
+          });
+      } else {
+        this.envoyerValidation();
+      }
+    });
+  }
+
+  envoyerValidation() {
         let id = this.permutation.id
         let action = "VALIDER"
         let motif = ""
@@ -407,7 +469,8 @@ export class EditPermutationComponent implements OnInit {
           next : (data)=>{
             if(data.success){
               console.log("Données traitement permutation === ",data);
-              if(!this.isDGPEEC && !this.isProfOrFormateur && this.files)
+              // chef d'établissement, IEF et IA passent par le circuit de signature (app-permutation-signature)
+              if(!this.isDGPEEC && !this.isProfOrFormateur && !this.estSignataire && this.files[0])
                 this.storeFile(data.data.traitementPermutation.id, this.files[0])
               Swal.fire({
                 html: `Demande de permutation <b>${id}</b> validée avec succès.`,
@@ -433,8 +496,10 @@ export class EditPermutationComponent implements OnInit {
             })
           }
         })
-      }
-    });
+  }
+
+  get signaturePrete(): boolean {
+    return !!this.signature?.pret;
   }
 
   visualiser2(fileName: string): void {

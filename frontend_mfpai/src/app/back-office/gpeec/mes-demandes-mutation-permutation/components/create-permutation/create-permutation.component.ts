@@ -6,6 +6,7 @@ import { DeconectedDTO, Utilisateur } from 'src/app/models/utilisateur';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Permutation } from '../../model/Permutation';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { FileService } from 'src/app/shared/services/files/file.service';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class CreatePermutationComponent implements OnInit{
   permutationForm !: FormGroup
 
   permutationPossible : boolean = false
+  piecesJointesFiles: File[] = [];
 
 
   constructor(
@@ -29,8 +31,9 @@ export class CreatePermutationComponent implements OnInit{
     private router: Router,
     private route: ActivatedRoute,
     private permutationService : PermutationService,
+    private readonly fileService: FileService,
     private spinner : NgxSpinnerService
-  ) { } 
+  ) { }
   
   ngOnInit(): void {
     this.matriculeUtilisateur2 = this.route.snapshot.params['matricule2'];
@@ -100,16 +103,7 @@ checkPossiblePermutation(){
 
     this.permutationService.add(permutation).subscribe({
       next: (data) => {
-        this.spinner.hide()
-        console.log(data);
-        Swal.fire({
-          icon: "success",
-          html: "La demande de permutation a été soumise avec succès.",
-          showConfirmButton: false,
-          timer: 2000,
-        }).then(() => {
-          this.router.navigate(["gpeec/mes-demandes-mutation-permutation"]);
-        });
+        this.uploadPiecesJointes(data?.data?.id);
       },
       error : (error)=>{
         this.spinner.hide()
@@ -125,6 +119,46 @@ checkPossiblePermutation(){
       }                                                          
     })
     
+  }
+
+  uploadPiecesJointes(idPermutation: number | undefined) {
+    if (!idPermutation || this.piecesJointesFiles.length === 0) {
+      this.onDemandeSoumise();
+      return;
+    }
+    this.fileService.storeMultipleFiles(idPermutation, 'permutationDemande', this.piecesJointesFiles)
+      .subscribe({
+        next: () => this.onDemandeSoumise(),
+        error: () => {
+          this.spinner.hide();
+          Swal.fire({
+            icon: 'warning',
+            text: 'La demande de permutation a été soumise mais l’envoi du dossier a échoué.'
+          }).then(() => {
+            this.router.navigate(["gpeec/mes-demandes-mutation-permutation"]);
+          });
+        }
+      });
+  }
+
+  onDemandeSoumise() {
+    this.spinner.hide();
+    Swal.fire({
+      icon: "success",
+      html: "La demande de permutation a été soumise avec succès.",
+      showConfirmButton: false,
+      timer: 2000,
+    }).then(() => {
+      this.router.navigate(["gpeec/mes-demandes-mutation-permutation"]);
+    });
+  }
+
+  onSelectFiles(event: { addedFiles: any }, filesArray: File[]) {
+    filesArray.push(...event.addedFiles);
+  }
+
+  onRemoveFile(event: File, filesArray: File[]) {
+    filesArray.splice(filesArray.indexOf(event), 1);
   }
 
   onReset() {

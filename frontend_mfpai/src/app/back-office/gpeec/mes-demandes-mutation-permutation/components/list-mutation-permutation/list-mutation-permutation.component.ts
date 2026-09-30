@@ -94,6 +94,9 @@ export class ListMutationPermutationComponent implements OnInit {
   profile : any
   isDGPEEC: boolean =false;
   isOsManager: boolean =false;
+  // DRH : « Reçu DRH » ; DGPEEC : « Traiter », puis OS à télécharger, signer et recharger
+  isDrh = false;
+  isDgpeecTraitant = false;
   isProfOrFormateur: boolean =false;
   activatedUrl!: string;
   dashboardMutation = false
@@ -145,6 +148,8 @@ export class ListMutationPermutationComponent implements OnInit {
     this.isOsManager = this.profilConnecte.some((pro : any) =>
         pro.code === "Chef-division-dgpeec" || pro.code === "bureau-mo-rec" ||
         pro.code === "Directeur-DRH" || pro.code === "ADMIN-DRH")
+    this.isDrh = this.profilConnecte.some((pro : any) => pro.code === "Directeur-DRH" || pro.code === "Assistant-DRH")
+    this.isDgpeecTraitant = this.profilConnecte.some((pro : any) => pro.code === "Chef-division-dgpeec" || pro.code === "bureau-mo-rec")
     //if(this.profile === 'Professeur' || this.profile === 'Formateurs')
 
     if(this.profile?.code?.includes("Chef-service") || this.profile?.code?.includes("Chef-division"))
@@ -376,13 +381,53 @@ export class ListMutationPermutationComponent implements OnInit {
     })
   }
 
+  // DRH (directeur ou assistant) : accusé de réception → « En cours de traitement », ventilée à la DGPEEC
+  onRecuDrh(id: number) {
+    this.changerStatutPermutation(id, 'RECU_DRH', 'Réception DRH',
+      'Confirmez-vous la réception de cette demande ? Elle sera transmise à la DGPEEC pour traitement.',
+      `Demande de permutation <b>${id}</b> reçue et transmise à la DGPEEC.`);
+  }
+
+  // DGPEEC : traitement → « Traitée DGPEEC », l'OS peut alors être téléchargé pour signature
+  onTraiterDgpeec(id: number) {
+    this.changerStatutPermutation(id, 'TRAITEE', 'Traitement DGPEEC',
+      'Confirmez-vous le traitement de cette demande ?',
+      `Demande de permutation <b>${id}</b> traitée.`);
+  }
+
+  private changerStatutPermutation(id: number, action: string, titre: string, question: string, succes: string) {
+    Swal.fire({
+      title: titre,
+      text: question,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1D4A7B',
+      cancelButtonColor: '#FF4D4F',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
+    }).then((result) => {
+      if (!result.isConfirmed)
+        return;
+      this.permutationService.traitement(id, action, '', this.type).subscribe({
+        next: (data) => {
+          if (data.success) {
+            Swal.fire({ html: succes, icon: 'success', timer: 1500, showConfirmButton: false })
+              .then(() => this.getAllPermutations());
+          }
+        },
+        error: () => Swal.fire({ icon: 'error', text: 'Une erreur est survenue. Veuillez réessayer.' })
+      });
+    });
+  }
+
   generate(id:number){
     this.permutationService.generate(id).subscribe({
       next :(res :any) =>{
       //  console.log("data generated == ",res);
         if(res.success){
 
-          this.Telecharger(res.data.ordreService)
+          // une fois l'OS téléchargé pour signature, l'action devient « Charger OS signé »
+          this.Telecharger(res.data.ordreService, () => this.getAllPermutations())
           Swal.fire({
             icon: 'success',
             html: `<strong>Ordre de service Permutation ${res.data.id} généré avec succès</strong>`,
@@ -623,6 +668,10 @@ export class ListMutationPermutationComponent implements OnInit {
               window.location.reload()
             })
           }
+        else {
+          this.spinner.hide();
+          this.showOsError(data.message || 'Le chargement de l’ordre de service signé a échoué.');
+        }
       },
       error: () => this.showOsError('Le chargement de l’ordre de service signé a échoué.')
     })
