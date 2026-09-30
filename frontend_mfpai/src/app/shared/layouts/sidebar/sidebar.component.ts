@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -51,6 +52,7 @@ interface IMenu {
 })
 export class SidebarComponent implements OnInit {
  
+  private readonly notificationSubscriptions = new Subscription();
   menuItems: Menu[] = [];
   // menuItems: IMenu[] = [];
   userInfos: any;
@@ -79,10 +81,7 @@ export class SidebarComponent implements OnInit {
     this.idUser = this.userInfos.id
    
     
-    this.notificationService.listenNotify().subscribe(() => {
 
-      this.notificationsLength = this.notificationService.nbrDeNotification()
-    });
   }
 
   ngOnInit(): void {
@@ -102,10 +101,11 @@ export class SidebarComponent implements OnInit {
     } else {
       this.refreshCurrentProfile();
     }
-    this.getAllNotification()
-    this.notificationService.listenNotify().subscribe(() => {
-      this.notificationsLength = this.notificationService.nbrDeNotification()
-    });
+    this.getAllNotification();
+    this.notificationSubscriptions.add(this.webSocketService.connect().subscribe(() => this.getAllNotification()));
+    this.notificationSubscriptions.add(this.notificationService.listenNotify().subscribe(() => {
+      this.notificationsLength = this.notificationService.nbrDeNotification();
+    }));
   }
 
   getMenus(){
@@ -306,35 +306,22 @@ export class SidebarComponent implements OnInit {
       }
     })
   }
-// Gestion des notifications
-getAllNotification(){
-    //notifications persistées
-    this.notificationService.getNotifications( this.idUser, this.page-1, this.size, this.profilConnecte[0].code)
-        .subscribe({
-          next : (data : ResponseApi2) =>{
-            if(data.status?.includes("OK"))
-              this.notifications = data.payload
-           // console.log(this.notifications)
-             if(data.metadata)
-               this.collectionSize1 = data.metadata.totalElements
-        //    this.notificationsLength = this.notifications[0].notReads
-          this.notificationService.updateNbre(this.notifications[0]?.notReads)
-          },
-        })
-  //notifications en temps réel
-  this.webSocketService.connect().subscribe((data: any) => {
-    const jsonObject = JSON.parse(data);
-        this.notifications.unshift(jsonObject)
-        this.collectionSize1 ++
-        this.notificationsLength ++
-        this.notificationService.updateNbre(this.notifications[1]?.notReads +1)
-        this.alertService.showAlert({
-          status: 'INFO',
-          message: jsonObject.message,
-          titre: jsonObject.objet
-        });
-    });
-}
+  getAllNotification() {
+    this.notificationService.getNotifications(this.idUser, this.page - 1, this.size, this.profilConnecte[0]?.code ?? '')
+      .subscribe({
+        next: (data: ResponseApi2) => {
+          if (data.status?.includes('OK')) {
+            this.notifications = data.payload ?? [];
+            this.collectionSize1 = data.metadata?.totalElements ?? 0;
+            this.notificationService.updateNbre(this.collectionSize1);
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.notificationSubscriptions.unsubscribe();
+  }
 
 }
 
@@ -572,7 +559,7 @@ const MENUITEMS: Menu[] = [
         menTitle: 'Demandes reçues',
         menPath: '/carrieres/demandes-recues',
         menType: 'link',
-        role: [ 'Admin-General', 'Chef-division-dgcaa', 'Chef-bureau-af'],
+        role: [ 'Admin-General', 'Assistant-DRH', 'Chef-division-dgcaa', 'Chef-bureau-af'],
       },
       {
         menTitle: 'Sortie temporaire',

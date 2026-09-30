@@ -32,7 +32,7 @@
             <!-- Si l'utilisateur n'est pas connecté -->
             <ng-container *ngIf="!currentUser">
                 <div class="buttons-group">
-                    <button class="button button-primary rounded-pill" [routerLink]="['/auth/login']">
+                    <button class="button button-primary rounded-pill" (click)="openBackoffice()">
                         Se connecter
                     </button>
                 </div>
@@ -53,7 +53,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-lg-end">
                         <li>
-                            <a class="dropdown-item" href="javascript:(0)" routerLink="/dashboard">
+                            <a class="dropdown-item" [href]="backofficeUrl + '#/dashboard'">
                                 <i class="fa fa-user-circle me-2"></i>
                                 <span>Mon Espace</span>
                             </a>

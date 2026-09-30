@@ -18,7 +18,7 @@ const routes: Routes = [
         component : ListeDemandesRecusComponent,
         canActivate: [IsRoleGuard],
         data: {
-          role: [ 'Chef-division-dgcaa', 'ADMIN-DRH', 'Directeur-DRH','Chef-division-dfc','Chef-division-dgpeec' ,'Chef-division-das','Chef-service','Chef-etablissement','Chef-cfp','Chef-EFF','Representant-IA','Représentant-IEF'],
+          role: [ 'Chef-division-dgcaa', 'ADMIN-DRH', 'Directeur-DRH','Assistant-DRH','Chef-division-dfc','Chef-division-dgpeec' ,'Chef-division-das','Chef-service','Chef-etablissement','Chef-cfp','Chef-EFF','Representant-IA','Représentant-IEF'],
           breadcrumb: 'Liste des demandes'
         }
       },

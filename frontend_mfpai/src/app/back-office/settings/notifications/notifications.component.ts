@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { Component } from '@angular/core';
 import { CredentialsService } from 'src/app/services/credentials.service';
 import { AlertService } from 'src/app/shared/commons/alert.service';
@@ -15,6 +16,7 @@ export class NotificationsComponent {
   //   { id: 1, title: 'Notification 1', details: 'Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu\'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem', date: '03/03/2023', isRead: false },
   //   { id: 2, title: 'Notification 2', details: 'Détails de la notification 2', date: '03/03/2023', isRead: true },
   // ];
+  private readonly subscriptions = new Subscription();
   notifications: any[] = [];
   selectedNotification: any = null;
   idUser: any;
@@ -39,7 +41,7 @@ export class NotificationsComponent {
 
   ngOnInit(): void {
     this.getAllNotification();
-    this.notificationService.listenNotify().subscribe(() => {});
+    this.subscriptions.add(this.webSocketService.connect().subscribe(() => this.getAllNotification()));
   }
 
   selectNotification(notification: any) {
@@ -52,44 +54,32 @@ export class NotificationsComponent {
          this.notificationService
            .readNotify(notification.id)
            .subscribe((data: any) => {
-             this.getAllNotification();
+             if (data.status?.includes('OK')) {
+               notification.read = true;
+               this.getAllNotification();
+             }
            });
     }
   }
 
   getAllNotification() {
-  
-    //notifications persistées
-    this.notificationService.getListNotifications( this.idUser,  this.profilConnecte[0].code)
-        .subscribe({
-          next : (data : ResponseApi2) =>{
-            if(data.status?.includes("OK"))
-              this.notifications = data.payload
-             if(data.metadata)
-               this.collectionSize1 = data.metadata.totalElements
-              this.notReads = this.notifications[0].notReads
-              this.notificationService.updateNbre(this.notReads)
-
-          },
-
-        })
-
-    //notifications en temps réel
-    this.webSocketService.connect().subscribe((data: any) => {
-      const jsonObject = JSON.parse(data);
-          this.notifications.unshift(jsonObject)
-          this.collectionSize1 ++
-          this.notificationService.updateNbre(this.notReads + 1)
-          // this.alertService.showAlert({
-          //   status: 'INFO',
-          //   message: jsonObject.message,
-          //   titre: jsonObject.objet
-          // });
+    this.notificationService.getListNotifications(this.idUser, this.profilConnecte[0]?.code ?? '')
+      .subscribe({
+        next: (data: ResponseApi2) => {
+          if (data.status?.includes('OK')) {
+            this.notifications = data.payload ?? [];
+            this.collectionSize1 = this.notifications.length;
+            this.notReads = this.notifications[0]?.notReads ?? 0;
+            this.notificationService.updateNbre(this.notReads);
+            if (this.selectedNotification) {
+              this.selectedNotification = this.notifications.find(n => n.id === this.selectedNotification.id) ?? null;
+            }
+          }
+        }
       });
   }
-  
-  ngOnDestroy() {
-    this.webSocketService.disconnect();
-}
-  
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 }
