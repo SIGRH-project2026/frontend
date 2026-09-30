@@ -10,6 +10,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { MaterialUiModule } from 'src/app/shared/material-ui/material.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { Search2PermutationPipe } from '../Pipes/Search2.permutation.pipe';
+import { PermutationPiecesJointesComponent } from '../shared-permutation/permutation-pieces-jointes/permutation-pieces-jointes.component';
+import { PermutationSignatureComponent } from '../shared-permutation/permutation-signature/permutation-signature.component';
 
 
 @NgModule({
@@ -25,6 +27,8 @@ import { Search2PermutationPipe } from '../Pipes/Search2.permutation.pipe';
     SharedModule,
     MaterialUiModule,
     NgxDropzoneModule,
+    PermutationPiecesJointesComponent,
+    PermutationSignatureComponent,
     MesDemandesPermutationRecuesRoutingModule
   ]
 })

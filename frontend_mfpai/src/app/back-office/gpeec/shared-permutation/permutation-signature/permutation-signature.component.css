@@ -1,0 +1,46 @@
+.signature-card {
+    height: 100%;
+    padding: 16px;
+    border: 1px solid #e3e8ef;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.signature-card h6 {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #1D4A7B;
+}
+
+.documents-list {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.documents-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+.documents-list li span {
+    overflow-wrap: anywhere;
+}
+
+.doc-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.doc-actions button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: #eef3f9;
+    color: #1D4A7B;
+}
