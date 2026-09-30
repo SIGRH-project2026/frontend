@@ -22,6 +22,7 @@ const routes: Routes = [
           role: [
 
             'ADMIN-DRH',
+            'Assistant-DRH',
             'Chef-division-das',
             'Directeur-DRH',
             'Representant-IA',
