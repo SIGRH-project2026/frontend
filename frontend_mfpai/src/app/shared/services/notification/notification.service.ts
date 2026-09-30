@@ -71,7 +71,7 @@ return 0
 
   //update nombre notifications
   updateNbre(nbr : number){
-    sessionStorage.setItem('notify', JSON.stringify(nbr));
+    sessionStorage.setItem('notify', JSON.stringify(Number.isFinite(nbr) ? Math.max(0, nbr) : 0));
     this.updateNotify.next();
   }
   private handleError(error: HttpErrorResponse) {

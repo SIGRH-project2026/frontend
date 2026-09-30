@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Component } from '@angular/core';
 
 @Component({
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer-portail.component.css']
 })
 export class FooterPortailComponent {
+  readonly backofficeUrl = environment.backofficeUrl;
 
 }

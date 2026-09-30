@@ -159,11 +159,11 @@ export class CredentialsService implements OnDestroy {
     try {
 
       if (token==null) {
-        return  false;
+        return true;
       }
       const decodedToken: any = this.decodeToken(token);
       const now = Date.now() / 1000;
-      return decodedToken.exp && decodedToken.exp < now;
+      return typeof decodedToken?.exp !== 'number' || decodedToken.exp <= now;
     } catch (error) {
       return true;
     }

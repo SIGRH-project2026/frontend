@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 
 
 
@@ -97,6 +98,11 @@ export class TokenInterceptor implements HttpInterceptor {
     constructor(private credentialsService: CredentialsService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        const target = new URL(req.url, window.location.origin);
+        const api = new URL(environment.apiUrl, window.location.origin);
+        if (target.origin !== api.origin || !target.pathname.startsWith(api.pathname)) {
+            return next.handle(req);
+        }
         const token = this.credentialsService.getCredentials();
         let clone = req;
 

@@ -4,7 +4,6 @@ import { AuthGuard } from 'src/app/guard/auth.guard';
 
 const routes: Routes = [
   { path: 'auth', loadChildren: () => import('src/app/back-office/authentification/authentification.module').then(m => m.AuthentificationModule) },
-  { path: '', loadChildren: () => import('src/app/front-office/front-office.module').then(m => m.FrontOfficeModule) },
   { path: '', canActivateChild: [AuthGuard], children: [
       { path: 'dashboard', loadChildren: () => import('src/app/back-office/dashboard/dashboard.module').then(m => m.DashboardModule) },
       { path: 'courriers', loadChildren: () => import('src/app/back-office/formations/courriers/courriers.module').then(m => m.CourriersModule) },
@@ -17,6 +16,8 @@ const routes: Routes = [
       { path: 'plan-travail-annuel', loadChildren: () => import('src/app/back-office/plan-travail-annuel/plan-travail-annuel.module').then(m => m.PlanTravailAnnuelModule) },
       { path: 'settings', loadChildren: () => import('src/app/back-office/settings/settings.module').then(m => m.SettingsModule) },
       { path: 'parametrage', loadChildren: () => import('src/app/back-office/parametre/parametre.module').then(m => m.ParametreModule) },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '**', redirectTo: 'dashboard' }
   ] }
 ];
 
