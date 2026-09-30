@@ -1,0 +1,48 @@
+<div class="row g-4 dossiers-permutation">
+    <div class="col-lg-6">
+        <ng-container *ngTemplateOutlet="carteAgent; context: { agent: permutation?.utilisateur1, code: 'DEMANDEUR' }"></ng-container>
+    </div>
+    <div class="col-lg-6">
+        <ng-container *ngTemplateOutlet="carteAgent; context: { agent: permutation?.utilisateur2, code: 'RECEVEUR' }"></ng-container>
+    </div>
+    <div class="col-lg-12" *ngIf="bordereaux.length">
+        <div class="dossier-card">
+            <h6><i class="fas fa-file-export"></i> Bordereaux de transmission</h6>
+            <ul class="documents-list">
+                <li *ngFor="let doc of bordereaux">
+                    <span>{{ libelleBordereau(doc) }} — {{ doc.originalName || 'Document' }}</span>
+                    <div class="doc-actions">
+                        <button type="button" title="Visualiser" (click)="visualiser(doc)"><i class="fas fa-eye"></i></button>
+                        <button type="button" title="Télécharger" (click)="telecharger(doc)"><i class="fas fa-download"></i></button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<ng-template #carteAgent let-agent="agent" let-code="code">
+    <div class="dossier-card">
+        <h6><i class="fas fa-paperclip"></i> Demande de {{agent?.prenom}} {{agent?.nom}}</h6>
+        <div class="etapes-signature">
+            <span *ngFor="let etape of etapesSignature(code)" class="statut-signature" [class.signee]="etape.signee"
+                  [title]="etape.signee ? 'Signée' : 'En attente de signature'">
+                <i class="fas" [ngClass]="etape.signee ? 'fa-check-circle' : 'fa-hourglass-half'"></i>
+                {{ etape.libelle }}
+            </span>
+        </div>
+        <ul *ngIf="demandeAgent(code).length; else aucunDossier" class="documents-list">
+            <li *ngFor="let doc of demandeAgent(code)">
+                <span>{{ doc.originalName || 'Document' }}</span>
+                <div class="doc-actions">
+                    <button type="button" title="Visualiser" (click)="visualiser(doc)"><i class="fas fa-eye"></i></button>
+                    <button type="button" title="Télécharger" (click)="telecharger(doc)"><i class="fas fa-download"></i></button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</ng-template>
+
+<ng-template #aucunDossier>
+    <p class="aucun-dossier">Aucun document joint.</p>
+</ng-template>

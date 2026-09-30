@@ -11,6 +11,7 @@ import { ListMutationPermutationComponent } from './components/list-mutation-per
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MaterialUiModule } from 'src/app/shared/material-ui/material.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { PermutationPiecesJointesComponent } from '../shared-permutation/permutation-pieces-jointes/permutation-pieces-jointes.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     SharedModule,
     MaterialUiModule,
     NgxDropzoneModule,
+    PermutationPiecesJointesComponent,
     DemandesMutationPermutationRecuesRoutingModule
   ]
 })
