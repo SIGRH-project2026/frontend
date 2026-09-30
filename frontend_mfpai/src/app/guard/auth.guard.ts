@@ -17,6 +17,10 @@ export class AuthGuard  {
   constructor(private _credentialsService: CredentialsService, private router: Router) {
 
   }
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    return this.canActivate(route, state);
+  }
+
   canActivate(
       route: ActivatedRouteSnapshot,
       state: RouterStateSnapshot): boolean | UrlTree {

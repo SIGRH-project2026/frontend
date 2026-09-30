@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -8,6 +9,9 @@ import Swal from 'sweetalert2';
   styleUrls: ['./main-portail.component.css']
 })
 export class MainPortailComponent implements OnInit {
+  readonly backofficeUrl = environment.backofficeUrl;
+
+  openBackoffice(): void { window.location.assign(this.backofficeUrl + '#/auth/login'); }
 
   currentUser: any;
 
