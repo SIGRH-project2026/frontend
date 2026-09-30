@@ -3,17 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve frontend_mfpai --port 4200",
     "build": "ng build",
     "build:qa": "ng build --configuration production --base-href /",
     "build:preprod": "ng build --configuration production --base-href /frontend-mfpai",
     "build:prod": "ng build --configuration production --base-href /frontend-mfpai/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start:frontoffice": "ng serve frontoffice --port 4200",
-    "start:backoffice": "ng serve backoffice --port 4300",
-    "build:frontoffice": "ng build frontoffice --configuration production",
-    "build:backoffice": "ng build backoffice --configuration production",
     "config": "node scripts/configure.mjs"
   },
   "private": true,
