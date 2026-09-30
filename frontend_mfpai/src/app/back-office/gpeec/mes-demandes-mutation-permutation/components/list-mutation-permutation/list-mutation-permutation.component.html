@@ -302,9 +302,9 @@
                                                     </li>
                                                     <li *ngIf="demande?.utilisateur2?.id == userId && demande?.traitementPermutation?.statut?.code ==='SOUMISE'">
                                                         <a class="dropdown-item" href="javascript:(0)"
-                                                           (click)="onEditPermutation(demande.id)">
+                                                           (click)="onAccept(demande.id)">
                                                             <i class="fa fa-edit me-2"></i>
-                                                            <span>Joindre mon dossier et accepter</span>
+                                                            <span>Accepter</span>
                                                         </a>
                                                     </li>
                                                     <li *ngIf="demande?.traitementPermutation?.statut?.code==='AMODIFIER'">
@@ -313,30 +313,11 @@
                                                             <span>Modifier</span>
                                                         </a>
                                                     </li>
-                                                    <!-- DRH : accusé de réception, la demande part à la DGPEEC -->
-                                                    <li *ngIf="pourTraitement && isDrh && demande.traitementPermutation?.statut?.code === 'TRANSMISE_DRH'">
-                                                        <a class="dropdown-item" href="javascript:(0)" (click)="onRecuDrh(demande.id)">
-                                                            <i class="fa fa-inbox me-2"></i>
-                                                            <span>Reçu DRH</span>
-                                                        </a>
-                                                    </li>
-                                                    <!-- DGPEEC : traitement, puis OS à télécharger pour signature et OS signé à charger -->
-                                                    <li *ngIf="pourTraitement && isDgpeecTraitant && demande.traitementPermutation?.statut?.code === 'TRAITEMENT'">
-                                                        <a class="dropdown-item" href="javascript:(0)" (click)="onTraiterDgpeec(demande.id)">
-                                                            <i class="fa fa-edit me-2"></i>
-                                                            <span>Traiter</span>
-                                                        </a>
-                                                    </li>
-                                                    <li *ngIf="pourTraitement && isDgpeecTraitant && demande.traitementPermutation?.statut?.code === 'TRAITEE' && !demande.ordreService">
-                                                        <a class="dropdown-item" href="javascript:(0)" (click)="generate(demande.id)">
-                                                            <img src="assets/icons/download.svg" alt="Télécharger OS" title="Télécharger OS">
-                                                            <span>Télécharger OS</span>
-                                                        </a>
-                                                    </li>
-                                                    <li *ngIf="pourTraitement && isDgpeecTraitant && demande.traitementPermutation?.statut?.code === 'TRAITEE' && demande.ordreService">
-                                                        <a class="dropdown-item" href="javascript:(0)" (click)="openModalUploadPermuationOs(UPLOAD_PERMUTATION_OS, demande.id)">
-                                                            <img src="assets/icons/generate.svg" alt="Charger OS signé" title="Charger OS signé">
-                                                            <span>Charger OS signé</span>
+                                                    <li   *ngIf="pourTraitement && isOsManager && demande.traitementPermutation?.statut?.code ==='TRAITEE'">
+                                                        <a class="dropdown-item" href="javascript:(0)"  (click)="openModalUploadPermuationOs(UPLOAD_PERMUTATION_OS, demande.id)">
+                                                            <!-- <i class="fa fa-sync-alt me-2"></i> -->
+                                                            <img src="assets/icons/generate.svg" alt="Soumettre OS" title="Soumettre OS">
+                                                            <span>Soumettre OS signé</span>
                                                         </a>
                                                     </li>
                                                     <li   *ngIf="demande.traitementPermutation?.statut?.code ==='VALIDER' && (isOsManager || !pourTraitement)">
@@ -358,10 +339,13 @@
                                                       </li> -->
                                                     <li *ngIf="demande?.traitementPermutation?.statut?.code === 'SOUMISE' && pourTraitement && profile !=='Directeur-DRH' ||
                                                             demande?.traitementPermutation?.statut?.code == 'TRANSMISE_IA' && pourTraitement && profile !=='Directeur-DRH' && profile =='Representant-IA'||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRAITEMENT' && pourTraitement && profile !=='Directeur-DRH' && profile =='Chef-division-dgpeec' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRAITEMENT' && pourTraitement && profile !=='Directeur-DRH' && profile =='bureau-mo-rec' ||
                                                             demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-etablissement'||
                                                             demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-EFF'||
                                                             demande?.traitementPermutation?.statut?.code == 'TRANSMISE_CE' && pourTraitement && profile !=='Directeur-DRH'  && profile =='Chef-cfp'||
-                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_IEF' && pourTraitement && profile !=='Directeur-DRH' && profile =='Représentant-IEF'">
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_IEF' && pourTraitement && profile !=='Directeur-DRH' && profile =='Représentant-IEF' ||
+                                                            demande?.traitementPermutation?.statut?.code == 'TRANSMISE_DRH' && pourTraitement && profile =='Directeur-DRH' ">
                                                         <a
                                                                 class="dropdown-item"
                                                                 href="javascript:(0)"
