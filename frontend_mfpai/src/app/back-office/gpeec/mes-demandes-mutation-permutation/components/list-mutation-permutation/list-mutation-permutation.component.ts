@@ -19,7 +19,6 @@ import { ReferencesService } from 'src/app/services/references.service';
 import { UtilisateurService } from 'src/app/services/utilisateur.service';
 import { UserDTOs } from 'src/app/models/UserDTOs';
 import { FileService } from 'src/app/shared/services/files/file.service';
-import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-list-permutation',
   templateUrl: './list-mutation-permutation.component.html',
@@ -335,56 +334,8 @@ export class ListMutationPermutationComponent implements OnInit {
           }
 
         }
-    )
-//modification aicha 
-  //   this.permutationService.getAll(
-  //   this.page - 1,
-  //   this.pageSize,
-  //   matricule,
-  //   region,
-  //   statut,
-  //   nom,
-  //   prenom,
-  //   this.type,
-  //   ia,
-  //   ief,
-  //   etablissement
-  // )
-  // .pipe(
-  //   finalize(() => {
-  //     this.spinner.hide();
-  //   })
-  // )
-  // .subscribe({
-  //   next: (data: any) => {
-  //     const liste = data?.data?.payload?.content;
+    )}
 
-  //     if (!Array.isArray(liste)) {
-  //       this.permutations = [];
-
-  //       Swal.fire({
-  //         icon: 'error',
-  //         title: 'Chargement impossible',
-  //         text: 'Le serveur n’a pas retourné la liste des permutations.'
-  //       });
-
-  //       return;
-  //     }
-
-  //     this.permutations = liste;
-  //   },
-  //   error: (err: any) => {
-  //     this.permutations = [];
-  //     console.error('Erreur de chargement des permutations :', err);
-
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Chargement impossible',
-  //       text: 'Impossible de récupérer les permutations. Veuillez réessayer.'
-  //     });
-  //   }
-  // });
-}
 
   genererOSMutation(allMutation : boolean, idMutation : number){
     this.mutationService.genererOS(allMutation, idMutation).subscribe({
@@ -864,16 +815,7 @@ doitTraiter(mutation : MutationDTO) : boolean {
 
   return this.profilConnecte.some((profil: { code: string }) => {
     const origine = mutation.origineDemandeurLog;
-    if (profil.code === attendu  
-//modification aicha
-      ||
-      (
-        profil.code === 'Assistant-DRH' &&
-        attendu === 'Directeur-DRH'
-      )
-      //fin modification aicha
-    )
-    {
+    if (profil.code === attendu) {
       if (['Chef-etablissement', 'Chef-cfp', 'Chef-EFF'].includes(attendu)) {
         return !!origine?.etablissement?.code && origine.etablissement.code === this.user?.etablissement?.code;
       }
