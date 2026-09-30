@@ -20,8 +20,6 @@
       </div><div class="assignment"><span>Affectation actuelle</span><div><i class="fas fa-map-marker-alt"></i><strong>{{ permutation.utilisateur2?.region?.label || '—' }}</strong></div><div><i class="fas fa-landmark"></i><strong>{{ permutation.utilisateur2?.ia?.label || '—' }}</strong></div><div *ngIf="permutation.utilisateur2?.ief"><i class="fas fa-school"></i><strong>{{ permutation.utilisateur2?.ief?.label }}</strong></div><div><i class="fas fa-university"></i><strong>{{ permutation.utilisateur2?.etablissement?.label || '—' }}</strong></div></div></article>
     </div>
     <div class="motif-card"><i class="fas fa-comment-alt"></i><div><small>Motif de la permutation</small><p>{{ permutation.motifPermutation || 'Aucun motif renseigné.' }}</p></div></div>
-    <div class="content-heading mt-4"><span>Pièces jointes</span><h3>Dossiers des agents</h3></div>
-    <app-permutation-pieces-jointes [permutation]="permutation"></app-permutation-pieces-jointes>
   </section>
 </main>
 

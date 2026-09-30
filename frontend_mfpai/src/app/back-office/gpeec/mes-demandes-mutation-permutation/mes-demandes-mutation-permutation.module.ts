@@ -15,8 +15,6 @@ import { MaterialUiModule } from 'src/app/shared/material-ui/material.module';
 import { TraitementMutationComponent } from './components/traitement-mutation/traitement-mutation.component';
 import { SearchPermutationPipe } from '../Pipes/Search.permutation.pipe';
 import { NgxDropzoneModule } from 'ngx-dropzone';
-import { PermutationPiecesJointesComponent } from '../shared-permutation/permutation-pieces-jointes/permutation-pieces-jointes.component';
-import { PermutationSignatureComponent } from '../shared-permutation/permutation-signature/permutation-signature.component';
 
 @NgModule({
   declarations: [
@@ -36,8 +34,6 @@ import { PermutationSignatureComponent } from '../shared-permutation/permutation
     SharedModule,
     MaterialUiModule,
     NgxDropzoneModule,
-    PermutationPiecesJointesComponent,
-    PermutationSignatureComponent,
     MesDemandesMutationPermutationRoutingModule
   ]
 })
