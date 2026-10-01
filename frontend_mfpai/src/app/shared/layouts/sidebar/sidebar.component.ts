@@ -547,7 +547,7 @@ const MENUITEMS: Menu[] = [
         menTitle: 'Dossier agents',
         menPath: '/carrieres/dossier-agents',
         menType: 'link',
-        role: [ 'Admin-General', 'Assistant-DRH', 'Chef-division-dgcaa', 'Chef-bureau-dgcaa'],
+        role: [ 'Admin-General', 'Assistant-DRH', 'Chef-division-dgcaa', 'Chef-bureau-dgcaa','Agent-bureau-dgcaa'],
       },
       {
         menTitle: 'Mes demandes',
