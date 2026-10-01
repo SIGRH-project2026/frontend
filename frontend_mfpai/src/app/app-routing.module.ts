@@ -1,27 +1,127 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from 'src/app/guard/auth.guard';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { IsAuthGuard } from "./guard/auth.guard";
 
 const routes: Routes = [
-  { path: 'auth', loadChildren: () => import('src/app/back-office/authentification/authentification.module').then(m => m.AuthentificationModule) },
-  { path: '', loadChildren: () => import('src/app/front-office/front-office.module').then(m => m.FrontOfficeModule) },
-  { path: '', canActivateChild: [AuthGuard], children: [
-      { path: 'dashboard', loadChildren: () => import('src/app/back-office/dashboard/dashboard.module').then(m => m.DashboardModule) },
-      { path: 'courriers', loadChildren: () => import('src/app/back-office/formations/courriers/courriers.module').then(m => m.CourriersModule) },
-      { path: 'formations', loadChildren: () => import('src/app/back-office/formations/formations.module').then(m => m.FormationsModule) },
-      { path: 'carrieres', loadChildren: () => import('src/app/back-office/carrieres/carrieres.module').then(m => m.CarrieresModule) },
-      { path: 'utilisateurs', loadChildren: () => import('src/app/back-office/utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },
-      { path: 'gpeec', loadChildren: () => import('src/app/back-office/gpeec/gpeec.module').then(m => m.GpeecModule) },
-      { path: 'affaires-sociales', loadChildren: () => import('src/app/back-office/affaires-sociales/affaires-sociales.module').then(m => m.AffairesSocialesModule) },
-      { path: 'statistiques', loadChildren: () => import('src/app/back-office/statistiques/statistiques.module').then(m => m.StatistiquesModule) },
-      { path: 'plan-travail-annuel', loadChildren: () => import('src/app/back-office/plan-travail-annuel/plan-travail-annuel.module').then(m => m.PlanTravailAnnuelModule) },
-      { path: 'settings', loadChildren: () => import('src/app/back-office/settings/settings.module').then(m => m.SettingsModule) },
-      { path: 'parametrage', loadChildren: () => import('src/app/back-office/parametre/parametre.module').then(m => m.ParametreModule) },
-  ] }
+  {
+    path: "auth",
+    loadChildren: () =>
+      import("./back-office/authentification/authentification.module").then(
+        (mod) => mod.AuthentificationModule,
+      ),
+  },
+  {
+    path: "",
+    loadChildren: () =>
+      import("./front-office/front-office.module").then(
+        (mod) => mod.FrontOfficeModule,
+      ),
+  },
+  {
+    path: "dashboard",
+    loadChildren: () =>
+      import("./back-office/dashboard/dashboard.module").then(
+        (mod) => mod.DashboardModule,
+      ),
+    canActivate: [IsAuthGuard],
+  },
+  // Courriers
+  {
+    path: "courriers",
+    loadChildren: () =>
+      import("./back-office/formations/courriers/courriers.module").then(
+        (mod) => mod.CourriersModule,
+      ),
+  },
+  {
+    path: "formations",
+
+    loadChildren: () =>
+      import("./back-office/formations/formations.module").then(
+        (mod) => mod.FormationsModule,
+      ),
+    canActivate: [IsAuthGuard],
+  },
+  {
+    path: "carrieres",
+    loadChildren: () =>
+      import("./back-office/carrieres/carrieres.module").then(
+        (mod) => mod.CarrieresModule,
+      ),
+    canActivate: [IsAuthGuard],
+  },
+  {
+    path: "utilisateurs",
+    loadChildren: () =>
+      import("./back-office/utilisateurs/utilisateurs.module").then(
+        (mod) => mod.UtilisateursModule,
+      ),
+    canActivate: [IsAuthGuard],
+  },
+  {
+    path: "gpeec",
+    loadChildren: () =>
+      import("./back-office/gpeec/gpeec.module").then((mod) => mod.GpeecModule),
+    canActivate: [IsAuthGuard],
+  },
+  {
+    path: "affaires-sociales",
+    loadChildren: () =>
+      import("./back-office/affaires-sociales/affaires-sociales.module").then(
+        (mod) => mod.AffairesSocialesModule,
+      ),
+  },
+  {
+    path: "statistiques",
+    loadChildren: () =>
+      import("./back-office/statistiques/statistiques.module").then(
+        (mod) => mod.StatistiquesModule,
+      ),
+  },
+  {
+    path: "plan-travail-annuel",
+    loadChildren: () =>
+      import("./back-office/plan-travail-annuel/plan-travail-annuel.module").then(
+        (mod) => mod.PlanTravailAnnuelModule,
+      ),
+  },
+  {
+    path: "courriers",
+    loadChildren: () =>
+      import("./back-office/formations/courriers/courriers.module").then(
+        (mod) => mod.CourriersModule,
+      ),
+  },
+  {
+    path: "settings",
+    loadChildren: () =>
+      import("./back-office/settings/settings.module").then(
+        (mod) => mod.SettingsModule,
+      ),
+  },
+  {
+    path: "parametrage",
+    loadChildren: () =>
+      import("./back-office/parametre/parametre.module").then(
+        (mod) => mod.ParametreModule,
+      ),
+  },
+
+  {
+    path: "",
+    redirectTo: "",
+    pathMatch: "full",
+  },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, scrollPositionRestoration: 'enabled' })],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, {
+      useHash: true,
+      scrollOffset: [0, 0],
+      scrollPositionRestoration: "enabled",
+    }),
+  ],
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}
