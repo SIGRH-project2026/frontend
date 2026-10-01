@@ -5,6 +5,7 @@ frontend_mfpai/dist
 frontend_mfpai/dist-server
 frontend_mfpai/tmp
 frontend_mfpai/out-tsc
+frontend_mfpai/scripts
 
 # dependencies
 frontend_mfpai/node_modules
