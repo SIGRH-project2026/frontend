@@ -3,14 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve frontend_mfpai --port 4200",
+    "start": "ng serve",
     "build": "ng build",
     "build:qa": "ng build --configuration production --base-href /",
     "build:preprod": "ng build --configuration production --base-href /frontend-mfpai",
     "build:prod": "ng build --configuration production --base-href /frontend-mfpai/",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "config": "node scripts/configure.mjs"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {

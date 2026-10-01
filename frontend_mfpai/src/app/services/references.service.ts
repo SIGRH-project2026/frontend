@@ -120,6 +120,8 @@ export class ReferencesService {
 
   listEtablissement = (): Observable<ResponseApi> =>
     this._http.get<ResponseApi>(`${this.apiUrl}static/etablissement`);
+  countEtablissement = (): Observable<ResponseApi> =>
+    this._http.get<ResponseApi>(`${this.apiUrl}static/etablissement/count`);
 
   listEtablissementByTypeSystemeEnseignement = (
     code: string,
