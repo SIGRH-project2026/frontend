@@ -88,10 +88,10 @@ export class PortailComponent implements OnInit {
 	}
 
 	getEtablissements(){
-		this.referenceService.listEtablissement().subscribe(
+		this.referenceService.countEtablissement().subscribe(
 			(data: any) => {
 				if(data.success){
-					this.etablissements = data.data.length;
+					this.etablissements = data.data;
 				}
 			//	console.log("Etablissements ",this.etablissements);
 			})

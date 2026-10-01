@@ -9,6 +9,6 @@ function baseUrl(value: string): string {
 }
 export const runtimeConfig = {
   apiUrl: baseUrl(config.apiUrl ?? 'http://localhost:9080/api/v1/mfpai/'),
-  backofficeUrl: baseUrl(config.backofficeUrl ?? 'http://localhost:4300/'),
+  backofficeUrl: baseUrl(config.backofficeUrl ?? 'http://localhost:4200/'),
   frontofficeUrl: baseUrl(config.frontofficeUrl ?? 'http://localhost:4200/')
 };
