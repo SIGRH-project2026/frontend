@@ -207,6 +207,27 @@
                 </div>
             
 
+            <div class="col-lg-12 mt-3">
+                <label class="form-label">Dossiers joints</label>
+                <app-permutation-pieces-jointes [permutation]="permutation"></app-permutation-pieces-jointes>
+            </div>
+
+            <div class="col-lg-6 mt-3" *ngIf="peutAccepter">
+                <label class="form-label">Joindre mon dossier <span class="text-danger fw-bold">*</span></label>
+                <ngx-dropzone (change)="onSelectFiles($event, piecesJointesFiles)">
+                    <ngx-dropzone-label>
+                        <i class="material-icons">cloud_upload</i>
+                        <p class="fw-semibold">Sélectionner le document</p>
+                        <small>ou glisser et déposer le fichier</small>
+                    </ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngFor="let f of piecesJointesFiles" [removable]="true"
+                                          (removed)="onRemoveFile(f, piecesJointesFiles)">
+                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+                <small class="text-danger" *ngIf="!dossierReceveurFourni">Votre dossier est requis pour accepter la permutation.</small>
+            </div>
+
             <form [formGroup]="aModifierForm">
                 <div class="col-lg-12" *ngIf="permutation?.motifPermutation">
                     <label class="form-label">Motif <span class="text-danger fw-bold">*</span></label>
@@ -214,7 +235,11 @@
                         placeholder="Saisir" [disabled]="pourTraitement" formControlName="amodifier" [ngModel]="permutation.motifPermutation">{{permutation.motifPermutation}}</textarea>
                 </div>
             </form>
-            <div class="col-sm-12" *ngIf="!isProfOrFormateur && !isDGPEEC">
+            <div class="col-sm-12 mt-3" *ngIf="estSignataire && permutation">
+                <label class="form-label">Signature et transmission</label>
+                <app-permutation-signature [permutation]="permutation" [profil]="profile"></app-permutation-signature>
+            </div>
+            <div class="col-sm-12" *ngIf="!isProfOrFormateur && !isDGPEEC && !estReceveur && !estSignataire">
                 <label class="form-label">BE/lettre de transmission</label>
                 <ngx-dropzone (change)="onSelect($event)" formControlName='file' class="" cols="30" rows="3">
                     <ngx-dropzone-label>Glisser et déposer le fichier</ngx-dropzone-label>
@@ -228,8 +253,8 @@
             <div class="action-steps">
                 <button type="button" class="button button-light-red" (click)="onReset()">Annuler</button>
                 <button type="button" class="button button-primary text-white" (click)="modifier()"  *ngIf="!pourTraitement && permutation?.traitementPermutation?.statut?.code == 'AMODIFIER'" [disabled]="!aModifierForm.valid">Envoyer</button>
-                <button type="button" class="button button-primary text-white" (click)="onValid()"  *ngIf="pourTraitement">Valider</button>
-                <button type="button" class="button button-primary text-white" (click)="onAccept()" *ngIf="isProfOrFormateur">Accepter</button>
+                <button type="button" class="button button-primary text-white" (click)="onValid()"  *ngIf="pourTraitement" [disabled]="estSignataire && !signaturePrete">Valider</button>
+                <button type="button" class="button button-primary text-white" (click)="onAccept()" *ngIf="peutAccepter" [disabled]="!dossierReceveurFourni">Accepter</button>
                 <button type="button" class="button button-yellow text-white" (click)="onModifier()" *ngIf="pourTraitement && permutation?.traitementPermutation?.statut?.code=='TRAITEMENT'">À modifier</button>
                 <button type="button" class="button button-red text-white" (click)="onRejet()" *ngIf="isDGPEEC || isProfOrFormateur ">Rejeter</button>
             </div>
