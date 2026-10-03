@@ -1,5 +1,6 @@
 import { PieceJointes } from "src/app/back-office/carrieres/models/dossier-agent/pieceJointes"
 import { UserDTOs } from "src/app/models/UserDTOs"
+import { FileDTO } from "src/app/back-office/carrieres/mes-demandes/components/models/FileDTO"
 
 export class Permutation{
 
@@ -36,4 +37,6 @@ export class PermutationDTO{
    motifPermutation !: string
    traitementPermutation !: TraitementPermutation
    ordreService !: string
+   // fileCode : DEMANDEUR / RECEVEUR (+ _SIGNE, _SIGNE_IEF, _SIGNE_IA) et BORDEREAU_IEF_... / BORDEREAU_IA_...
+   pieceJointes ?: FileDTO[]
 }
