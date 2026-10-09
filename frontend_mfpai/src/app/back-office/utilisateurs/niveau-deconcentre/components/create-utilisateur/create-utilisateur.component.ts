@@ -1,5 +1,6 @@
 import { Location } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   AbstractControl,
   FormBuilder,
@@ -51,6 +52,8 @@ export class CreateUtilisateurComponent implements OnInit {
   codeIA: any;
   deconectedRegionForm!: FormGroup;
   eeministere: any;
+  emplacementFacultatif = false;
+  private readonly destroyRef = inject(DestroyRef);
 
   alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   validationResult: string = "";
@@ -120,6 +123,11 @@ export class CreateUtilisateurComponent implements OnInit {
       typePoste: ["", Validators.required],
     });
 
+    this.updateEmplacementValidators();
+    this.deconectedForm.controls["profils"].valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.updateEmplacementValidators());
+
     // this.listProfiles();
 
     this.referenceService.listProfilesDEC().subscribe((response) => {
@@ -167,6 +175,21 @@ export class CreateUtilisateurComponent implements OnInit {
     this.referenceService.listEEMinistere().subscribe((response) => {
       if (response.success) this.eeministere = response.data;
     });
+  }
+
+  updateEmplacementValidators(): void {
+    const profil = this.deconectedForm.controls["profils"].value;
+    this.emplacementFacultatif = ["Representant-IA", "Représentant-IEF"].includes(profil);
+
+    for (const field of ["etablissement", "typeSystemeEnseignement"]) {
+      const control = this.deconectedRegionForm.controls[field];
+      if (this.emplacementFacultatif) {
+        control.removeValidators(Validators.required);
+      } else {
+        control.addValidators(Validators.required);
+      }
+      control.updateValueAndValidity({ emitEvent: false });
+    }
   }
 
   getListEF(code: any): void {
@@ -364,12 +387,11 @@ export class CreateUtilisateurComponent implements OnInit {
           ? { code: this.deconectedRegionForm.controls["ia"].value }
           : null,
       etablissement:
-        this.deconectedRegionForm.controls["etablissement"].value !== ""
+        this.deconectedRegionForm.controls["etablissement"].value
           ? { code: this.deconectedRegionForm.controls["etablissement"].value }
           : null,
       typeSystemeEnseignement:
-        this.deconectedRegionForm.controls["typeSystemeEnseignement"].value !==
-        ""
+        this.deconectedRegionForm.controls["typeSystemeEnseignement"].value
           ? {
               code: this.deconectedRegionForm.controls["typeSystemeEnseignement"]
                 .value,

@@ -67,21 +67,27 @@
           </select>
         </div>
         <div class="col-sm-4">
-          <label class="form-label">Etablissements/EFF/CFP </label>
+          <label class="form-label">Etablissements/EFF/CFP
+            <span *ngIf="!emplacementFacultatif" style="color: red">*</span>
+            <span *ngIf="emplacementFacultatif" class="text-muted">(facultatif)</span>
+          </label>
           <select class="form-select" formControlName="etablissement">
             <option value="">Sélectionner</option>
             <option *ngFor="let eta of etablissement" [value]="eta.code">
               {{ eta?.label }}
             </option>
           </select>
-          <div style="color: red" *ngIf="f1['etablissement'].touched">
+          <div style="color: red" *ngIf="f1['etablissement'].touched && f1['etablissement'].hasError('required')">
             L'établissement
             <strong>obligatoire!</strong>
           </div>
         </div>
 
         <div class="col-sm-4">
-          <label for="form-label">Systeme enseignement </label>
+          <label class="form-label">Système d’enseignement
+            <span *ngIf="!emplacementFacultatif" style="color: red">*</span>
+            <span *ngIf="emplacementFacultatif" class="text-muted">(facultatif)</span>
+          </label>
           <select class="form-select" formControlName="typeSystemeEnseignement">
             <option value="">Sélectionner</option>
             <option
@@ -91,7 +97,7 @@
               {{ typeSystemeEns?.label }}
             </option>
           </select>
-          <div style="color: red" *ngIf="f1['typeSystemeEnseignement'].touched">
+          <div style="color: red" *ngIf="f1['typeSystemeEnseignement'].touched && f1['typeSystemeEnseignement'].hasError('required')">
             Le systeme d'enseignement
             <strong>obligatoire!</strong>
           </div>
