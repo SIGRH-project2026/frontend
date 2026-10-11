@@ -22,6 +22,8 @@ export class ListeIefComponent  implements OnInit {
   page = 1;
   pageSize = 10;
   statut = '';
+  filter = '';
+  iaFiltre = '';
 
   region: Region[]=[];
   ia: Ia[]=[];
@@ -59,7 +61,12 @@ export class ListeIefComponent  implements OnInit {
 
   refreshData() {
     this.page = 1;
-    this.listIEFdvanced(this.page - 1, this.pageSize, "", this.statut);
+    this.listIEFdvanced(this.page - 1, this.pageSize, this.filter, this.statut);
+  }
+
+  onSearch() {
+    this.page = 1;
+    this.listIEFdvanced(0, this.pageSize, this.filter, this.statut);
   }
 
   onCreateRecrutement() {
@@ -125,7 +132,7 @@ export class ListeIefComponent  implements OnInit {
   }
 
   listIEFdvanced(page: number, size: number, filter: string,statut: string){
-    this.parametreService.listIEFAdvanced(page,  size,  filter, statut)
+    this.parametreService.listIEFAdvanced(page,  size,  filter, statut, this.iaFiltre)
         .subscribe(data => {
           if (data?.status === 'OK') {
 
@@ -183,7 +190,7 @@ export class ListeIefComponent  implements OnInit {
 
   onPageChange(page: number) {
     this.page = page;
-    this.listIEFdvanced(page - 1, this.pageSize, "", this.statut);
+    this.listIEFdvanced(page - 1, this.pageSize, this.filter, this.statut);
   }
 
   onAddIEF() {
@@ -289,7 +296,7 @@ export class ListeIefComponent  implements OnInit {
   onStatusChange(event: any) {
     this.statut = event.target.value;
     this.page = 1;
-    this.listIEFdvanced(0, this.pageSize, '', this.statut);
+    this.listIEFdvanced(0, this.pageSize, this.filter, this.statut);
   }
 
 }

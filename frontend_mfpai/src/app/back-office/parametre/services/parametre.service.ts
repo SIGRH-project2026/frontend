@@ -218,9 +218,9 @@ export class ParametreService {
 
 
   // IEF
-  listIEFAdvanced(page: number, size: number, filter: string, statut: string) : Observable<ResponseApiData> {
+  listIEFAdvanced(page: number, size: number, filter: string, statut: string, ia: string = '') : Observable<ResponseApiData> {
 
-    return this._http.get<ResponseApi>(`${environment.apiUrl}parametrages/utilisateur/ief/list-pages?page=${page}&size=${size}&filter=${filter}&statut=${statut}`);
+    return this._http.get<ResponseApi>(`${environment.apiUrl}parametrages/utilisateur/ief/list-pages?page=${page}&size=${size}&filter=${filter}&statut=${statut}&ia=${ia}`);
 
   }
 
