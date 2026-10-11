@@ -1,5 +1,6 @@
 import { Location } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   AbstractControl,
   FormBuilder,
@@ -443,12 +444,11 @@ export class CreateUtilisateurComponent implements OnInit {
           ? { code: this.deconectedRegionForm.controls["ia"].value }
           : null,
       etablissement:
-        this.deconectedRegionForm.controls["etablissement"].value !== ""
+        this.deconectedRegionForm.controls["etablissement"].value
           ? { code: this.deconectedRegionForm.controls["etablissement"].value }
           : null,
       typeSystemeEnseignement:
-        this.deconectedRegionForm.controls["typeSystemeEnseignement"].value !==
-        ""
+        this.deconectedRegionForm.controls["typeSystemeEnseignement"].value
           ? {
               code: this.deconectedRegionForm.controls["typeSystemeEnseignement"]
                 .value,

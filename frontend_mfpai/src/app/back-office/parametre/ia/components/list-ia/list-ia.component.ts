@@ -20,6 +20,7 @@ export class ListIaComponent  implements OnInit {
   page = 1;
   pageSize = 10;
   statut = '';
+  filter = '';
 
   region: Region[]=[];
 
@@ -56,7 +57,12 @@ export class ListIaComponent  implements OnInit {
 
   refreshData() {
     this.page = 1;
-    this.listIAAdvanced(this.page - 1, this.pageSize, "", this.statut);
+    this.listIAAdvanced(this.page - 1, this.pageSize, this.filter, this.statut);
+  }
+
+  onSearch() {
+    this.page = 1;
+    this.listIAAdvanced(0, this.pageSize, this.filter, this.statut);
   }
 
 
@@ -174,7 +180,7 @@ export class ListIaComponent  implements OnInit {
 
   onPageChange(page: number) {
     this.page = page;
-    this.listIAAdvanced(page - 1, this.pageSize, "", this.statut);
+    this.listIAAdvanced(page - 1, this.pageSize, this.filter, this.statut);
   }
 
   onAddIA() {
@@ -254,7 +260,7 @@ export class ListIaComponent  implements OnInit {
   onStatusChange(event: any) {
     this.statut = event.target.value;
     this.page = 1;
-    this.listIAAdvanced(0, this.pageSize, '', this.statut);
+    this.listIAAdvanced(0, this.pageSize, this.filter, this.statut);
   }
 
   onViewImage(imageUrl: string, title: string) {
