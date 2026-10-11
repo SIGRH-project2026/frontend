@@ -13,8 +13,8 @@
         <div class="panel-list-search">
             <div class="search">
                 <div class="search-box">
-                    <input class="search-input" type="text" placeholder="Rechercher">
-                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="filter" (ngModelChange)="onSearch()">
+                    <button class="search-btn" type="button" (click)="onSearch()"><i class="fas fa-search"></i></button>
                 </div>
                 <select class="form-select" (change)="onStatusChange($event)">
                     <option value="">Tous les status</option>
