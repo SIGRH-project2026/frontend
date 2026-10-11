@@ -55,9 +55,11 @@ export class EditUtilisateurComponent implements OnInit{
      codeIA: any;
      eeministere: any;
 
-    // Un Representant-IA ne gère que le personnel de son IA : région et IA
-    // sont verrouillées (le serveur applique la même règle).
+    // Un Representant-IA ne gère que le personnel de son IA (région et IA
+    // verrouillées), un Représentant-IEF celui des établissements de son IEF
+    // (IEF verrouillée aussi). Le serveur applique la même règle.
     isRepresentantIA = false;
+    isRepresentantIEF = false;
     // Les représentants IA/IEF sont rattachés à une circonscription, pas à un
     // établissement : le champ établissement ne s'applique pas.
     sansEtablissement = false;
@@ -78,7 +80,9 @@ export class EditUtilisateurComponent implements OnInit{
 
     ){
         this.userId = this.activatedRoute.snapshot.paramMap.get('userId')
-        this.isRepresentantIA = this.credentialsService.userProfils?.includes('Representant-IA') ?? false;
+        const profilsConnecte: string[] = this.credentialsService.userProfils ?? [];
+        this.isRepresentantIA = profilsConnecte.includes('Representant-IA');
+        this.isRepresentantIEF = profilsConnecte.includes('Représentant-IEF');
     }
 
 
@@ -174,9 +178,7 @@ export class EditUtilisateurComponent implements OnInit{
         this.referenceService.listProfilesDEC().subscribe(response => {
 
             if(response.success)
-                this.profils = this.isRepresentantIA
-                    ? response.data.filter((p: any) => p.code !== 'Representant-IA')
-                    : response.data;
+                this.profils = response.data.filter((p: any) => this.profilAttribuable(p.code));
         });
 
         this.referenceService.listRegion().subscribe(response => {
@@ -364,9 +366,12 @@ export class EditUtilisateurComponent implements OnInit{
 
                         this.ajusterChampsSelonProfil(this.profile?.code);
 
-                        if (this.isRepresentantIA) {
+                        if (this.isRepresentantIA || this.isRepresentantIEF) {
                             this.deconectedRegionForm.controls['region'].disable();
                             this.deconectedRegionForm.controls['ia'].disable();
+                        }
+                        if (this.isRepresentantIEF) {
+                            this.deconectedRegionForm.controls['ief'].disable();
                         }
                     }
                 }
@@ -375,6 +380,13 @@ export class EditUtilisateurComponent implements OnInit{
 
         this.spinner.hide();
 
+    }
+
+    /** Un représentant n'attribue ni son propre niveau ni un niveau supérieur. */
+    profilAttribuable(code: string): boolean {
+        if ((this.isRepresentantIA || this.isRepresentantIEF) && code === 'Representant-IA') return false;
+        if (this.isRepresentantIEF && code === 'Représentant-IEF') return false;
+        return true;
     }
 
     ajusterChampsSelonProfil(code: string | undefined): void {

@@ -54,9 +54,11 @@ export class CreateUtilisateurComponent implements OnInit {
   codeIA: any;
   deconectedRegionForm!: FormGroup;
   eeministere: any;
-  // Un Representant-IA ne crée que le personnel de son IA : région et IA
-  // sont imposées (le serveur applique la même règle).
+  // Un Representant-IA ne crée que le personnel de son IA (région et IA
+  // imposées), un Représentant-IEF celui des établissements de son IEF
+  // (région, IA et IEF imposées). Le serveur applique la même règle.
   isRepresentantIA = false;
+  isRepresentantIEF = false;
   // Les représentants IA/IEF sont rattachés à une circonscription, pas à un
   // établissement : établissement et système d'enseignement ne s'appliquent pas.
   sansEtablissement = false;
@@ -75,8 +77,9 @@ export class CreateUtilisateurComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private credentialsService: CredentialsService,
   ) {
-    this.isRepresentantIA =
-      this.credentialsService.userProfils?.includes("Representant-IA") ?? false;
+    const profilsConnecte: string[] = this.credentialsService.userProfils ?? [];
+    this.isRepresentantIA = profilsConnecte.includes("Representant-IA");
+    this.isRepresentantIEF = profilsConnecte.includes("Représentant-IEF");
   }
 
   ngOnInit(): void {
@@ -142,13 +145,13 @@ export class CreateUtilisateurComponent implements OnInit {
 
     this.referenceService.listProfilesDEC().subscribe((response) => {
       if (response.success)
-        this.profils = this.isRepresentantIA
-          ? response.data.filter((p: any) => p.code !== "Representant-IA")
-          : response.data;
+        this.profils = response.data.filter((p: any) =>
+          this.profilAttribuable(p.code),
+        );
     });
 
-    if (this.isRepresentantIA) {
-      this.imposerIADuRepresentant();
+    if (this.isRepresentantIA || this.isRepresentantIEF) {
+      this.imposerCirconscriptionDuRepresentant();
     }
 
     this.referenceService.listRegion().subscribe((response) => {
@@ -206,22 +209,42 @@ export class CreateUtilisateurComponent implements OnInit {
     ief.updateValueAndValidity();
   }
 
-  /** Préremplit et verrouille la région et l'IA du Representant-IA connecté. */
-  imposerIADuRepresentant(): void {
+  /** Un représentant n'attribue ni son propre niveau ni un niveau supérieur. */
+  profilAttribuable(code: string): boolean {
+    if (this.isRepresentantIA || this.isRepresentantIEF) {
+      if (code === "Representant-IA") return false;
+    }
+    if (this.isRepresentantIEF && code === "Représentant-IEF") return false;
+    return true;
+  }
+
+  /**
+   * Préremplit et verrouille la circonscription du représentant connecté :
+   * région et IA, plus l'IEF pour un Représentant-IEF.
+   */
+  imposerCirconscriptionDuRepresentant(): void {
     const userId = this.credentialsService.getUserInfos()?.id;
     if (!userId) return;
     this.userService.getOneUser(userId).subscribe((response: any) => {
       const representant = response?.data;
-      if (!representant?.ia) return;
-      this.ia = [representant.ia];
+      const ia = representant?.ia ?? representant?.ief?.ia;
+      if (!ia) return;
+      this.ia = [ia];
       this.deconectedRegionForm.patchValue({
-        region: representant.region?.code ?? representant.ia.region?.code ?? "",
-        ia: representant.ia.code,
+        region: representant.region?.code ?? ia.region?.code ?? "",
+        ia: ia.code,
       });
       this.deconectedRegionForm.controls["region"].disable();
       this.deconectedRegionForm.controls["ia"].disable();
-      this.getListEF(representant.ia.code);
-      this.getListEtabByIA(representant.ia.code);
+      this.getListEF(ia.code);
+
+      if (this.isRepresentantIEF && representant.ief) {
+        this.deconectedRegionForm.patchValue({ ief: representant.ief.code });
+        this.deconectedRegionForm.controls["ief"].disable();
+        this.getListEtablissement(representant.ief.code);
+      } else {
+        this.getListEtabByIA(ia.code);
+      }
     });
   }
 
