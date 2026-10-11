@@ -33,7 +33,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   private static readonly STATE_KEY = "utilisateurs-niveau-deconcentre";
 
   headers!: string[];
-  page = 0;
+  page = 1; // numérotation de ngb-pagination (1 = première page) ; l'API attend page - 1
   pageSize = 10;
 
   totalPages = 0;
@@ -212,14 +212,14 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
       }
     }
     this.isSearchUser = savedState.isSearchUser;
-    this.page = savedState.page ?? 0;
+    this.page = Math.max(1, savedState.page ?? 1);
     this.pageSize = savedState.pageSize ?? 10;
 
     if (this.isSearchUser) {
       // Relance la recherche avec les critères restaurés : résultats
       // conservés et données à jour (utile après une modification).
       this.listUtilisateurDecoPage(
-        this.page,
+        this.page - 1,
         this.pageSize,
         this.advancedSearchForm.value["region"],
         this.advancedSearchForm.value["ia"],
@@ -330,10 +330,10 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
    * résultat de la recherche.
    */
   refreshData() {
-    this.page = 0;
+    this.page = 1;
     this.spinner.show();
     this.listUtilisateurDecoPage(
-      this.page,
+      this.page - 1,
       this.pageSize,
       this.advancedSearchForm.value["region"],
       this.advancedSearchForm.value["ia"],
@@ -763,6 +763,12 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
               showConfirmButton: false,
             });
           },
+          error: (error) => {
+            this.userService.showSwal(
+              "error",
+              error?.error?.message || "Le changement de statut a échoué.",
+            );
+          },
         });
       }
     });
@@ -805,6 +811,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   onCancle() {
     console.log("ici");
     this.advancedSearchForm.reset();
+    this.page = 1;
     this.listUtilisateurDecoPage(
       0,
       10,
@@ -828,7 +835,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   }
 
   onSearchUser() {
-    this.page = 0;
+    this.page = 1;
     this.spinner.show();
     this.listUtilisateurDecoPage(
       0,
@@ -949,7 +956,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy {
   refreshData2() {
     this.spinner.show();
     this.listUtilisateurDecoPage(
-      this.page,
+      this.page - 1,
       this.pageSize,
       this.advancedSearchForm.value["region"],
       this.advancedSearchForm.value["ia"],

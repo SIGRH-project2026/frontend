@@ -8,11 +8,14 @@ import {UtilisateurService} from "../../../../../services/utilisateur.service";
 import {ReferencesService} from "../../../../../services/references.service";
 import {ResponseApi} from "../../../../../models/response-api";
 import {NgxSpinnerService} from "ngx-spinner";
+import {CredentialsService} from "../../../../../services/credentials.service";
 import {
     matriculeContractuelValidator,
     matriculeFonctionnaireValidator,
     thirteenOrFourteenDigitsValidator
 } from "../../../../../shared/commons/validators";
+
+const PROFILS_SANS_ETABLISSEMENT = ['Représentant-IEF', 'Representant-IA'];
 
 @Component({
   selector: 'app-edit-utilisateur',
@@ -52,6 +55,16 @@ export class EditUtilisateurComponent implements OnInit{
      codeIA: any;
      eeministere: any;
 
+    // Un Representant-IA ne gère que le personnel de son IA (région et IA
+    // verrouillées), un Représentant-IEF celui des établissements de son IEF
+    // (IEF verrouillée aussi). Le serveur applique la même règle.
+    isRepresentantIA = false;
+    isRepresentantIEF = false;
+    // Les représentants IA/IEF sont rattachés à une circonscription, pas à un
+    // établissement : le champ établissement ne s'applique pas.
+    sansEtablissement = false;
+    iefObligatoire = false;
+
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     validationResult: string = '';
 
@@ -63,9 +76,13 @@ export class EditUtilisateurComponent implements OnInit{
         private referenceService: ReferencesService,
         private activatedRoute: ActivatedRoute,
         private  spinner : NgxSpinnerService,
+        private credentialsService: CredentialsService,
 
     ){
         this.userId = this.activatedRoute.snapshot.paramMap.get('userId')
+        const profilsConnecte: string[] = this.credentialsService.userProfils ?? [];
+        this.isRepresentantIA = profilsConnecte.includes('Representant-IA');
+        this.isRepresentantIEF = profilsConnecte.includes('Représentant-IEF');
     }
 
 
@@ -152,12 +169,16 @@ export class EditUtilisateurComponent implements OnInit{
             }),
         });
 
+        this.deconectedForm.get('profils.code')?.valueChanges.subscribe(code =>
+            this.ajusterChampsSelonProfil(code)
+        );
+
         // this.listProfiles();
 
         this.referenceService.listProfilesDEC().subscribe(response => {
 
             if(response.success)
-                this.profils = response.data;
+                this.profils = response.data.filter((p: any) => this.profilAttribuable(p.code));
         });
 
         this.referenceService.listRegion().subscribe(response => {
@@ -180,13 +201,6 @@ export class EditUtilisateurComponent implements OnInit{
             if(response.success)
                 this.corpsGrade = response.data;
         });
-
-        this.referenceService.listProfilesDEC().subscribe(response => {
-
-            if(response.success)
-                this.profils = response.data;
-        });
-
 
         this.referenceService.listTypePoste().subscribe(response => {
             if(response.success)
@@ -250,7 +264,7 @@ export class EditUtilisateurComponent implements OnInit{
                             //  console.log("1222")
                         } else {
                             //console.log("2222")
-                               this.getListEtablissement(this.deconectedDTO?.ia?.code);
+                               this.getListEtablissement(null);
                                this.getListEF(this.deconectedDTO?.ia?.code);
                         }
 
@@ -349,6 +363,16 @@ export class EditUtilisateurComponent implements OnInit{
                         if (this.deconectedDTO?.typeMatricule?.code) {
                             this.onTypeMatriculeChange(this.deconectedDTO.typeMatricule.code);
                         }
+
+                        this.ajusterChampsSelonProfil(this.profile?.code);
+
+                        if (this.isRepresentantIA || this.isRepresentantIEF) {
+                            this.deconectedRegionForm.controls['region'].disable();
+                            this.deconectedRegionForm.controls['ia'].disable();
+                        }
+                        if (this.isRepresentantIEF) {
+                            this.deconectedRegionForm.controls['ief'].disable();
+                        }
                     }
                 }
             });
@@ -356,6 +380,27 @@ export class EditUtilisateurComponent implements OnInit{
 
         this.spinner.hide();
 
+    }
+
+    /** Un représentant n'attribue ni son propre niveau ni un niveau supérieur. */
+    profilAttribuable(code: string): boolean {
+        if ((this.isRepresentantIA || this.isRepresentantIEF) && code === 'Representant-IA') return false;
+        if (this.isRepresentantIEF && code === 'Représentant-IEF') return false;
+        return true;
+    }
+
+    ajusterChampsSelonProfil(code: string | undefined): void {
+        this.sansEtablissement = PROFILS_SANS_ETABLISSEMENT.includes(code ?? '');
+        this.iefObligatoire = code === 'Représentant-IEF';
+
+        const etablissement = this.deconectedRegionForm.get('etablissement.code');
+        etablissement?.setValidators(this.sansEtablissement ? null : Validators.required);
+        if (this.sansEtablissement) etablissement?.setValue('');
+        etablissement?.updateValueAndValidity();
+
+        const ief = this.deconectedRegionForm.get('ief.code');
+        ief?.setValidators(this.iefObligatoire ? Validators.required : null);
+        ief?.updateValueAndValidity();
     }
 
     getEEMinistre(code: any): void {
@@ -410,65 +455,32 @@ export class EditUtilisateurComponent implements OnInit{
     }
 
 
+    /**
+     * Établissements de l'IEF choisie ; sans IEF, ceux de l'IA courante.
+     */
     getListEtablissement(code: any): void {
-
-        if( !this.deconectedDTO?.ief) {
-            this.spinner.show();
-          //  console.log(code)
-          //  this.getListEF(this.deconectedDTO?.ia?.code);
-            this.referenceService.listEtablissementByIACode(this.deconectedDTO?.ia?.code)
-                .subscribe(response => {
-                    console.log("#1")
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        this.spinner.hide();
-
-                    }
-                });
+        const iaCode = this.deconectedRegionForm?.get('ia.code')?.value || this.deconectedDTO?.ia?.code;
+        const request = code
+            ? this.referenceService.listEtablissementByCode(code)
+            : this.referenceService.listEtablissementByIACode(iaCode);
+        if (!code && !iaCode) {
+            this.etablissement = [];
+            return;
         }
+        this.spinner.show();
+        request.subscribe({
+            next: response => {
+                this.etablissement = response.success ? response.data : [];
+                this.spinner.hide();
+            },
+            error: () => this.spinner.hide()
+        });
+    }
 
-
-
-        if(code &&  this.deconectedDTO?.ief) {
-            this.spinner.show();
-            console.log("test", code)
-            this.referenceService.listEtablissementByCode(code)
-                .subscribe(response => {
-
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        console.log("test #1", this.etablissement);
-                        this.spinner.hide();
-                    }
-                });
-        }
-
-        /*else if (this.codeIA) {
-            console.log("ici #")
-            this.spinner.show()
-            this.referenceService.listEtablissementByIACode( this.codeIA )
-                .subscribe(response => {
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        this.spinner.hide()
-                    }
-                });
-        }*/
-        else {
-           console.log("#3")
-            this.spinner.show()
-            this.referenceService.listEtablissementByIACode( this.deconectedDTO?.ia?.code )
-                .subscribe(response => {
-                    if (response.success) {
-                        this.etablissement = response.data;
-                        this.spinner.hide()
-                    }
-                });
-        }
-
-
-
-
+    /** Changement d'IEF par l'utilisateur : l'établissement précédent n'est plus valable. */
+    onIefChange(code: any): void {
+        this.deconectedRegionForm.get('etablissement.code')?.setValue('');
+        this.getListEtablissement(code);
     }
 
 
@@ -616,6 +628,8 @@ export class EditUtilisateurComponent implements OnInit{
             const control = this.deconectedRegionForm!.get(field);
             control!.markAsTouched({onlySelf: true});
         });
+        // Les champs « code » imbriqués (IEF, établissement) portent les validateurs.
+        this.deconectedRegionForm.markAllAsTouched();
     }
 
     splitValueMatricule(matricule: string | null | undefined): string {

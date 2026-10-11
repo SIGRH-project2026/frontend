@@ -12,6 +12,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { NgxSpinnerService } from "ngx-spinner";
 import Swal from "sweetalert2";
 import { ResponseApi } from "../../../../../models/response-api";
+import { CredentialsService } from "../../../../../services/credentials.service";
 import { DeconectedDTO } from "../../../../../models/utilisateur";
 import { ReferencesService } from "../../../../../services/references.service";
 import { UtilisateurService } from "../../../../../services/utilisateur.service";
@@ -20,6 +21,8 @@ import {
   matriculeFonctionnaireValidator,
   thirteenOrFourteenDigitsValidator,
 } from "../../../../../shared/commons/validators";
+
+const PROFILS_SANS_ETABLISSEMENT = ["Représentant-IEF", "Representant-IA"];
 
 @Component({
   selector: "app-create-utilisateur",
@@ -52,8 +55,15 @@ export class CreateUtilisateurComponent implements OnInit {
   codeIA: any;
   deconectedRegionForm!: FormGroup;
   eeministere: any;
-  emplacementFacultatif = false;
-  private readonly destroyRef = inject(DestroyRef);
+  // Un Representant-IA ne crée que le personnel de son IA (région et IA
+  // imposées), un Représentant-IEF celui des établissements de son IEF
+  // (région, IA et IEF imposées). Le serveur applique la même règle.
+  isRepresentantIA = false;
+  isRepresentantIEF = false;
+  // Les représentants IA/IEF sont rattachés à une circonscription, pas à un
+  // établissement : établissement et système d'enseignement ne s'appliquent pas.
+  sansEtablissement = false;
+  iefObligatoire = false;
 
   alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   validationResult: string = "";
@@ -66,7 +76,12 @@ export class CreateUtilisateurComponent implements OnInit {
     private referenceService: ReferencesService,
     public modalService: NgbModal = inject(NgbModal),
     private spinner: NgxSpinnerService,
-  ) {}
+    private credentialsService: CredentialsService,
+  ) {
+    const profilsConnecte: string[] = this.credentialsService.userProfils ?? [];
+    this.isRepresentantIA = profilsConnecte.includes("Representant-IA");
+    this.isRepresentantIEF = profilsConnecte.includes("Représentant-IEF");
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -123,16 +138,22 @@ export class CreateUtilisateurComponent implements OnInit {
       typePoste: ["", Validators.required],
     });
 
-    this.updateEmplacementValidators();
-    this.deconectedForm.controls["profils"].valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.updateEmplacementValidators());
+    this.deconectedForm.controls["profils"].valueChanges.subscribe((code) =>
+      this.ajusterChampsSelonProfil(code),
+    );
 
     // this.listProfiles();
 
     this.referenceService.listProfilesDEC().subscribe((response) => {
-      if (response.success) this.profils = response.data;
+      if (response.success)
+        this.profils = response.data.filter((p: any) =>
+          this.profilAttribuable(p.code),
+        );
     });
+
+    if (this.isRepresentantIA || this.isRepresentantIEF) {
+      this.imposerCirconscriptionDuRepresentant();
+    }
 
     this.referenceService.listRegion().subscribe((response) => {
       if (response.success) this.region = response.data;
@@ -148,10 +169,6 @@ export class CreateUtilisateurComponent implements OnInit {
 
     this.referenceService.listcorpsGrade().subscribe((response) => {
       if (response.success) this.corpsGrade = response.data;
-    });
-
-    this.referenceService.listProfilesDEC().subscribe((response) => {
-      if (response.success) this.profils = response.data;
     });
 
     this.referenceService.listTypePoste().subscribe((response) => {
@@ -177,19 +194,59 @@ export class CreateUtilisateurComponent implements OnInit {
     });
   }
 
-  updateEmplacementValidators(): void {
-    const profil = this.deconectedForm.controls["profils"].value;
-    this.emplacementFacultatif = ["Representant-IA", "Représentant-IEF"].includes(profil);
+  ajusterChampsSelonProfil(code: string): void {
+    this.sansEtablissement = PROFILS_SANS_ETABLISSEMENT.includes(code);
+    this.iefObligatoire = code === "Représentant-IEF";
 
-    for (const field of ["etablissement", "typeSystemeEnseignement"]) {
-      const control = this.deconectedRegionForm.controls[field];
-      if (this.emplacementFacultatif) {
-        control.removeValidators(Validators.required);
-      } else {
-        control.addValidators(Validators.required);
-      }
-      control.updateValueAndValidity({ emitEvent: false });
+    for (const champ of ["etablissement", "typeSystemeEnseignement"]) {
+      const control = this.deconectedRegionForm.controls[champ];
+      control.setValidators(this.sansEtablissement ? null : Validators.required);
+      if (this.sansEtablissement) control.setValue("");
+      control.updateValueAndValidity();
     }
+
+    const ief = this.deconectedRegionForm.controls["ief"];
+    ief.setValidators(this.iefObligatoire ? Validators.required : null);
+    ief.updateValueAndValidity();
+  }
+
+  /** Un représentant n'attribue ni son propre niveau ni un niveau supérieur. */
+  profilAttribuable(code: string): boolean {
+    if (this.isRepresentantIA || this.isRepresentantIEF) {
+      if (code === "Representant-IA") return false;
+    }
+    if (this.isRepresentantIEF && code === "Représentant-IEF") return false;
+    return true;
+  }
+
+  /**
+   * Préremplit et verrouille la circonscription du représentant connecté :
+   * région et IA, plus l'IEF pour un Représentant-IEF.
+   */
+  imposerCirconscriptionDuRepresentant(): void {
+    const userId = this.credentialsService.getUserInfos()?.id;
+    if (!userId) return;
+    this.userService.getOneUser(userId).subscribe((response: any) => {
+      const representant = response?.data;
+      const ia = representant?.ia ?? representant?.ief?.ia;
+      if (!ia) return;
+      this.ia = [ia];
+      this.deconectedRegionForm.patchValue({
+        region: representant.region?.code ?? ia.region?.code ?? "",
+        ia: ia.code,
+      });
+      this.deconectedRegionForm.controls["region"].disable();
+      this.deconectedRegionForm.controls["ia"].disable();
+      this.getListEF(ia.code);
+
+      if (this.isRepresentantIEF && representant.ief) {
+        this.deconectedRegionForm.patchValue({ ief: representant.ief.code });
+        this.deconectedRegionForm.controls["ief"].disable();
+        this.getListEtablissement(representant.ief.code);
+      } else {
+        this.getListEtabByIA(ia.code);
+      }
+    });
   }
 
   getListEF(code: any): void {

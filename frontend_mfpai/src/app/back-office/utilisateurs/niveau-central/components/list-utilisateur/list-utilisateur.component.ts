@@ -31,7 +31,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
     private static readonly STATE_KEY = 'utilisateurs-niveau-central';
     isSearchResult = false;
     headers!: string[];
-    page = 0;
+    page = 1; // numérotation de ngb-pagination (1 = première page) ; l'API attend page - 1
     totalPages = 0;
     size = 10;
 	pageSize = 10;
@@ -98,7 +98,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
           this.restoreSearchState(savedState);
       } else {
           this.refreshData();
-          this.listUtilisateurCenPage(this.page, this.pageSize, "", "","", "","","", "", "", "", "", "", "", "", "");
       }
   }
 
@@ -132,13 +131,13 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
           }
       }
       this.isSearchUser = savedState.isSearchUser;
-      this.page = savedState.page ?? 0;
+      this.page = Math.max(1, savedState.page ?? 1);
       this.pageSize = savedState.pageSize ?? 10;
 
       if (this.isSearchUser) {
           // Relance la recherche avec les critères restaurés : résultats
           // conservés et données à jour (utile après une modification).
-          this.listUtilisateurCenPage(this.page, this.pageSize,
+          this.listUtilisateurCenPage(this.page - 1, this.pageSize,
               this.advancedSearchForm.value['region'],
               this.advancedSearchForm.value['direction'],
               this.advancedSearchForm.value['division'],
@@ -156,7 +155,6 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
           );
       } else {
           this.refreshData();
-          this.listUtilisateurCenPage(this.page, this.pageSize, "", "","", "","","", "", "", "", "", "", "", "", "");
       }
   }
 
@@ -318,9 +316,9 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
    * résultat de la recherche.
    */
   refreshData() {
-    this.page = 0;
+    this.page = 1;
     this.listUtilisateurCenPage(
-      this.page,
+      this.page - 1,
       this.pageSize,
       this.advancedSearchForm.value['region'],
       this.advancedSearchForm.value['direction'],
@@ -443,7 +441,8 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
       const    nom =   this.searchForm.controls['nom'].value ;
       const    direction =  this.searchForm.controls['direction'].value ;
 
-      this.listUtilisateurAdvancedProfile(this.page, this.size, "", "",  matricule, prenom, nom, direction);
+      this.page = 1;
+      this.listUtilisateurAdvancedProfile(0, this.size, "", "",  matricule, prenom, nom, direction);
 
       this.modalService.dismissAll();
       this.isSearchResult = true;
@@ -475,7 +474,7 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
      */
     refreshData2() {
       this.listUtilisateurCenPage(
-        this.page,
+        this.page - 1,
         this.pageSize,
         this.advancedSearchForm.value['region'],
         this.advancedSearchForm.value['direction'],
@@ -552,7 +551,8 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
 
     onSearchUser(){
        // console.log( this.advancedSearchForm.value)
-        this.listUtilisateurCenPage(0, 10,
+        this.page = 1;
+        this.listUtilisateurCenPage(0, this.pageSize,
             this.advancedSearchForm.value['region'],
             this.advancedSearchForm.value['direction'],
             this.advancedSearchForm.value['division'],
@@ -599,7 +599,8 @@ export class ListUtilisateurComponent implements OnInit, OnDestroy{
 
     onAdvancedSearchForm() {
        // console.log(this.advancedSearchForm.value['corps'])
-       this.listUtilisateurCenPage(0, 10,
+       this.page = 1;
+       this.listUtilisateurCenPage(0, this.pageSize,
             this.advancedSearchForm.value['region'],
             this.advancedSearchForm.value['direction'],
             this.advancedSearchForm.value['division'],

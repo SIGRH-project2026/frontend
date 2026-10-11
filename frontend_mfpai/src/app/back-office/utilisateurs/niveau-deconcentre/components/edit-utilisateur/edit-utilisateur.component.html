@@ -38,20 +38,22 @@
 
                 </div>
                 <div class="col-sm-4" formGroupName="ief">
-                    <label class="form-label">IEF</label>
-                    <select class="form-select" formControlName="code" (change)="
-                        getListEtablissement($any($event.target).value);">
+                    <label class="form-label">IEF <span *ngIf="iefObligatoire" style="color: red">*</span></label>
+                    <select class="form-select" formControlName="code" (change)="onIefChange($any($event.target).value)">
                         <option value="">Sélectionner</option>
                         <option *ngFor="let ie of ief" [value]="ie.code">{{ie?.label}}</option>
                     </select>
+                    <div style="color: red" *ngIf="f1['ief'].get('code')?.touched && f1['ief'].get('code')?.hasError('required')">IEF
+                        <strong>obligatoire!</strong>
+                    </div>
                 </div>
-                <div class="col-sm-4" formGroupName="etablissement">
+                <div class="col-sm-4" formGroupName="etablissement" *ngIf="!sansEtablissement">
                     <label class="form-label">Etablissements/EFF/CFP <span style="color: red">*</span></label>
                     <select class="form-select" formControlName="code">
                         <option value="">Sélectionner</option>
                         <option *ngFor="let eta of etablissement" [value]="eta.code">{{eta?.label}}</option>
                     </select>
-                    <div style="color: red" *ngIf="f1['etablissement'].touched && f1['etablissement'].hasError('required')">L'établissement
+                    <div style="color: red" *ngIf="f1['etablissement'].get('code')?.touched && f1['etablissement'].get('code')?.hasError('required')">L'établissement
                         <strong>obligatoire!</strong>
                     </div>
                 </div>
