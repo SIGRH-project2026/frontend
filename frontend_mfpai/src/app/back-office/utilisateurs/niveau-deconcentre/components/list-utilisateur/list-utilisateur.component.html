@@ -5,7 +5,8 @@
       <ng-container
         *ngIf="
           userInfos?.profil[0]?.code === 'ADMIN-DRH' ||
-          userInfos?.profil[0]?.code === 'Directeur-DRH'
+          userInfos?.profil[0]?.code === 'Directeur-DRH' ||
+          userInfos?.profil[0]?.code === 'Representant-IA'
         "
       >
         <div class="d-flex gap-2">
@@ -190,10 +191,7 @@
       <!-- ACTIONS -->
       <div class="row g-3 mt-2">
         <div class="col-lg-2 col-sm-6">
-          <button
-            class="button button-secondary w-100"
-            type="submit"
-          >
+          <button class="button button-secondary w-100" type="submit">
             Rechercher
           </button>
         </div>
@@ -293,11 +291,11 @@
                         >
                           <i
                             class="fa fa-lock me-2"
-                            title="Activer"
+                            title="Désactiver"
                             id="status"
                             type="button"
                           ></i>
-                          <span>Activer</span>
+                          <span>Désactiver</span>
                         </a>
                       </li>
                       <li *ngIf="!user.status">
@@ -418,10 +416,7 @@
                 (change)="getListIA($any($event.target).value)"
               >
                 <option value="">Sélectionner</option>
-                <option
-                  *ngFor="let reg of region"
-                  [value]="reg.code"
-                >
+                <option *ngFor="let reg of region" [value]="reg.code">
                   {{ reg.label }}
                 </option>
               </select>
@@ -434,10 +429,7 @@
                 (change)="getListEF($any($event.target).value)"
               >
                 <option value="">Sélectionner</option>
-                <option
-                  *ngFor="let reg of ia"
-                  [value]="reg.code"
-                >
+                <option *ngFor="let reg of ia" [value]="reg.code">
                   {{ reg.label }}
                 </option>
               </select>
@@ -450,10 +442,7 @@
                 (change)="getListEtablissement($any($event.target).value)"
               >
                 <option value="">Sélectionner</option>
-                <option
-                  *ngFor="let ie of ief"
-                  [value]="ie.code"
-                >
+                <option *ngFor="let ie of ief" [value]="ie.code">
                   {{ ie.label }}
                 </option>
               </select>
@@ -462,10 +451,7 @@
               <label class="form-label">Etablissement/EFF</label>
               <select class="form-select" formControlName="etablissement">
                 <option value="">Sélectionner</option>
-                <option
-                  *ngFor="let eta of etablissement"
-                  [value]="eta.code"
-                >
+                <option *ngFor="let eta of etablissement" [value]="eta.code">
                   {{ eta.label }}
                 </option>
               </select>

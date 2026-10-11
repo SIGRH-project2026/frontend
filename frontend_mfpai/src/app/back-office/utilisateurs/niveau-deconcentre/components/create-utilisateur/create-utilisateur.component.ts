@@ -11,6 +11,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { NgxSpinnerService } from "ngx-spinner";
 import Swal from "sweetalert2";
 import { ResponseApi } from "../../../../../models/response-api";
+import { CredentialsService } from "../../../../../services/credentials.service";
 import { DeconectedDTO } from "../../../../../models/utilisateur";
 import { ReferencesService } from "../../../../../services/references.service";
 import { UtilisateurService } from "../../../../../services/utilisateur.service";
@@ -19,6 +20,8 @@ import {
   matriculeFonctionnaireValidator,
   thirteenOrFourteenDigitsValidator,
 } from "../../../../../shared/commons/validators";
+
+const PROFILS_SANS_ETABLISSEMENT = ["Représentant-IEF", "Representant-IA"];
 
 @Component({
   selector: "app-create-utilisateur",
@@ -51,6 +54,13 @@ export class CreateUtilisateurComponent implements OnInit {
   codeIA: any;
   deconectedRegionForm!: FormGroup;
   eeministere: any;
+  // Un Representant-IA ne crée que le personnel de son IA : région et IA
+  // sont imposées (le serveur applique la même règle).
+  isRepresentantIA = false;
+  // Les représentants IA/IEF sont rattachés à une circonscription, pas à un
+  // établissement : établissement et système d'enseignement ne s'appliquent pas.
+  sansEtablissement = false;
+  iefObligatoire = false;
 
   alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   validationResult: string = "";
@@ -63,7 +73,11 @@ export class CreateUtilisateurComponent implements OnInit {
     private referenceService: ReferencesService,
     public modalService: NgbModal = inject(NgbModal),
     private spinner: NgxSpinnerService,
-  ) {}
+    private credentialsService: CredentialsService,
+  ) {
+    this.isRepresentantIA =
+      this.credentialsService.userProfils?.includes("Representant-IA") ?? false;
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -120,11 +134,22 @@ export class CreateUtilisateurComponent implements OnInit {
       typePoste: ["", Validators.required],
     });
 
+    this.deconectedForm.controls["profils"].valueChanges.subscribe((code) =>
+      this.ajusterChampsSelonProfil(code),
+    );
+
     // this.listProfiles();
 
     this.referenceService.listProfilesDEC().subscribe((response) => {
-      if (response.success) this.profils = response.data;
+      if (response.success)
+        this.profils = this.isRepresentantIA
+          ? response.data.filter((p: any) => p.code !== "Representant-IA")
+          : response.data;
     });
+
+    if (this.isRepresentantIA) {
+      this.imposerIADuRepresentant();
+    }
 
     this.referenceService.listRegion().subscribe((response) => {
       if (response.success) this.region = response.data;
@@ -140,10 +165,6 @@ export class CreateUtilisateurComponent implements OnInit {
 
     this.referenceService.listcorpsGrade().subscribe((response) => {
       if (response.success) this.corpsGrade = response.data;
-    });
-
-    this.referenceService.listProfilesDEC().subscribe((response) => {
-      if (response.success) this.profils = response.data;
     });
 
     this.referenceService.listTypePoste().subscribe((response) => {
@@ -166,6 +187,41 @@ export class CreateUtilisateurComponent implements OnInit {
     });
     this.referenceService.listEEMinistere().subscribe((response) => {
       if (response.success) this.eeministere = response.data;
+    });
+  }
+
+  ajusterChampsSelonProfil(code: string): void {
+    this.sansEtablissement = PROFILS_SANS_ETABLISSEMENT.includes(code);
+    this.iefObligatoire = code === "Représentant-IEF";
+
+    for (const champ of ["etablissement", "typeSystemeEnseignement"]) {
+      const control = this.deconectedRegionForm.controls[champ];
+      control.setValidators(this.sansEtablissement ? null : Validators.required);
+      if (this.sansEtablissement) control.setValue("");
+      control.updateValueAndValidity();
+    }
+
+    const ief = this.deconectedRegionForm.controls["ief"];
+    ief.setValidators(this.iefObligatoire ? Validators.required : null);
+    ief.updateValueAndValidity();
+  }
+
+  /** Préremplit et verrouille la région et l'IA du Representant-IA connecté. */
+  imposerIADuRepresentant(): void {
+    const userId = this.credentialsService.getUserInfos()?.id;
+    if (!userId) return;
+    this.userService.getOneUser(userId).subscribe((response: any) => {
+      const representant = response?.data;
+      if (!representant?.ia) return;
+      this.ia = [representant.ia];
+      this.deconectedRegionForm.patchValue({
+        region: representant.region?.code ?? representant.ia.region?.code ?? "",
+        ia: representant.ia.code,
+      });
+      this.deconectedRegionForm.controls["region"].disable();
+      this.deconectedRegionForm.controls["ia"].disable();
+      this.getListEF(representant.ia.code);
+      this.getListEtabByIA(representant.ia.code);
     });
   }
 
