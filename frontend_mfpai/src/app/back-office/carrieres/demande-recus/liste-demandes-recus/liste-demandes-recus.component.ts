@@ -692,6 +692,9 @@ export class ListeDemandesRecusComponent {
   profilContientCode(p: Profil, code: string): boolean {
     return p.code?.includes(code) ?? false;
   }
+  estActeLycee(acte: any): boolean {
+    return acte?.etablissement?.typeEtablissement?.code?.toUpperCase() === 'LYC';
+  }
 
 
 

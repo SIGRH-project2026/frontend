@@ -104,6 +104,7 @@
                                              (demandes?.statutActe?.code === 'SOUMIS' &&   profilContientCode(profil,'Chef') && profil.code!=='Chef-division-dgcaa' )
 
                                             ||(demandes?.statutActe?.code === 'VALIDEIEF'&& profil.code==='Representant-IA' )
+                                            ||(demandes?.statutActe?.code === 'VALIDECE'&& profil.code==='Representant-IA' && estActeLycee(demandes) )
                                             ||(demandes?.statutActe?.code === 'VALIDECE'&& profil.code==='Représentant-IEF' )"
 
                                            class="dropdown-item" href="javascript:(0)" (click)="openJointureModal(demandes,JOINDRE)">
