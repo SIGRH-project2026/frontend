@@ -13,9 +13,21 @@
         <div class="panel-list-search">
             <div class="search">
                 <div class="search-box">
-                    <input class="search-input" type="text" placeholder="Rechercher">
-                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                    <input class="search-input" type="text" placeholder="Rechercher" [(ngModel)]="filter" (ngModelChange)="onSearch()">
+                    <button class="search-btn" type="button" (click)="onSearch()"><i class="fas fa-search"></i></button>
                 </div>
+                <select class="form-select" [(ngModel)]="regionFiltre" (ngModelChange)="onRegionChange()">
+                    <option value="">Toutes les régions</option>
+                    <option *ngFor="let r of region" [value]="r?.code">{{ r?.label }}</option>
+                </select>
+                <select class="form-select" [(ngModel)]="iaFiltre" (ngModelChange)="onIaChange()">
+                    <option value="">Toutes les IA</option>
+                    <option *ngFor="let i of ia" [value]="i?.code">{{ i?.label }}</option>
+                </select>
+                <select class="form-select" [(ngModel)]="iefFiltre" (ngModelChange)="onSearch()">
+                    <option value="">Toutes les IEF</option>
+                    <option *ngFor="let f of ief" [value]="f?.code">{{ f?.label }}</option>
+                </select>
                 <select class="form-select" (change)="onStatusChange($event)">
                     <option value="">Tous les status</option>
                     <option value="true">Actif</option>

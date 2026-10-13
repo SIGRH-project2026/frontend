@@ -246,9 +246,9 @@ export class ParametreService {
 
 
   // Etablissement
-  listEtablissementAdvanced(page: number, size: number, filter: string, statut: string) : Observable<ResponseApiData> {
+  listEtablissementAdvanced(page: number, size: number, filter: string, statut: string, region: string = '', ia: string = '', ief: string = '') : Observable<ResponseApiData> {
 
-    return this._http.get<ResponseApi>(`${environment.apiUrl}parametrages/utilisateur/etablissement/list-pages?page=${page}&size=${size}&filter=${filter}&statut=${statut}`);
+    return this._http.get<ResponseApi>(`${environment.apiUrl}parametrages/utilisateur/etablissement/list-pages?page=${page}&size=${size}&filter=${encodeURIComponent(filter)}&statut=${statut}&region=${region}&ia=${ia}&ief=${ief}`);
 
   }
 

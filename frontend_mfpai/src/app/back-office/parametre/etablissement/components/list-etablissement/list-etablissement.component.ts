@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ParametreService } from "../../../services/parametre.service";
 import { FormBuilder } from "@angular/forms";
-import { Etablissement, Ia } from "../../../../../models/utilisateur";
+import { Etablissement, Ia, Ief, Region } from "../../../../../models/utilisateur";
 import { ResponseApi } from "../../../../../models/response-api";
 import { CredentialsService } from "../../../../../services/credentials.service";
 import { ReferencesService } from 'src/app/services/references.service';
@@ -30,6 +30,14 @@ export class ListEtablissementComponent implements OnInit {
   pageSize = 10;
 
   statut = '';
+  filter = '';
+  regionFiltre = '';
+  iaFiltre = '';
+  iefFiltre = '';
+
+  region: Region[] = [];
+  ia: Ia[] = [];
+  ief: Ief[] = [];
 
   etablissementList: Etablissement[] = [];
 
@@ -44,6 +52,7 @@ export class ListEtablissementComponent implements OnInit {
     private route: ActivatedRoute,
     private parametreService: ParametreService,
     private credentialsService: CredentialsService,
+    private referenceService: ReferencesService,
     public modalService: NgbModal = inject(NgbModal),
     private spinner: NgxSpinnerService,
 
@@ -54,12 +63,50 @@ export class ListEtablissementComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.referenceService.listRegion().subscribe((response) => {
+      if (response.success) {
+        this.region = response.data;
+      }
+    });
     this.refreshData();
   }
 
   refreshData() {
     this.page = 1;
-    this.listEtablissementAdvanced(this.page - 1, this.pageSize, "", this.statut);
+    this.listEtablissementAdvanced(this.page - 1, this.pageSize, this.filter, this.statut);
+  }
+
+  onSearch() {
+    this.page = 1;
+    this.listEtablissementAdvanced(0, this.pageSize, this.filter, this.statut);
+  }
+
+  onRegionChange() {
+    this.iaFiltre = '';
+    this.iefFiltre = '';
+    this.ia = [];
+    this.ief = [];
+    if (this.regionFiltre) {
+      this.referenceService.listIAByCode(this.regionFiltre).subscribe((response) => {
+        if (response.success) {
+          this.ia = response.data;
+        }
+      });
+    }
+    this.onSearch();
+  }
+
+  onIaChange() {
+    this.iefFiltre = '';
+    this.ief = [];
+    if (this.iaFiltre) {
+      this.referenceService.listIEFByCode(this.iaFiltre).subscribe((response) => {
+        if (response.success) {
+          this.ief = response.data;
+        }
+      });
+    }
+    this.onSearch();
   }
 
   onCreateDivisionBureaux() {
@@ -84,7 +131,7 @@ export class ListEtablissementComponent implements OnInit {
 
     this.spinner.show();
     this.parametreService
-      .listEtablissementAdvanced(page, size, filter, statut)
+      .listEtablissementAdvanced(page, size, filter, statut, this.regionFiltre, this.iaFiltre, this.iefFiltre)
       .subscribe({
         next: (data) => {
           if (data?.status === "OK") {
@@ -138,13 +185,13 @@ export class ListEtablissementComponent implements OnInit {
 
   onPageChange(page: number) {
     this.page = page;
-    this.listEtablissementAdvanced(page - 1, this.pageSize, "", this.statut);
+    this.listEtablissementAdvanced(page - 1, this.pageSize, this.filter, this.statut);
   }
 
   onStatusChange(event: any) {
     this.statut = event.target.value;
     this.page = 1;
-    this.listEtablissementAdvanced(0, this.pageSize, "", this.statut);
+    this.listEtablissementAdvanced(0, this.pageSize, this.filter, this.statut);
   }
 
   closeModal() {
