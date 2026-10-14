@@ -24,6 +24,7 @@ const routes: Routes = [
                   'Chef-division-das',
                   'Directeur-DRH',
                   'Assistant-DRH',
+                  'ADMIN-DRH',
                   'Chef-service',
                   'Chef-etablissement',
                   'Representant-IA',
