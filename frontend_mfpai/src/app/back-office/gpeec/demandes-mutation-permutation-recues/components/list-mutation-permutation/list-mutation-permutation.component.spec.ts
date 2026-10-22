@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListMutationPermutationComponent } from '../../../demande-mutation-permutation-recue/components/list-mutation-permutation/list-mutation-permutation.component';
+import { ListMutationPermutationComponent } from './list-mutation-permutation.component';
 
 describe('ListMutationPermutationComponent', () => {
   let component: ListMutationPermutationComponent;
