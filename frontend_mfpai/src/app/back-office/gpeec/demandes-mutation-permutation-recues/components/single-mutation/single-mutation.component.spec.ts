@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SingleMutationComponent } from '../../../demande-mutation-permutation-recue/components/single-mutation/single-mutation.component';
+import { SingleMutationComponent } from './single-mutation.component';
 
 describe('SingleMutationComponent', () => {
   let component: SingleMutationComponent;

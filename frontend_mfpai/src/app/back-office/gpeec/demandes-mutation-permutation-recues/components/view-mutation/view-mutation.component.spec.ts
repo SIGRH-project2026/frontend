@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewMutationComponent } from '../../../demande-mutation-permutation-recue/components/view-mutation/view-mutation.component';
+import { ViewMutationComponent } from './view-mutation.component';
 
 describe('ViewMutationComponent', () => {
   let component: ViewMutationComponent;
